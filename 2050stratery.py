@@ -1,6 +1,7 @@
 import akshare as ak
 import pandas as pd
 import numpy as np
+import random
 
 # 获取股票数据函数
 def get_stock_data(stock_code, start_date):
@@ -50,13 +51,19 @@ def main():
     # 获取所有A股股票列表
     stock_list = ak.stock_zh_a_spot()
     stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
+    stock_codes = stock_list['代码'].tolist()
 
-    # 随机选择一只股票
-    random_stock = stock_list.sample(1)['代码'].values[0]
-
-    # 获取股票数据
-    start_date = '2022-01-01'
-    stock_df = get_stock_data(random_stock, start_date)
+    # 尝试随机选择一只有效股票
+    random_stock = None
+    while not random_stock:
+        try:
+            potential_stock = random.choice(stock_codes)
+            # 获取股票数据
+            start_date = '2022-01-01'
+            stock_df = get_stock_data(potential_stock, start_date)
+            random_stock = potential_stock
+        except KeyError:
+            continue
 
     # 模拟交易
     transactions, final_balance = simulate_strategy(stock_df)
