@@ -47,8 +47,11 @@ def simulate_strategy(stock_df, initial_balance=100000):
 
 # 主函数
 def main():
-    # 随机选择一只股票
+    # 获取所有A股股票列表
     stock_list = ak.stock_zh_a_spot()
+    stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
+
+    # 随机选择一只股票
     random_stock = stock_list.sample(1)['代码'].values[0]
 
     # 获取股票数据
