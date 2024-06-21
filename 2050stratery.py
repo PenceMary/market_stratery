@@ -2,15 +2,37 @@ import akshare as ak
 import pandas as pd
 import numpy as np
 import random
+import time
+from datetime import datetime
+
+# 获取股票信息的函数，增加重试机制
+def get_stock_info_with_retry(retries=5, delay=5):
+    for attempt in range(retries):
+        try:
+            stock_info = ak.stock_info_a_code_name()
+            return stock_info
+        except Exception as e:
+            print(f"获取股票信息失败，重试 {attempt + 1}/{retries}...")
+            time.sleep(delay)
+    raise Exception("多次重试后仍然无法获取股票信息")
 
 # 获取股票数据函数
-def get_stock_data(stock_code, start_date):
-    stock_df = ak.stock_zh_a_hist(symbol=stock_code, period="daily", start_date=start_date, adjust="qfq")
-    stock_df = stock_df[['日期', '开盘', '收盘', '最高']]
-    stock_df.columns = ['date', 'open', 'close', 'high']
-    stock_df['date'] = pd.to_datetime(stock_df['date'])
-    stock_df.set_index('date', inplace=True)
-    return stock_df
+def get_stock_data(ticker, start, end):
+    start = start.replace("-", "")
+    end = end.replace("-", "")
+    stock = ak.stock_zh_a_hist(symbol=ticker, period="daily", start_date=start, end_date=end, adjust="qfq")
+    stock = stock[['日期', '开盘', '收盘', '最高', '最低', '成交量', '成交额']]
+    stock.columns = ['date', 'open', 'close', 'high', 'low', 'volume', 'amount']
+    stock.set_index('date', inplace=True)
+    stock.index = pd.to_datetime(stock.index)
+    return stock
+
+# 下载所有需要的股票数据
+def download_all_stock_data(tickers, start_date, end_date):
+    all_stock_data = {}
+    for ticker in tickers:
+        all_stock_data[ticker] = get_stock_data(ticker, start_date, end_date)
+    return all_stock_data
 
 # 模拟交易策略函数
 def simulate_strategy(stock_df, initial_balance=100000):
@@ -43,46 +65,80 @@ def simulate_strategy(stock_df, initial_balance=100000):
             shares = 0
             buy_price = 0
 
-    return transactions, balance
+    return transactions, balance, shares
 
 # 主函数
 def main():
-    # 获取所有A股股票列表
-    try:
-        stock_list = ak.stock_zh_a_spot()
-        stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
-        stock_codes = stock_list['代码'].tolist()
-        
-        if not stock_codes:
-            raise ValueError("股票列表为空，无法进行随机选择。")
-        
-        print("获取的股票列表：", stock_codes[:10])  # 打印前10个股票代码以检查格式
-    except Exception as e:
-        print(f"Error fetching stock list: {e}")
-        return
+    init_date = '2024-01-01'
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    num_stocks = 5
 
-    # 尝试获取固定股票数据进行调试
-    try:
-        fixed_stock_code = stock_codes[0][2:]  # 移除前缀
-        print(f"尝试获取股票数据: {fixed_stock_code}")
-        stock_df = get_stock_data(fixed_stock_code, '2024-01-01')
-        print(stock_df.head())  # 打印前几行数据检查获取是否正确
-    except Exception as e:
-        print(f"Error fetching fixed stock data: {e}")
-        return
+    # 随机选择多支股票
+    stock_info = get_stock_info_with_retry()
+    stock_list = stock_info['code'].tolist()
+    stock_names = stock_info['name'].tolist()
+    selected_indices = random.sample(range(len(stock_list)), num_stocks)
+    tickers = [stock_list[i] for i in selected_indices]
+    stock_names = [stock_names[i] for i in selected_indices]
 
-    # 模拟交易
-    transactions, final_balance = simulate_strategy(stock_df)
+    # 预先下载所有股票数据
+    all_stock_data = download_all_stock_data(tickers, init_date, current_date)
 
-    # 打印交易信息
-    for transaction in transactions:
-        print(f"Date: {transaction[0]}, Type: {transaction[1]}, Shares: {transaction[2]}, Price: {transaction[3]:.2f}, Balance: {transaction[4]:.2f}")
+    total_cash = 0
+    total_stock_value = 0
+    num_profitable = 0
+    num_loss = 0
+    total_profit = 0
+    total_loss = 0
 
-    # 打印最终结果
-    initial_balance = 100000
-    print(f"Initial Balance: {initial_balance:.2f}")
-    print(f"Final Balance: {final_balance:.2f}")
-    print(f"Total Profit/Loss: {final_balance - initial_balance:.2f}")
+    for ticker in all_stock_data.keys():
+        print(f"模拟交易策略 {ticker} 的数据")
+        transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker])
+
+        # 计算截止到当前日期的股票市值
+        current_stock_price = all_stock_data[ticker]['close'].iloc[-1]
+        stock_value = shares * current_stock_price
+
+        # 累计总现金和股票市值
+        total_cash += final_balance
+        total_stock_value += stock_value
+
+        # 计算利润或损失
+        total_balance = final_balance + stock_value
+        profit_or_loss = total_balance - 100000
+
+        if profit_or_loss > 0:
+            num_profitable += 1
+            total_profit += profit_or_loss
+        else:
+            num_loss += 1
+            total_loss += profit_or_loss
+
+        # 打印交易信息
+        for transaction in transactions:
+            print(f"Date: {transaction[0]}, Type: {transaction[1]}, Shares: {transaction[2]}, Price: {transaction[3]:.2f}, Balance: {transaction[4]:.2f}")
+
+        # 打印最终结果
+        initial_balance = 100000
+        print(f"{ticker} Initial Balance: {initial_balance:.2f}")
+        print(f"{ticker} Final Balance: {final_balance:.2f}")
+        print(f"{ticker} Stock Value: {stock_value:.2f}")
+        print(f"{ticker} Total Profit/Loss: {profit_or_loss:.2f}")
+        print("===")
+
+    # 打印累计结果
+    total_value = total_cash + total_stock_value
+    avg_profit = total_profit / num_profitable if num_profitable > 0 else 0
+    avg_loss = total_loss / num_loss if num_loss > 0 else 0
+
+    print(f"Total Cash: {total_cash:.2f}")
+    print(f"Total Stock Value: {total_stock_value:.2f}")
+    print(f"Total Portfolio Value: {total_value:.2f}")
+    print(f"Number of Stocks Simulated: {num_stocks}")
+    print(f"Number of Profitable Stocks: {num_profitable}")
+    print(f"Number of Losing Stocks: {num_loss}")
+    print(f"Average Profit: {avg_profit:.2f}")
+    print(f"Average Loss: {avg_loss:.2f}")
 
 if __name__ == "__main__":
     main()
