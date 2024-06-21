@@ -1,25 +1,47 @@
-尝试获取股票数据: sh.600759
-KeyError: 无法获取股票数据 sh600759
-尝试获取股票数据: sz.301197
-KeyError: 无法获取股票数据 sz301197
-尝试获取股票数据: sh.603416
-KeyError: 无法获取股票数据 sh603416
-尝试获取股票数据: sh.600566
-KeyError: 无法获取股票数据 sh600566
-尝试获取股票数据: sh.600250
-KeyError: 无法获取股票数据 sh600250
-尝试获取股票数据: sz.000932
-KeyError: 无法获取股票数据 sz000932
-尝试获取股票数据: sh.600363
-KeyError: 无法获取股票数据 sh600363
-尝试获取股票数据: sz.000554
-KeyError: 无法获取股票数据 sz000554
-尝试获取股票数据: sz.000702
-KeyError: 无法获取股票数据 sz000702
-尝试获取股票数据: sh.688533
-KeyError: 无法获取股票数据 sh688533
-多次尝试后仍无法获取有效的股票数据，程序终止。
-Error fetching stock list: Can not decode value starting with character '<'
-获取的股票列表： ['sh600000', 'sh600004', 'sh600006', 'sh600007', 'sh600008', 'sh600009', 'sh600010', 'sh600011', 'sh600012', 'sh600015']
-尝试获取股票数据: sh600000
-Error fetching fixed stock data: 'sh600000'
+获取股票信息失败，重试 1/5...
+模拟交易策略 002027 的数据
+002027 Initial Balance: 100000.00
+002027 Final Balance: 100000.00
+002027 Stock Value: 0.00
+002027 Total Profit/Loss: 0.00
+===
+模拟交易策略 001316 的数据
+Date: 2024-03-25 00:00:00, Type: buy, Shares: 3259.0, Price: 30.68, Balance: 13.88
+Date: 2024-05-10 00:00:00, Type: sell, Shares: 3259.0, Price: 33.75, Balance: 109998.61
+Date: 2024-05-16 00:00:00, Type: buy, Shares: 3163.0, Price: 34.77, Balance: 21.10
+Date: 2024-05-20 00:00:00, Type: sell, Shares: 3163.0, Price: 38.25, Balance: 120996.36
+001316 Initial Balance: 100000.00
+001316 Final Balance: 120996.36
+001316 Stock Value: 0.00
+001316 Total Profit/Loss: 20996.36
+===
+模拟交易策略 300499 的数据
+Date: 2024-05-29 00:00:00, Type: buy, Shares: 7880.0, Price: 12.69, Balance: 2.80
+300499 Initial Balance: 100000.00
+300499 Final Balance: 2.80
+300499 Stock Value: 87625.60
+300499 Total Profit/Loss: -12371.60
+===
+模拟交易策略 002021 的数据
+Date: 2024-04-01 00:00:00, Type: buy, Shares: 52910.0, Price: 1.89, Balance: 0.10
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 52910.0, Price: 2.08, Balance: 109999.99
+002021 Initial Balance: 100000.00
+002021 Final Balance: 109999.99
+002021 Stock Value: 0.00
+002021 Total Profit/Loss: 9999.99
+===
+模拟交易策略 603776 的数据
+Date: 2024-03-25 00:00:00, Type: buy, Shares: 8438.0, Price: 11.85, Balance: 9.70
+603776 Initial Balance: 100000.00
+603776 Final Balance: 9.70
+603776 Stock Value: 87586.44
+603776 Total Profit/Loss: -12403.86
+===
+Total Cash: 331008.85
+Total Stock Value: 175212.04
+Total Portfolio Value: 506220.89
+Number of Stocks Simulated: 5
+Number of Profitable Stocks: 2
+Number of Losing Stocks: 3
+Average Profit: 15498.18
+Average Loss: -8258.49
