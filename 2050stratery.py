@@ -6,8 +6,8 @@ import random
 # 获取股票数据函数
 def get_stock_data(stock_code, start_date):
     stock_df = ak.stock_zh_a_hist(symbol=stock_code, period="daily", start_date=start_date, adjust="qfq")
-    stock_df = stock_df[['日期', '开盘', '收盘']]
-    stock_df.columns = ['date', 'open', 'close']
+    stock_df = stock_df[['日期', '开盘', '收盘', '最高']]
+    stock_df.columns = ['date', 'open', 'close', 'high']
     stock_df['date'] = pd.to_datetime(stock_df['date'])
     stock_df.set_index('date', inplace=True)
     return stock_df
@@ -34,18 +34,14 @@ def simulate_strategy(stock_df, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
-        continue
-
-        if shares > 0 and today['higher'] >= (1.1*buy_price):
-            current_value = shares * today['close']
-            if current_value >= (1.1 * (initial_balance - balance)):
-                # 卖出信号
-                sell_price = today['close']
-                income = shares * sell_price
-                balance += income
-                transactions.append((today.name, 'sell', shares, sell_price, balance))
-                shares = 0
-                buy_price = 0
+        elif shares > 0 and today['high'] >= (1.1 * buy_price):
+            # 卖出信号（当日最高价达到10%涨幅时卖出）
+            sell_price = 1.1 * buy_price  # 设定卖出价格为涨幅10%的价格
+            income = shares * sell_price
+            balance += income
+            transactions.append((today.name, 'sell', shares, sell_price, balance))
+            shares = 0
+            buy_price = 0
 
     return transactions, balance
 
@@ -56,18 +52,10 @@ def main():
     stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
     stock_codes = stock_list['代码'].tolist()
 
-    # 尝试随机选择一只有效股票
-    random_stock = None
-    while not random_stock:
-        try:
-            print("stock is ",stock_list)
-            potential_stock = random.choice(stock_codes)
-            # 获取股票数据
-            start_date = '2024-01-01'
-            stock_df = get_stock_data(potential_stock, start_date)
-            random_stock = potential_stock
-        except KeyError:
-            continue
+    # 随机选择一只股票
+    random_stock = random.choice(stock_codes)
+    start_date = '2024-01-01'
+    stock_df = get_stock_data(random_stock, start_date)
 
     # 模拟交易
     transactions, final_balance = simulate_strategy(stock_df)
