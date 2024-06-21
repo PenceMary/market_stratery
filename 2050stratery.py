@@ -48,9 +48,16 @@ def simulate_strategy(stock_df, initial_balance=100000):
 # 主函数
 def main():
     # 获取所有A股股票列表
-    stock_list = ak.stock_zh_a_spot_em()
-    stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
-    stock_codes = stock_list['代码'].tolist()
+    try:
+        stock_list = ak.stock_zh_a_spot_em()
+        stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
+        stock_codes = stock_list['代码'].tolist()
+        
+        if not stock_codes:
+            raise ValueError("股票列表为空，无法进行随机选择。")
+    except Exception as e:
+        print(f"Error fetching stock list: {e}")
+        return
 
     # 尝试随机选择一只有效股票
     random_stock = None
@@ -66,7 +73,7 @@ def main():
         except KeyError:
             continue
         except Exception as e:
-            print(f"Error fetching data for {potential_stock}: {e}")
+            print(f"Error fetching data for {locals().get('potential_stock', 'unknown')}: {e}")
             continue
 
     # 模拟交易
