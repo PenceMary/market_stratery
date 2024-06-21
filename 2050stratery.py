@@ -55,34 +55,20 @@ def main():
         
         if not stock_codes:
             raise ValueError("股票列表为空，无法进行随机选择。")
+        
+        print("获取的股票列表：", stock_codes[:10])  # 打印前10个股票代码以检查格式
     except Exception as e:
         print(f"Error fetching stock list: {e}")
         return
 
-    # 尝试随机选择一只有效股票
-    random_stock = None
-    max_attempts = 10
-    attempts = 0
-
-    while not random_stock and attempts < max_attempts:
-        attempts += 1
-        try:
-            potential_stock = random.choice(stock_codes)
-            stock_code = potential_stock  # 使用原始股票代码，不进行前缀处理
-            # 获取股票数据
-            start_date = '2024-01-01'
-            print(f"尝试获取股票数据: {stock_code}")
-            stock_df = get_stock_data(stock_code, start_date)
-            random_stock = potential_stock
-        except KeyError:
-            print(f"KeyError: 无法获取股票数据 {potential_stock}")
-            continue
-        except Exception as e:
-            print(f"Error fetching data for {locals().get('potential_stock', 'unknown')}: {e}")
-            continue
-
-    if not random_stock:
-        print("多次尝试后仍无法获取有效的股票数据，程序终止。")
+    # 尝试获取固定股票数据进行调试
+    try:
+        fixed_stock_code = stock_codes[0]  # 使用第一个股票代码进行调试
+        print(f"尝试获取股票数据: {fixed_stock_code}")
+        stock_df = get_stock_data(fixed_stock_code, '2024-01-01')
+        print(stock_df.head())  # 打印前几行数据检查获取是否正确
+    except Exception as e:
+        print(f"Error fetching fixed stock data: {e}")
         return
 
     # 模拟交易
