@@ -68,8 +68,7 @@ def main():
         attempts += 1
         try:
             potential_stock = random.choice(stock_codes)
-            stock_code = potential_stock.replace('sh', '').replace('sz', '')  # 去掉前缀
-            stock_code = potential_stock[:2] + '.' + stock_code  # 添加格式化前缀
+            stock_code = potential_stock  # 使用原始股票代码，不进行前缀处理
             # 获取股票数据
             start_date = '2024-01-01'
             print(f"尝试获取股票数据: {stock_code}")
