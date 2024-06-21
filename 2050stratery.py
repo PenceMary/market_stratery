@@ -61,20 +61,30 @@ def main():
 
     # 尝试随机选择一只有效股票
     random_stock = None
-    while not random_stock:
+    max_attempts = 10
+    attempts = 0
+
+    while not random_stock and attempts < max_attempts:
+        attempts += 1
         try:
             potential_stock = random.choice(stock_codes)
             stock_code = potential_stock.replace('sh', '').replace('sz', '')  # 去掉前缀
             stock_code = potential_stock[:2] + '.' + stock_code  # 添加格式化前缀
             # 获取股票数据
             start_date = '2024-01-01'
+            print(f"尝试获取股票数据: {stock_code}")
             stock_df = get_stock_data(stock_code, start_date)
             random_stock = potential_stock
         except KeyError:
+            print(f"KeyError: 无法获取股票数据 {potential_stock}")
             continue
         except Exception as e:
             print(f"Error fetching data for {locals().get('potential_stock', 'unknown')}: {e}")
             continue
+
+    if not random_stock:
+        print("多次尝试后仍无法获取有效的股票数据，程序终止。")
+        return
 
     # 模拟交易
     transactions, final_balance = simulate_strategy(stock_df)
