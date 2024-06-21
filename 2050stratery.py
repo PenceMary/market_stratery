@@ -25,7 +25,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
 
-        if yesterday['ma20'] <= yesterday['ma50'] and today['ma20'] > today['ma50']:
+        if yesterday['ma20'] <= yesterday['ma50'] and today['ma20'] > today['ma50'] and shares != 0:
             # 买入信号（次日开盘价买入）
             buy_price = today['open']
             shares_to_buy = balance // buy_price
@@ -33,6 +33,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
+        continue
 
         if shares > 0:
             current_value = shares * today['close']
