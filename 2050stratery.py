@@ -49,7 +49,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 def main():
     # 获取所有A股股票列表
     try:
-        stock_list = ak.stock_zh_a_spot_em()
+        stock_list = ak.stock_zh_a_spot()
         stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
         stock_codes = stock_list['代码'].tolist()
         
