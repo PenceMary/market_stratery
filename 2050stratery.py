@@ -63,7 +63,7 @@ def main():
 
     # 尝试获取固定股票数据进行调试
     try:
-        fixed_stock_code = stock_codes[0]  # 使用第一个股票代码进行调试
+        fixed_stock_code = stock_codes[0][2:]  # 移除前缀
         print(f"尝试获取股票数据: {fixed_stock_code}")
         stock_df = get_stock_data(fixed_stock_code, '2024-01-01')
         print(stock_df.head())  # 打印前几行数据检查获取是否正确
