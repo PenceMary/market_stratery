@@ -19,3 +19,4 @@ KeyError: 无法获取股票数据 sz000702
 尝试获取股票数据: sh.688533
 KeyError: 无法获取股票数据 sh688533
 多次尝试后仍无法获取有效的股票数据，程序终止。
+Error fetching stock list: Can not decode value starting with character '<'
