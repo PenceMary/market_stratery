@@ -52,10 +52,22 @@ def main():
     stock_list = stock_list[stock_list['代码'].str.startswith('sh') | stock_list['代码'].str.startswith('sz')]
     stock_codes = stock_list['代码'].tolist()
 
-    # 随机选择一只股票
-    random_stock = random.choice(stock_codes)
-    start_date = '2024-01-01'
-    stock_df = get_stock_data(random_stock, start_date)
+    # 尝试随机选择一只有效股票
+    random_stock = None
+    while not random_stock:
+        try:
+            potential_stock = random.choice(stock_codes)
+            stock_code = potential_stock.replace('sh', '').replace('sz', '')  # 去掉前缀
+            stock_code = potential_stock[:2] + '.' + stock_code  # 添加格式化前缀
+            # 获取股票数据
+            start_date = '2024-01-01'
+            stock_df = get_stock_data(stock_code, start_date)
+            random_stock = potential_stock
+        except KeyError:
+            continue
+        except Exception as e:
+            print(f"Error fetching data for {potential_stock}: {e}")
+            continue
 
     # 模拟交易
     transactions, final_balance = simulate_strategy(stock_df)
