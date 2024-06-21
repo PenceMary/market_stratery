@@ -17,6 +17,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
     balance = initial_balance
     shares = 0
     transactions = []
+    buy_price = 0
 
     stock_df['ma20'] = stock_df['close'].rolling(window=20).mean()
     stock_df['ma50'] = stock_df['close'].rolling(window=50).mean()
@@ -25,7 +26,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
 
-        if yesterday['ma20'] <= yesterday['ma50'] and today['ma20'] > today['ma50'] and shares != 0:
+        if yesterday['ma20'] <= yesterday['ma50'] and today['ma20'] > today['ma50'] and shares == 0:
             # 买入信号（次日开盘价买入）
             buy_price = today['open']
             shares_to_buy = balance // buy_price
@@ -35,7 +36,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
         continue
 
-        if shares > 0:
+        if shares > 0 and today['higher'] >= (1.1*buy_price):
             current_value = shares * today['close']
             if current_value >= (1.1 * (initial_balance - balance)):
                 # 卖出信号
@@ -44,6 +45,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
                 balance += income
                 transactions.append((today.name, 'sell', shares, sell_price, balance))
                 shares = 0
+                buy_price = 0
 
     return transactions, balance
 
@@ -58,9 +60,10 @@ def main():
     random_stock = None
     while not random_stock:
         try:
+            print("stock is ",stock_list)
             potential_stock = random.choice(stock_codes)
             # 获取股票数据
-            start_date = '2022-01-01'
+            start_date = '2024-01-01'
             stock_df = get_stock_data(potential_stock, start_date)
             random_stock = potential_stock
         except KeyError:
