@@ -74,7 +74,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 def main():
     init_date = '2023-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
-    num_stocks = 100
+    num_stocks = 500
 
     # 随机选择多支股票
     stock_info = get_stock_info_with_retry()
