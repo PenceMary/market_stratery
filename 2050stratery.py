@@ -42,13 +42,13 @@ def simulate_strategy(stock_df, initial_balance=100000):
     buy_price = 0
 
     stock_df['ma10'] = stock_df['close'].rolling(window=10).mean()
-    stock_df['ma20'] = stock_df['close'].rolling(window=20).mean()
+    stock_df['ma40'] = stock_df['close'].rolling(window=40).mean()
 
     for i in range(1, len(stock_df)):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
 
-        if yesterday['ma10'] <= yesterday['ma20'] and today['ma10'] > today['ma20'] and shares == 0:
+        if yesterday['ma10'] <= yesterday['ma40'] and today['ma10'] > today['ma40'] and shares == 0:
             # 买入信号（次日开盘价买入）
             buy_price = today['open']
             shares_to_buy = balance // buy_price
