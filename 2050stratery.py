@@ -56,10 +56,10 @@ def simulate_strategy(stock_df, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
-        elif shares > 0 and (today['high'] >= (1.5 * buy_price) or today['low'] <= 0.95 * buy_price):
+        elif shares > 0 and (today['high'] >= (1.15 * buy_price) or today['low'] <= 0.95 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
-            if today['high'] >= 1.1 * buy_price:
-                sell_price = 1.1 * buy_price  # 设定卖出价格为涨幅10%的价格
+            if today['high'] >= 1.15 * buy_price:
+                sell_price = 1.15 * buy_price  # 设定卖出价格为涨幅10%的价格
             else:
                 sell_price = 0.95 * buy_price
             income = shares * sell_price
@@ -74,7 +74,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 def main():
     init_date = '2023-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
-    num_stocks = 50
+    num_stocks = 100
 
     # 随机选择多支股票
     stock_info = get_stock_info_with_retry()
