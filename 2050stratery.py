@@ -58,8 +58,8 @@ def simulate_strategy(stock_df, initial_balance=100000):
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
         elif shares > 0 and (today['high'] >= (1.5 * buy_price) or today['low'] <= 0.95 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
-            if today['high'] >= 1.5 * buy_price:
-                sell_price = 1.5 * buy_price  # 设定卖出价格为涨幅10%的价格
+            if today['high'] >= 1.1 * buy_price:
+                sell_price = 1.1 * buy_price  # 设定卖出价格为涨幅10%的价格
             else:
                 sell_price = 0.95 * buy_price
             income = shares * sell_price
