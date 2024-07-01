@@ -56,6 +56,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
+            print(f"Date: {today.name}, Type: buy, Shares: {shares_to_buy}, Price: {buy_price:.2f}, Balance: {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.1 * buy_price) or today['low'] <= 0.95 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
             if today['high'] >= 1.1 * buy_price:
@@ -65,6 +66,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             income = shares * sell_price
             balance += income
             transactions.append((today.name, 'sell', shares, sell_price, balance))
+            print(f"Date: {today.name}, Type: sell, Shares: {shares}, Price: {sell_price:.2f}, Balance: {balance:.2f}")
             shares = 0
             buy_price = 0
 
@@ -94,8 +96,9 @@ def main():
     total_profit = 0
     total_loss = 0
 
-    for ticker in all_stock_data.keys():
-        print(f"模拟交易策略 {ticker} 的数据")
+    for idx, ticker in enumerate(all_stock_data.keys()):
+        stock_name = stock_names[idx]
+        print(f"模拟交易策略 {stock_name} ({ticker}) 的数据")
         transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker])
 
         # 计算截止到当前日期的股票市值
@@ -123,10 +126,10 @@ def main():
 
         # 打印最终结果
         initial_balance = 100000
-        print(f"{ticker} Initial Balance: {initial_balance:.2f}")
-        print(f"{ticker} Final Balance: {final_balance:.2f}")
-        print(f"{ticker} Stock Value: {stock_value:.2f}")
-        print(f"{ticker} Total Profit/Loss: {profit_or_loss:.2f}")
+        print(f"{ticker} ({stock_name}) Initial Balance: {initial_balance:.2f}")
+        print(f"{ticker} ({stock_name}) Final Balance: {final_balance:.2f}")
+        print(f"{ticker} ({stock_name}) Stock Value: {stock_value:.2f}")
+        print(f"{ticker} ({stock_name}) Total Profit/Loss: {profit_or_loss:.2f}")
         print("===")
 
     # 打印累计结果
