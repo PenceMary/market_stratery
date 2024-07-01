@@ -1,953 +1,1346 @@
-模拟交易策略 600779 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 1992.0, Price: 50.20, Balance: 1.60
-Date: 2024-03-08 00:00:00, Type: sell, Shares: 1992.0, Price: 47.69, Balance: 95000.08
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 2038.0, Price: 46.60, Balance: 29.28
-Date: 2024-06-03 00:00:00, Type: sell, Shares: 2038.0, Price: 44.27, Balance: 90251.54
-600779 Initial Balance: 100000.00
-600779 Final Balance: 90251.54
-600779 Stock Value: 0.00
-600779 Total Profit/Loss: -9748.46
-===
-模拟交易策略 605277 的数据
-Date: 2024-03-04 00:00:00, Type: buy, Shares: 8695.0, Price: 11.50, Balance: 7.50
-Date: 2024-03-05 00:00:00, Type: sell, Shares: 8695.0, Price: 10.92, Balance: 95000.37
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 7235.0, Price: 13.13, Balance: 4.82
-Date: 2024-05-22 00:00:00, Type: sell, Shares: 7235.0, Price: 14.44, Balance: 104499.93
-605277 Initial Balance: 100000.00
-605277 Final Balance: 104499.93
-605277 Stock Value: 0.00
-605277 Total Profit/Loss: 4499.93
-===
-模拟交易策略 603269 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 12970.0, Price: 7.71, Balance: 1.30
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 12970.0, Price: 8.48, Balance: 109999.87
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 10270.0, Price: 10.71, Balance: 8.17
-Date: 2024-05-10 00:00:00, Type: sell, Shares: 10270.0, Price: 10.17, Balance: 104500.28
-603269 Initial Balance: 100000.00
-603269 Final Balance: 104500.28
-603269 Stock Value: 0.00
-603269 Total Profit/Loss: 4500.28
-===
-模拟交易策略 002360 的数据
-Date: 2024-03-14 00:00:00, Type: buy, Shares: 17094.0, Price: 5.85, Balance: 0.10
-Date: 2024-04-02 00:00:00, Type: sell, Shares: 17094.0, Price: 6.44, Balance: 109999.99
-Date: 2024-05-29 00:00:00, Type: buy, Shares: 19332.0, Price: 5.69, Balance: 0.91
-Date: 2024-06-05 00:00:00, Type: sell, Shares: 19332.0, Price: 5.41, Balance: 104500.04
-002360 Initial Balance: 100000.00
-002360 Final Balance: 104500.04
-002360 Stock Value: 0.00
-002360 Total Profit/Loss: 4500.04
-===
-模拟交易策略 600999 的数据
-Date: 2024-04-24 00:00:00, Type: buy, Shares: 6958.0, Price: 14.37, Balance: 13.54
-600999 Initial Balance: 100000.00
-600999 Final Balance: 13.54
-600999 Stock Value: 96785.78
-600999 Total Profit/Loss: -3200.68
-===
-模拟交易策略 688315 的数据
-Date: 2024-03-18 00:00:00, Type: buy, Shares: 6553.0, Price: 15.26, Balance: 1.22
-Date: 2024-03-26 00:00:00, Type: sell, Shares: 6553.0, Price: 14.50, Balance: 95000.06
-Date: 2024-05-08 00:00:00, Type: buy, Shares: 6031.0, Price: 15.75, Balance: 11.81
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 6031.0, Price: 14.96, Balance: 90250.65
-688315 Initial Balance: 100000.00
-688315 Final Balance: 90250.65
-688315 Stock Value: 0.00
-688315 Total Profit/Loss: -9749.35
-===
-模拟交易策略 002817 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 14992.0, Price: 6.67, Balance: 3.36
-Date: 2024-04-15 00:00:00, Type: sell, Shares: 14992.0, Price: 6.34, Balance: 95000.17
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 13828.0, Price: 6.87, Balance: 1.81
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 13828.0, Price: 6.53, Balance: 90250.25
-002817 Initial Balance: 100000.00
-002817 Final Balance: 90250.25
-002817 Stock Value: 0.00
-002817 Total Profit/Loss: -9749.75
-===
-模拟交易策略 002616 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 23041.0, Price: 4.34, Balance: 2.06
-Date: 2024-04-15 00:00:00, Type: sell, Shares: 23041.0, Price: 4.12, Balance: 95000.10
-Date: 2024-05-08 00:00:00, Type: buy, Shares: 19387.0, Price: 4.90, Balance: 3.80
-Date: 2024-05-10 00:00:00, Type: sell, Shares: 19387.0, Price: 5.39, Balance: 104499.73
-002616 Initial Balance: 100000.00
-002616 Final Balance: 104499.73
-002616 Stock Value: 0.00
-002616 Total Profit/Loss: 4499.73
-===
-模拟交易策略 001229 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 3378.0, Price: 29.60, Balance: 11.20
-Date: 2024-03-04 00:00:00, Type: sell, Shares: 3378.0, Price: 32.56, Balance: 109998.88
-Date: 2024-06-27 00:00:00, Type: buy, Shares: 3942.0, Price: 27.90, Balance: 17.08
-001229 Initial Balance: 100000.00
-001229 Final Balance: 17.08
-001229 Stock Value: 114988.14
-001229 Total Profit/Loss: 15005.22
-===
-模拟交易策略 003028 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 2699.0, Price: 37.05, Balance: 2.05
-Date: 2024-04-02 00:00:00, Type: sell, Shares: 2699.0, Price: 40.76, Balance: 109999.80
-Date: 2024-04-10 00:00:00, Type: buy, Shares: 2786.0, Price: 39.48, Balance: 8.52
-Date: 2024-04-16 00:00:00, Type: sell, Shares: 2786.0, Price: 37.51, Balance: 104500.23
-003028 Initial Balance: 100000.00
-003028 Final Balance: 104500.23
-003028 Stock Value: 0.00
-003028 Total Profit/Loss: 4500.23
-===
-模拟交易策略 601089 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 6988.0, Price: 14.31, Balance: 1.72
-Date: 2024-06-25 00:00:00, Type: sell, Shares: 6988.0, Price: 13.59, Balance: 95000.09
-601089 Initial Balance: 100000.00
-601089 Final Balance: 95000.09
-601089 Stock Value: 0.00
-601089 Total Profit/Loss: -4999.91
-===
-模拟交易策略 603273 的数据
-Date: 2024-03-04 00:00:00, Type: buy, Shares: 4000.0, Price: 25.00, Balance: 0.00
-Date: 2024-03-05 00:00:00, Type: sell, Shares: 4000.0, Price: 27.50, Balance: 110000.00
-Date: 2024-05-15 00:00:00, Type: buy, Shares: 4865.0, Price: 22.61, Balance: 2.35
-Date: 2024-05-23 00:00:00, Type: sell, Shares: 4865.0, Price: 21.48, Balance: 104500.12
-603273 Initial Balance: 100000.00
-603273 Final Balance: 104500.12
-603273 Stock Value: 0.00
-603273 Total Profit/Loss: 4500.12
-===
-模拟交易策略 600054 的数据
-Date: 2024-03-12 00:00:00, Type: buy, Shares: 9017.0, Price: 11.09, Balance: 1.47
-Date: 2024-04-01 00:00:00, Type: sell, Shares: 9017.0, Price: 12.20, Balance: 109999.85
-600054 Initial Balance: 100000.00
-600054 Final Balance: 109999.85
-600054 Stock Value: 0.00
-600054 Total Profit/Loss: 9999.85
-===
-模拟交易策略 002045 的数据
-Date: 2024-03-04 00:00:00, Type: buy, Shares: 7412.0, Price: 13.49, Balance: 12.12
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 7412.0, Price: 12.82, Balance: 95000.61
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 7661.0, Price: 12.40, Balance: 4.21
-Date: 2024-05-14 00:00:00, Type: sell, Shares: 7661.0, Price: 13.64, Balance: 104500.25
-Date: 2024-06-24 00:00:00, Type: buy, Shares: 8260.0, Price: 12.65, Balance: 11.25
-Date: 2024-06-27 00:00:00, Type: sell, Shares: 8260.0, Price: 13.92, Balance: 114949.15
-002045 Initial Balance: 100000.00
-002045 Final Balance: 114949.15
-002045 Stock Value: 0.00
-002045 Total Profit/Loss: 14949.15
-===
-模拟交易策略 000617 的数据
-Date: 2024-04-24 00:00:00, Type: buy, Shares: 16778.0, Price: 5.96, Balance: 3.12
-Date: 2024-05-30 00:00:00, Type: sell, Shares: 16778.0, Price: 5.66, Balance: 95000.16
-000617 Initial Balance: 100000.00
-000617 Final Balance: 95000.16
-000617 Stock Value: 0.00
-000617 Total Profit/Loss: -4999.84
-===
-模拟交易策略 002455 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 18796.0, Price: 5.32, Balance: 5.28
-Date: 2024-04-09 00:00:00, Type: sell, Shares: 18796.0, Price: 5.85, Balance: 109999.47
-002455 Initial Balance: 100000.00
-002455 Final Balance: 109999.47
-002455 Stock Value: 0.00
-002455 Total Profit/Loss: 9999.47
-===
-模拟交易策略 600903 的数据
-Date: 2024-02-29 00:00:00, Type: buy, Shares: 14534.0, Price: 6.88, Balance: 6.08
-Date: 2024-04-03 00:00:00, Type: sell, Shares: 14534.0, Price: 7.57, Balance: 109999.39
-Date: 2024-04-11 00:00:00, Type: buy, Shares: 15089.0, Price: 7.29, Balance: 0.58
-Date: 2024-04-16 00:00:00, Type: sell, Shares: 15089.0, Price: 6.93, Balance: 104499.45
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 14574.0, Price: 7.17, Balance: 3.87
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 14574.0, Price: 7.89, Balance: 114949.01
-600903 Initial Balance: 100000.00
-600903 Final Balance: 114949.01
-600903 Stock Value: 0.00
-600903 Total Profit/Loss: 14949.01
-===
-模拟交易策略 603661 的数据
-Date: 2024-02-28 00:00:00, Type: buy, Shares: 2039.0, Price: 49.04, Balance: 7.44
-Date: 2024-02-29 00:00:00, Type: sell, Shares: 2039.0, Price: 46.59, Balance: 95000.37
-Date: 2024-04-09 00:00:00, Type: buy, Shares: 2118.0, Price: 44.85, Balance: 8.07
-Date: 2024-04-10 00:00:00, Type: sell, Shares: 2118.0, Price: 42.61, Balance: 90250.76
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 1961.0, Price: 46.00, Balance: 44.76
-Date: 2024-05-14 00:00:00, Type: sell, Shares: 1961.0, Price: 50.60, Balance: 99271.36
-603661 Initial Balance: 100000.00
-603661 Final Balance: 99271.36
-603661 Stock Value: 0.00
-603661 Total Profit/Loss: -728.64
-===
-模拟交易策略 600056 的数据
-Date: 2024-04-29 00:00:00, Type: buy, Shares: 9157.0, Price: 10.92, Balance: 5.56
-Date: 2024-06-06 00:00:00, Type: sell, Shares: 9157.0, Price: 10.37, Balance: 95000.28
-600056 Initial Balance: 100000.00
-600056 Final Balance: 95000.28
-600056 Stock Value: 0.00
-600056 Total Profit/Loss: -4999.72
-===
-模拟交易策略 688590 的数据
-Date: 2024-03-04 00:00:00, Type: buy, Shares: 5649.0, Price: 17.70, Balance: 12.70
-Date: 2024-03-06 00:00:00, Type: sell, Shares: 5649.0, Price: 16.81, Balance: 95000.63
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 5688.0, Price: 16.70, Balance: 11.03
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 5688.0, Price: 15.86, Balance: 90251.15
-688590 Initial Balance: 100000.00
-688590 Final Balance: 90251.15
-688590 Stock Value: 0.00
-688590 Total Profit/Loss: -9748.85
-===
-模拟交易策略 301376 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 4364.0, Price: 22.91, Balance: 20.76
-Date: 2024-03-25 00:00:00, Type: sell, Shares: 4364.0, Price: 25.20, Balance: 109997.92
-Date: 2024-05-06 00:00:00, Type: buy, Shares: 4704.0, Price: 23.38, Balance: 18.40
-Date: 2024-05-07 00:00:00, Type: sell, Shares: 4704.0, Price: 25.72, Balance: 120995.88
-301376 Initial Balance: 100000.00
-301376 Final Balance: 120995.88
-301376 Stock Value: 0.00
-301376 Total Profit/Loss: 20995.88
-===
-模拟交易策略 001268 的数据
-Date: 2024-03-11 00:00:00, Type: buy, Shares: 5509.0, Price: 18.15, Balance: 11.65
-Date: 2024-03-15 00:00:00, Type: sell, Shares: 5509.0, Price: 19.96, Balance: 109998.84
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 5684.0, Price: 19.35, Balance: 13.43
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 5684.0, Price: 18.38, Balance: 104499.57
-001268 Initial Balance: 100000.00
-001268 Final Balance: 104499.57
-001268 Stock Value: 0.00
-001268 Total Profit/Loss: 4499.57
-===
-模拟交易策略 000568 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 593.0, Price: 168.58, Balance: 32.06
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 593.0, Price: 185.44, Balance: 109996.79
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 568.0, Price: 193.56, Balance: 54.71
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 568.0, Price: 183.88, Balance: 104499.69
-000568 Initial Balance: 100000.00
-000568 Final Balance: 104499.69
-000568 Stock Value: 0.00
-000568 Total Profit/Loss: 4499.69
-===
-模拟交易策略 000712 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 8354.0, Price: 11.97, Balance: 2.62
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 8354.0, Price: 11.37, Balance: 95000.13
-Date: 2024-05-14 00:00:00, Type: buy, Shares: 8861.0, Price: 10.72, Balance: 10.21
-Date: 2024-05-23 00:00:00, Type: sell, Shares: 8861.0, Price: 10.18, Balance: 90250.63
-000712 Initial Balance: 100000.00
-000712 Final Balance: 90250.63
-000712 Stock Value: 0.00
-000712 Total Profit/Loss: -9749.37
-===
-模拟交易策略 600438 的数据
-Date: 2024-02-22 00:00:00, Type: buy, Shares: 3988.0, Price: 25.07, Balance: 20.84
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 3988.0, Price: 23.82, Balance: 95001.04
-Date: 2024-05-31 00:00:00, Type: buy, Shares: 4194.0, Price: 22.65, Balance: 6.94
-Date: 2024-06-06 00:00:00, Type: sell, Shares: 4194.0, Price: 21.52, Balance: 90251.34
-600438 Initial Balance: 100000.00
-600438 Final Balance: 90251.34
-600438 Stock Value: 0.00
-600438 Total Profit/Loss: -9748.66
-===
-模拟交易策略 601988 的数据
-Date: 2024-04-09 00:00:00, Type: buy, Shares: 22075.0, Price: 4.53, Balance: 0.25
-601988 Initial Balance: 100000.00
-601988 Final Balance: 0.25
-601988 Stock Value: 101986.50
-601988 Total Profit/Loss: 1986.75
-===
-模拟交易策略 688095 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 1720.0, Price: 58.13, Balance: 16.40
-Date: 2024-03-06 00:00:00, Type: sell, Shares: 1720.0, Price: 55.22, Balance: 95000.82
-Date: 2024-05-14 00:00:00, Type: buy, Shares: 1672.0, Price: 56.80, Balance: 31.22
-Date: 2024-05-15 00:00:00, Type: sell, Shares: 1672.0, Price: 53.96, Balance: 90252.34
-688095 Initial Balance: 100000.00
-688095 Final Balance: 90252.34
-688095 Stock Value: 0.00
-688095 Total Profit/Loss: -9747.66
-===
-模拟交易策略 600749 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 9541.0, Price: 10.48, Balance: 10.32
-Date: 2024-04-09 00:00:00, Type: sell, Shares: 9541.0, Price: 11.53, Balance: 109998.97
-Date: 2024-04-29 00:00:00, Type: buy, Shares: 7607.0, Price: 14.46, Balance: 1.75
-Date: 2024-04-30 00:00:00, Type: sell, Shares: 7607.0, Price: 13.74, Balance: 104499.11
-Date: 2024-05-20 00:00:00, Type: buy, Shares: 8163.0, Price: 12.80, Balance: 12.71
-Date: 2024-05-21 00:00:00, Type: sell, Shares: 8163.0, Price: 12.16, Balance: 99274.79
-Date: 2024-06-28 00:00:00, Type: buy, Shares: 7786.0, Price: 12.75, Balance: 3.29
-600749 Initial Balance: 100000.00
-600749 Final Balance: 3.29
-600749 Stock Value: 100672.98
-600749 Total Profit/Loss: 676.27
-===
-模拟交易策略 603260 的数据
-Date: 2024-02-28 00:00:00, Type: buy, Shares: 2036.0, Price: 49.11, Balance: 12.04
-Date: 2024-03-01 00:00:00, Type: sell, Shares: 2036.0, Price: 54.02, Balance: 109998.80
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 2091.0, Price: 52.59, Balance: 33.11
-Date: 2024-06-05 00:00:00, Type: sell, Shares: 2091.0, Price: 49.96, Balance: 104500.51
-603260 Initial Balance: 100000.00
-603260 Final Balance: 104500.51
-603260 Stock Value: 0.00
-603260 Total Profit/Loss: 4500.51
-===
-模拟交易策略 002258 的数据
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 10010.0, Price: 9.99, Balance: 0.10
-Date: 2024-05-21 00:00:00, Type: sell, Shares: 10010.0, Price: 9.49, Balance: 95000.00
-002258 Initial Balance: 100000.00
-002258 Final Balance: 95000.00
-002258 Stock Value: 0.00
-002258 Total Profit/Loss: -5000.00
-===
-模拟交易策略 834033 的数据
-Date: 2024-02-28 00:00:00, Type: buy, Shares: 3234.0, Price: 30.92, Balance: 4.72
-Date: 2024-02-29 00:00:00, Type: sell, Shares: 3234.0, Price: 29.37, Balance: 95000.24
-Date: 2024-03-19 00:00:00, Type: buy, Shares: 3193.0, Price: 29.75, Balance: 8.49
-Date: 2024-03-20 00:00:00, Type: sell, Shares: 3193.0, Price: 28.26, Balance: 90250.65
-834033 Initial Balance: 100000.00
-834033 Final Balance: 90250.65
-834033 Stock Value: 0.00
-834033 Total Profit/Loss: -9749.35
-===
-模拟交易策略 601059 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 6067.0, Price: 16.48, Balance: 15.84
-Date: 2024-03-25 00:00:00, Type: sell, Shares: 6067.0, Price: 15.66, Balance: 95000.79
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 6089.0, Price: 15.60, Balance: 12.39
-Date: 2024-05-24 00:00:00, Type: sell, Shares: 6089.0, Price: 14.82, Balance: 90251.37
-Date: 2024-06-25 00:00:00, Type: buy, Shares: 6181.0, Price: 14.60, Balance: 8.77
-601059 Initial Balance: 100000.00
-601059 Final Balance: 8.77
-601059 Stock Value: 87832.01
-601059 Total Profit/Loss: -12159.22
-===
-模拟交易策略 301322 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 4244.0, Price: 23.56, Balance: 11.36
-Date: 2024-03-26 00:00:00, Type: sell, Shares: 4244.0, Price: 22.38, Balance: 95000.57
-Date: 2024-05-08 00:00:00, Type: buy, Shares: 4091.0, Price: 23.22, Balance: 7.55
-Date: 2024-05-30 00:00:00, Type: sell, Shares: 4091.0, Price: 22.06, Balance: 90250.92
-301322 Initial Balance: 100000.00
-301322 Final Balance: 90250.92
-301322 Stock Value: 0.00
-301322 Total Profit/Loss: -9749.08
-===
-模拟交易策略 603899 的数据
-Date: 2024-02-23 00:00:00, Type: buy, Shares: 2791.0, Price: 35.82, Balance: 26.38
-Date: 2024-03-04 00:00:00, Type: sell, Shares: 2791.0, Price: 34.03, Balance: 95001.32
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 2524.0, Price: 37.63, Balance: 23.20
-Date: 2024-05-31 00:00:00, Type: sell, Shares: 2524.0, Price: 35.75, Balance: 90252.41
-603899 Initial Balance: 100000.00
-603899 Final Balance: 90252.41
-603899 Stock Value: 0.00
-603899 Total Profit/Loss: -9747.59
-===
-模拟交易策略 838163 的数据
-Date: 2024-04-25 00:00:00, Type: buy, Shares: 7794.0, Price: 12.83, Balance: 2.98
-Date: 2024-04-29 00:00:00, Type: sell, Shares: 7794.0, Price: 14.11, Balance: 109999.70
-Date: 2024-06-21 00:00:00, Type: buy, Shares: 6883.0, Price: 15.98, Balance: 9.36
-Date: 2024-06-24 00:00:00, Type: sell, Shares: 6883.0, Price: 15.18, Balance: 104500.18
-838163 Initial Balance: 100000.00
-838163 Final Balance: 104500.18
-838163 Stock Value: 0.00
-838163 Total Profit/Loss: 4500.18
-===
-模拟交易策略 601003 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 33557.0, Price: 2.98, Balance: 0.14
-Date: 2024-03-28 00:00:00, Type: sell, Shares: 33557.0, Price: 2.83, Balance: 95000.01
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 32094.0, Price: 2.96, Balance: 1.77
-Date: 2024-06-03 00:00:00, Type: sell, Shares: 32094.0, Price: 2.81, Balance: 90250.09
-601003 Initial Balance: 100000.00
-601003 Final Balance: 90250.09
-601003 Stock Value: 0.00
-601003 Total Profit/Loss: -9749.91
-===
-模拟交易策略 603197 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 2123.0, Price: 47.09, Balance: 27.93
-Date: 2024-03-14 00:00:00, Type: sell, Shares: 2123.0, Price: 51.80, Balance: 109997.21
-603197 Initial Balance: 100000.00
-603197 Final Balance: 109997.21
-603197 Stock Value: 0.00
-603197 Total Profit/Loss: 9997.21
-===
-模拟交易策略 688692 的数据
-688692 Initial Balance: 100000.00
-688692 Final Balance: 100000.00
-688692 Stock Value: 0.00
-688692 Total Profit/Loss: 0.00
-===
-模拟交易策略 000550 的数据
-000550 Initial Balance: 100000.00
-000550 Final Balance: 100000.00
-000550 Stock Value: 0.00
-000550 Total Profit/Loss: 0.00
-===
-模拟交易策略 688401 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 3598.0, Price: 27.79, Balance: 11.58
-Date: 2024-03-25 00:00:00, Type: sell, Shares: 3598.0, Price: 26.40, Balance: 95000.58
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 3531.0, Price: 26.90, Balance: 16.68
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 3531.0, Price: 25.55, Balance: 90251.38
-Date: 2024-05-29 00:00:00, Type: buy, Shares: 3465.0, Price: 26.04, Balance: 22.78
-Date: 2024-06-13 00:00:00, Type: sell, Shares: 3465.0, Price: 28.64, Balance: 99274.24
-688401 Initial Balance: 100000.00
-688401 Final Balance: 99274.24
-688401 Stock Value: 0.00
-688401 Total Profit/Loss: -725.76
-===
-模拟交易策略 300338 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 25316.0, Price: 3.95, Balance: 1.80
-Date: 2024-03-04 00:00:00, Type: sell, Shares: 25316.0, Price: 3.75, Balance: 95000.09
-300338 Initial Balance: 100000.00
-300338 Final Balance: 95000.09
-300338 Stock Value: 0.00
-300338 Total Profit/Loss: -4999.91
-===
-模拟交易策略 600380 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 8382.0, Price: 11.93, Balance: 2.74
-Date: 2024-03-22 00:00:00, Type: sell, Shares: 8382.0, Price: 11.33, Balance: 95000.14
-Date: 2024-04-17 00:00:00, Type: buy, Shares: 8119.0, Price: 11.70, Balance: 7.84
-Date: 2024-05-08 00:00:00, Type: sell, Shares: 8119.0, Price: 12.87, Balance: 104499.37
-600380 Initial Balance: 100000.00
-600380 Final Balance: 104499.37
-600380 Stock Value: 0.00
-600380 Total Profit/Loss: 4499.37
-===
-模拟交易策略 002451 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 17094.0, Price: 5.85, Balance: 0.10
-Date: 2024-03-21 00:00:00, Type: sell, Shares: 17094.0, Price: 6.44, Balance: 109999.99
-002451 Initial Balance: 100000.00
-002451 Final Balance: 109999.99
-002451 Stock Value: 0.00
-002451 Total Profit/Loss: 9999.99
-===
-模拟交易策略 600007 的数据
-Date: 2024-02-21 00:00:00, Type: buy, Shares: 5685.0, Price: 17.59, Balance: 0.85
-Date: 2024-03-22 00:00:00, Type: sell, Shares: 5685.0, Price: 19.35, Balance: 109999.92
-600007 Initial Balance: 100000.00
-600007 Final Balance: 109999.92
-600007 Stock Value: 0.00
-600007 Total Profit/Loss: 9999.92
-===
-模拟交易策略 688335 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 10245.0, Price: 9.76, Balance: 8.80
-Date: 2024-03-18 00:00:00, Type: sell, Shares: 10245.0, Price: 10.74, Balance: 109999.12
-688335 Initial Balance: 100000.00
-688335 Final Balance: 109999.12
-688335 Stock Value: 0.00
-688335 Total Profit/Loss: 9999.12
-===
-模拟交易策略 600515 的数据
-Date: 2024-03-21 00:00:00, Type: buy, Shares: 27027.0, Price: 3.70, Balance: 0.10
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 27027.0, Price: 3.52, Balance: 95000.00
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 27536.0, Price: 3.45, Balance: 0.80
-Date: 2024-06-20 00:00:00, Type: sell, Shares: 27536.0, Price: 3.28, Balance: 90250.04
-600515 Initial Balance: 100000.00
-600515 Final Balance: 90250.04
-600515 Stock Value: 0.00
-600515 Total Profit/Loss: -9749.96
-===
-模拟交易策略 600711 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 25706.0, Price: 3.89, Balance: 3.66
-Date: 2024-03-15 00:00:00, Type: sell, Shares: 25706.0, Price: 4.28, Balance: 109999.63
-600711 Initial Balance: 100000.00
-600711 Final Balance: 109999.63
-600711 Stock Value: 0.00
-600711 Total Profit/Loss: 9999.63
-===
-模拟交易策略 003018 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 12180.0, Price: 8.21, Balance: 2.20
-Date: 2024-03-14 00:00:00, Type: sell, Shares: 12180.0, Price: 9.03, Balance: 109999.78
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 13048.0, Price: 8.43, Balance: 5.14
-Date: 2024-06-03 00:00:00, Type: sell, Shares: 13048.0, Price: 8.01, Balance: 104500.05
-Date: 2024-06-24 00:00:00, Type: buy, Shares: 11741.0, Price: 8.90, Balance: 5.15
-Date: 2024-06-25 00:00:00, Type: sell, Shares: 11741.0, Price: 8.46, Balance: 99275.30
-003018 Initial Balance: 100000.00
-003018 Final Balance: 99275.30
-003018 Stock Value: 0.00
-003018 Total Profit/Loss: -724.70
-===
-模拟交易策略 000816 的数据
-Date: 2024-03-06 00:00:00, Type: buy, Shares: 38910.0, Price: 2.57, Balance: 1.30
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 38910.0, Price: 2.44, Balance: 95000.06
-Date: 2024-04-12 00:00:00, Type: buy, Shares: 36121.0, Price: 2.63, Balance: 1.83
-Date: 2024-04-15 00:00:00, Type: sell, Shares: 36121.0, Price: 2.50, Balance: 90250.15
-Date: 2024-05-20 00:00:00, Type: buy, Shares: 37293.0, Price: 2.42, Balance: 1.09
-Date: 2024-05-23 00:00:00, Type: sell, Shares: 37293.0, Price: 2.30, Balance: 85737.70
-000816 Initial Balance: 100000.00
-000816 Final Balance: 85737.70
-000816 Stock Value: 0.00
-000816 Total Profit/Loss: -14262.30
-===
-模拟交易策略 688212 的数据
-Date: 2024-02-22 00:00:00, Type: buy, Shares: 1811.0, Price: 55.20, Balance: 32.80
-Date: 2024-02-28 00:00:00, Type: sell, Shares: 1811.0, Price: 60.72, Balance: 109996.72
-688212 Initial Balance: 100000.00
-688212 Final Balance: 109996.72
-688212 Stock Value: 0.00
-688212 Total Profit/Loss: 9996.72
-===
-模拟交易策略 600671 的数据
-Date: 2024-04-03 00:00:00, Type: buy, Shares: 10752.0, Price: 9.30, Balance: 6.40
-Date: 2024-04-15 00:00:00, Type: sell, Shares: 10752.0, Price: 8.84, Balance: 95000.32
-600671 Initial Balance: 100000.00
-600671 Final Balance: 95000.32
-600671 Stock Value: 0.00
-600671 Total Profit/Loss: -4999.68
-===
-模拟交易策略 002919 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 5216.0, Price: 19.17, Balance: 9.28
-Date: 2024-03-07 00:00:00, Type: sell, Shares: 5216.0, Price: 18.21, Balance: 95000.46
-002919 Initial Balance: 100000.00
-002919 Final Balance: 95000.46
-002919 Stock Value: 0.00
-002919 Total Profit/Loss: -4999.54
-===
-模拟交易策略 601086 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 23474.0, Price: 4.26, Balance: 0.76
-Date: 2024-03-15 00:00:00, Type: sell, Shares: 23474.0, Price: 4.69, Balance: 109999.92
-601086 Initial Balance: 100000.00
-601086 Final Balance: 109999.92
-601086 Stock Value: 0.00
-601086 Total Profit/Loss: 9999.92
-===
-模拟交易策略 002658 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 16556.0, Price: 6.04, Balance: 1.76
-Date: 2024-03-29 00:00:00, Type: sell, Shares: 16556.0, Price: 6.64, Balance: 109999.82
-002658 Initial Balance: 100000.00
-002658 Final Balance: 109999.82
-002658 Stock Value: 0.00
-002658 Total Profit/Loss: 9999.82
-===
-模拟交易策略 002409 的数据
-Date: 2024-02-27 00:00:00, Type: buy, Shares: 2167.0, Price: 46.13, Balance: 36.29
-Date: 2024-03-01 00:00:00, Type: sell, Shares: 2167.0, Price: 50.74, Balance: 109996.37
-Date: 2024-04-24 00:00:00, Type: buy, Shares: 1894.0, Price: 58.05, Balance: 49.67
-Date: 2024-04-29 00:00:00, Type: sell, Shares: 1894.0, Price: 63.86, Balance: 120991.04
-Date: 2024-06-06 00:00:00, Type: buy, Shares: 1951.0, Price: 62.00, Balance: 29.04
-Date: 2024-06-11 00:00:00, Type: sell, Shares: 1951.0, Price: 58.90, Balance: 114942.94
-002409 Initial Balance: 100000.00
-002409 Final Balance: 114942.94
-002409 Stock Value: 0.00
-002409 Total Profit/Loss: 14942.94
-===
-模拟交易策略 600760 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 2632.0, Price: 37.99, Balance: 10.32
-Date: 2024-03-26 00:00:00, Type: sell, Shares: 2632.0, Price: 36.09, Balance: 95000.52
-Date: 2024-04-25 00:00:00, Type: buy, Shares: 2517.0, Price: 37.73, Balance: 34.11
-Date: 2024-06-05 00:00:00, Type: sell, Shares: 2517.0, Price: 41.50, Balance: 104497.16
-600760 Initial Balance: 100000.00
-600760 Final Balance: 104497.16
-600760 Stock Value: 0.00
-600760 Total Profit/Loss: 4497.16
-===
-模拟交易策略 002422 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 4040.0, Price: 24.75, Balance: 10.00
-Date: 2024-03-04 00:00:00, Type: sell, Shares: 4040.0, Price: 27.23, Balance: 109999.00
-Date: 2024-04-26 00:00:00, Type: buy, Shares: 3617.0, Price: 30.41, Balance: 6.03
-Date: 2024-04-30 00:00:00, Type: sell, Shares: 3617.0, Price: 33.45, Balance: 120998.30
-002422 Initial Balance: 100000.00
-002422 Final Balance: 120998.30
-002422 Stock Value: 0.00
-002422 Total Profit/Loss: 20998.30
-===
-模拟交易策略 301229 的数据
-Date: 2024-03-06 00:00:00, Type: buy, Shares: 5485.0, Price: 18.23, Balance: 8.45
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 5485.0, Price: 20.05, Balance: 109999.15
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 4828.0, Price: 22.78, Balance: 17.31
-Date: 2024-05-21 00:00:00, Type: sell, Shares: 4828.0, Price: 21.64, Balance: 104500.06
-301229 Initial Balance: 100000.00
-301229 Final Balance: 104500.06
-301229 Stock Value: 0.00
-301229 Total Profit/Loss: 4500.06
-===
-模拟交易策略 688569 的数据
-Date: 2024-03-04 00:00:00, Type: buy, Shares: 3968.0, Price: 25.20, Balance: 6.40
-Date: 2024-03-07 00:00:00, Type: sell, Shares: 3968.0, Price: 27.72, Balance: 109999.36
-Date: 2024-05-06 00:00:00, Type: buy, Shares: 4735.0, Price: 23.23, Balance: 5.31
-Date: 2024-06-11 00:00:00, Type: sell, Shares: 4735.0, Price: 22.07, Balance: 104499.66
-688569 Initial Balance: 100000.00
-688569 Final Balance: 104499.66
-688569 Stock Value: 0.00
-688569 Total Profit/Loss: 4499.66
-===
-模拟交易策略 603757 的数据
-Date: 2024-02-29 00:00:00, Type: buy, Shares: 4789.0, Price: 20.88, Balance: 5.68
-Date: 2024-03-08 00:00:00, Type: sell, Shares: 4789.0, Price: 22.97, Balance: 109999.43
-Date: 2024-04-30 00:00:00, Type: buy, Shares: 5290.0, Price: 20.79, Balance: 20.33
-Date: 2024-05-29 00:00:00, Type: sell, Shares: 5290.0, Price: 19.75, Balance: 104500.48
-603757 Initial Balance: 100000.00
-603757 Final Balance: 104500.48
-603757 Stock Value: 0.00
-603757 Total Profit/Loss: 4500.48
-===
-模拟交易策略 600688 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 35971.0, Price: 2.78, Balance: 0.62
-Date: 2024-03-26 00:00:00, Type: sell, Shares: 35971.0, Price: 2.64, Balance: 95000.03
-Date: 2024-04-11 00:00:00, Type: buy, Shares: 33687.0, Price: 2.82, Balance: 2.69
-Date: 2024-06-03 00:00:00, Type: sell, Shares: 33687.0, Price: 2.68, Balance: 90250.16
-600688 Initial Balance: 100000.00
-600688 Final Balance: 90250.16
-600688 Stock Value: 0.00
-600688 Total Profit/Loss: -9749.84
-===
-模拟交易策略 301116 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 9980.0, Price: 10.02, Balance: 0.40
-Date: 2024-03-22 00:00:00, Type: sell, Shares: 9980.0, Price: 11.02, Balance: 109999.96
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 10546.0, Price: 10.43, Balance: 5.18
-Date: 2024-05-24 00:00:00, Type: sell, Shares: 10546.0, Price: 11.47, Balance: 120999.44
-301116 Initial Balance: 100000.00
-301116 Final Balance: 120999.44
-301116 Stock Value: 0.00
-301116 Total Profit/Loss: 20999.44
-===
-模拟交易策略 300712 的数据
-Date: 2024-03-06 00:00:00, Type: buy, Shares: 4856.0, Price: 20.59, Balance: 14.96
-Date: 2024-03-11 00:00:00, Type: sell, Shares: 4856.0, Price: 22.65, Balance: 109998.50
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 4352.0, Price: 25.27, Balance: 23.46
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 4352.0, Price: 27.80, Balance: 120996.01
-300712 Initial Balance: 100000.00
-300712 Final Balance: 120996.01
-300712 Stock Value: 0.00
-300712 Total Profit/Loss: 20996.01
-===
-模拟交易策略 832735 的数据
-Date: 2024-02-27 00:00:00, Type: buy, Shares: 3787.0, Price: 26.40, Balance: 23.20
-Date: 2024-02-28 00:00:00, Type: sell, Shares: 3787.0, Price: 29.04, Balance: 109997.68
-Date: 2024-05-08 00:00:00, Type: buy, Shares: 4072.0, Price: 27.01, Balance: 12.96
-Date: 2024-05-14 00:00:00, Type: sell, Shares: 4072.0, Price: 25.66, Balance: 104498.44
-832735 Initial Balance: 100000.00
-832735 Final Balance: 104498.44
-832735 Stock Value: 0.00
-832735 Total Profit/Loss: 4498.44
-===
-模拟交易策略 600156 的数据
-Date: 2024-03-15 00:00:00, Type: buy, Shares: 24154.0, Price: 4.14, Balance: 2.44
-Date: 2024-03-22 00:00:00, Type: sell, Shares: 24154.0, Price: 4.55, Balance: 109999.76
-600156 Initial Balance: 100000.00
-600156 Final Balance: 109999.76
-600156 Stock Value: 0.00
-600156 Total Profit/Loss: 9999.76
-===
-模拟交易策略 603810 的数据
-Date: 2024-03-18 00:00:00, Type: buy, Shares: 9149.0, Price: 10.93, Balance: 1.43
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 9149.0, Price: 12.02, Balance: 109999.86
-603810 Initial Balance: 100000.00
-603810 Final Balance: 109999.86
-603810 Stock Value: 0.00
-603810 Total Profit/Loss: 9999.86
-===
-模拟交易策略 600751 的数据
-Date: 2024-02-28 00:00:00, Type: buy, Shares: 40322.0, Price: 2.48, Balance: 1.44
-Date: 2024-03-08 00:00:00, Type: sell, Shares: 40322.0, Price: 2.36, Balance: 95000.07
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 41304.0, Price: 2.30, Balance: 0.87
-Date: 2024-06-06 00:00:00, Type: sell, Shares: 41304.0, Price: 2.18, Balance: 90250.11
-600751 Initial Balance: 100000.00
-600751 Final Balance: 90250.11
-600751 Stock Value: 0.00
-600751 Total Profit/Loss: -9749.89
-===
-模拟交易策略 831278 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 20080.0, Price: 4.98, Balance: 1.60
-Date: 2024-03-04 00:00:00, Type: sell, Shares: 20080.0, Price: 4.73, Balance: 95000.08
-Date: 2024-05-28 00:00:00, Type: buy, Shares: 23809.0, Price: 3.99, Balance: 2.17
-Date: 2024-05-29 00:00:00, Type: sell, Shares: 23809.0, Price: 4.39, Balance: 104499.87
-Date: 2024-06-25 00:00:00, Type: buy, Shares: 25930.0, Price: 4.03, Balance: 1.97
-831278 Initial Balance: 100000.00
-831278 Final Balance: 1.97
-831278 Stock Value: 104497.90
-831278 Total Profit/Loss: 4499.87
-===
-模拟交易策略 002021 的数据
-Date: 2024-03-15 00:00:00, Type: buy, Shares: 54054.0, Price: 1.85, Balance: 0.10
-Date: 2024-04-03 00:00:00, Type: sell, Shares: 54054.0, Price: 2.04, Balance: 109999.99
-Date: 2024-05-08 00:00:00, Type: buy, Shares: 56410.0, Price: 1.95, Balance: 0.49
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 56410.0, Price: 1.85, Balance: 104500.01
-002021 Initial Balance: 100000.00
-002021 Final Balance: 104500.01
-002021 Stock Value: 0.00
-002021 Total Profit/Loss: 4500.01
-===
-模拟交易策略 600353 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 12642.0, Price: 7.91, Balance: 1.78
-Date: 2024-03-14 00:00:00, Type: sell, Shares: 12642.0, Price: 7.51, Balance: 95000.09
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 14264.0, Price: 6.66, Balance: 1.85
-Date: 2024-05-15 00:00:00, Type: sell, Shares: 14264.0, Price: 6.33, Balance: 90250.18
-Date: 2024-06-19 00:00:00, Type: buy, Shares: 13450.0, Price: 6.71, Balance: 0.68
-Date: 2024-06-21 00:00:00, Type: sell, Shares: 13450.0, Price: 6.37, Balance: 85737.70
-600353 Initial Balance: 100000.00
-600353 Final Balance: 85737.70
-600353 Stock Value: 0.00
-600353 Total Profit/Loss: -14262.30
-===
-模拟交易策略 603633 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 13422.0, Price: 7.45, Balance: 6.10
-Date: 2024-03-19 00:00:00, Type: sell, Shares: 13422.0, Price: 8.20, Balance: 109999.39
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 13580.0, Price: 8.10, Balance: 1.39
-Date: 2024-05-31 00:00:00, Type: sell, Shares: 13580.0, Price: 8.91, Balance: 120999.19
-603633 Initial Balance: 100000.00
-603633 Final Balance: 120999.19
-603633 Stock Value: 0.00
-603633 Total Profit/Loss: 20999.19
-===
-模拟交易策略 603599 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 6896.0, Price: 14.50, Balance: 8.00
-Date: 2024-05-31 00:00:00, Type: sell, Shares: 6896.0, Price: 13.77, Balance: 95000.40
-603599 Initial Balance: 100000.00
-603599 Final Balance: 95000.40
-603599 Stock Value: 0.00
-603599 Total Profit/Loss: -4999.60
-===
-模拟交易策略 600529 的数据
-Date: 2024-02-26 00:00:00, Type: buy, Shares: 3846.0, Price: 26.00, Balance: 4.00
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 3846.0, Price: 28.60, Balance: 109999.60
-600529 Initial Balance: 100000.00
-600529 Final Balance: 109999.60
-600529 Stock Value: 0.00
-600529 Total Profit/Loss: 9999.60
-===
-模拟交易策略 688287 的数据
-Date: 2024-03-06 00:00:00, Type: buy, Shares: 12626.0, Price: 7.92, Balance: 2.08
-Date: 2024-03-13 00:00:00, Type: sell, Shares: 12626.0, Price: 8.71, Balance: 109999.79
-688287 Initial Balance: 100000.00
-688287 Final Balance: 109999.79
-688287 Stock Value: 0.00
-688287 Total Profit/Loss: 9999.79
-===
-模拟交易策略 832885 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 15455.0, Price: 6.47, Balance: 6.15
-Date: 2024-03-25 00:00:00, Type: sell, Shares: 15455.0, Price: 6.15, Balance: 95000.31
-Date: 2024-04-15 00:00:00, Type: buy, Shares: 13475.0, Price: 7.05, Balance: 1.56
-Date: 2024-04-16 00:00:00, Type: sell, Shares: 13475.0, Price: 6.70, Balance: 90250.37
-832885 Initial Balance: 100000.00
-832885 Final Balance: 90250.37
-832885 Stock Value: 0.00
-832885 Total Profit/Loss: -9749.63
-===
-模拟交易策略 002948 的数据
-Date: 2024-04-03 00:00:00, Type: buy, Shares: 31645.0, Price: 3.16, Balance: 1.80
-Date: 2024-05-16 00:00:00, Type: sell, Shares: 31645.0, Price: 3.48, Balance: 109999.82
-002948 Initial Balance: 100000.00
-002948 Final Balance: 109999.82
-002948 Stock Value: 0.00
-002948 Total Profit/Loss: 9999.82
-===
-模拟交易策略 300806 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 10101.0, Price: 9.90, Balance: 0.10
-Date: 2024-03-08 00:00:00, Type: sell, Shares: 10101.0, Price: 9.40, Balance: 95000.00
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 10052.0, Price: 9.45, Balance: 8.60
-Date: 2024-05-13 00:00:00, Type: sell, Shares: 10052.0, Price: 8.98, Balance: 90250.43
-300806 Initial Balance: 100000.00
-300806 Final Balance: 90250.43
-300806 Stock Value: 0.00
-300806 Total Profit/Loss: -9749.57
-===
-模拟交易策略 605388 的数据
-Date: 2024-03-14 00:00:00, Type: buy, Shares: 15673.0, Price: 6.38, Balance: 6.26
-Date: 2024-04-12 00:00:00, Type: sell, Shares: 15673.0, Price: 6.06, Balance: 95000.31
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 14774.0, Price: 6.43, Balance: 3.49
-Date: 2024-05-20 00:00:00, Type: sell, Shares: 14774.0, Price: 7.07, Balance: 104500.00
-605388 Initial Balance: 100000.00
-605388 Final Balance: 104500.00
-605388 Stock Value: 0.00
-605388 Total Profit/Loss: 4500.00
-===
-模拟交易策略 002515 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 20661.0, Price: 4.84, Balance: 0.76
-Date: 2024-04-01 00:00:00, Type: sell, Shares: 20661.0, Price: 4.60, Balance: 95000.04
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 20742.0, Price: 4.58, Balance: 1.68
-Date: 2024-05-15 00:00:00, Type: sell, Shares: 20742.0, Price: 4.35, Balance: 90250.12
-002515 Initial Balance: 100000.00
-002515 Final Balance: 90250.12
-002515 Stock Value: 0.00
-002515 Total Profit/Loss: -9749.88
-===
-模拟交易策略 600650 的数据
-Date: 2024-03-19 00:00:00, Type: buy, Shares: 12345.0, Price: 8.10, Balance: 5.50
-Date: 2024-04-08 00:00:00, Type: sell, Shares: 12345.0, Price: 8.91, Balance: 109999.45
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 13580.0, Price: 8.10, Balance: 1.45
-Date: 2024-06-05 00:00:00, Type: sell, Shares: 13580.0, Price: 7.69, Balance: 104499.55
-600650 Initial Balance: 100000.00
-600650 Final Balance: 104499.55
-600650 Stock Value: 0.00
-600650 Total Profit/Loss: 4499.55
-===
-模拟交易策略 688080 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 2886.0, Price: 34.64, Balance: 28.96
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 2886.0, Price: 32.91, Balance: 95001.45
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 2673.0, Price: 35.54, Balance: 3.03
-Date: 2024-05-10 00:00:00, Type: sell, Shares: 2673.0, Price: 33.76, Balance: 90251.53
-688080 Initial Balance: 100000.00
-688080 Final Balance: 90251.53
-688080 Stock Value: 0.00
-688080 Total Profit/Loss: -9748.47
-===
-模拟交易策略 002697 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 21978.0, Price: 4.55, Balance: 0.10
-Date: 2024-04-03 00:00:00, Type: sell, Shares: 21978.0, Price: 5.00, Balance: 109999.99
-002697 Initial Balance: 100000.00
-002697 Final Balance: 109999.99
-002697 Stock Value: 0.00
-002697 Total Profit/Loss: 9999.99
-===
-模拟交易策略 301381 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 3861.0, Price: 25.90, Balance: 0.10
-Date: 2024-03-27 00:00:00, Type: sell, Shares: 3861.0, Price: 24.60, Balance: 95000.00
-Date: 2024-05-07 00:00:00, Type: buy, Shares: 3490.0, Price: 27.22, Balance: 2.20
-Date: 2024-05-08 00:00:00, Type: sell, Shares: 3490.0, Price: 25.86, Balance: 90250.11
-301381 Initial Balance: 100000.00
-301381 Final Balance: 90250.11
-301381 Stock Value: 0.00
-301381 Total Profit/Loss: -9749.89
-===
-模拟交易策略 603339 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 10020.0, Price: 9.98, Balance: 0.40
-Date: 2024-03-22 00:00:00, Type: sell, Shares: 10020.0, Price: 10.98, Balance: 109999.96
-603339 Initial Balance: 100000.00
-603339 Final Balance: 109999.96
-603339 Stock Value: 0.00
-603339 Total Profit/Loss: 9999.96
-===
-模拟交易策略 600988 的数据
-Date: 2024-02-27 00:00:00, Type: buy, Shares: 7800.0, Price: 12.82, Balance: 4.00
-Date: 2024-03-05 00:00:00, Type: sell, Shares: 7800.0, Price: 14.10, Balance: 109999.60
-600988 Initial Balance: 100000.00
-600988 Final Balance: 109999.60
-600988 Stock Value: 0.00
-600988 Total Profit/Loss: 9999.60
-===
-模拟交易策略 603125 的数据
-Date: 2024-03-13 00:00:00, Type: buy, Shares: 5227.0, Price: 19.13, Balance: 7.49
-Date: 2024-05-07 00:00:00, Type: sell, Shares: 5227.0, Price: 21.04, Balance: 109999.25
-603125 Initial Balance: 100000.00
-603125 Final Balance: 109999.25
-603125 Stock Value: 0.00
-603125 Total Profit/Loss: 9999.25
-===
-模拟交易策略 002414 的数据
-Date: 2024-02-29 00:00:00, Type: buy, Shares: 16474.0, Price: 6.07, Balance: 2.82
-Date: 2024-03-08 00:00:00, Type: sell, Shares: 16474.0, Price: 6.68, Balance: 109999.72
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 15514.0, Price: 7.09, Balance: 5.46
-Date: 2024-05-15 00:00:00, Type: sell, Shares: 15514.0, Price: 6.74, Balance: 104500.00
-002414 Initial Balance: 100000.00
-002414 Final Balance: 104500.00
-002414 Stock Value: 0.00
-002414 Total Profit/Loss: 4500.00
-===
-模拟交易策略 603682 的数据
-Date: 2024-03-20 00:00:00, Type: buy, Shares: 21186.0, Price: 4.72, Balance: 2.08
-Date: 2024-04-15 00:00:00, Type: sell, Shares: 21186.0, Price: 4.48, Balance: 95000.10
-Date: 2024-05-10 00:00:00, Type: buy, Shares: 20127.0, Price: 4.72, Balance: 0.66
-Date: 2024-05-16 00:00:00, Type: sell, Shares: 20127.0, Price: 5.19, Balance: 104500.05
-603682 Initial Balance: 100000.00
-603682 Final Balance: 104500.05
-603682 Stock Value: 0.00
-603682 Total Profit/Loss: 4500.05
-===
-模拟交易策略 002756 的数据
-Date: 2024-03-01 00:00:00, Type: buy, Shares: 1876.0, Price: 53.30, Balance: 9.20
-Date: 2024-03-05 00:00:00, Type: sell, Shares: 1876.0, Price: 50.63, Balance: 95000.46
-002756 Initial Balance: 100000.00
-002756 Final Balance: 95000.46
-002756 Stock Value: 0.00
-002756 Total Profit/Loss: -4999.54
-===
-模拟交易策略 601628 的数据
-Date: 2024-04-29 00:00:00, Type: buy, Shares: 3355.0, Price: 29.80, Balance: 21.00
-Date: 2024-05-17 00:00:00, Type: sell, Shares: 3355.0, Price: 32.78, Balance: 109997.90
-601628 Initial Balance: 100000.00
-601628 Final Balance: 109997.90
-601628 Stock Value: 0.00
-601628 Total Profit/Loss: 9997.90
-===
-模拟交易策略 688189 的数据
-Date: 2024-03-11 00:00:00, Type: buy, Shares: 14005.0, Price: 7.14, Balance: 4.30
-Date: 2024-03-18 00:00:00, Type: sell, Shares: 14005.0, Price: 7.85, Balance: 109999.57
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 15406.0, Price: 7.14, Balance: 0.73
-Date: 2024-05-16 00:00:00, Type: sell, Shares: 15406.0, Price: 6.78, Balance: 104499.63
-688189 Initial Balance: 100000.00
-688189 Final Balance: 104499.63
-688189 Stock Value: 0.00
-688189 Total Profit/Loss: 4499.63
-===
-模拟交易策略 300649 的数据
-Date: 2024-03-15 00:00:00, Type: buy, Shares: 8176.0, Price: 12.23, Balance: 7.52
-Date: 2024-04-08 00:00:00, Type: sell, Shares: 8176.0, Price: 11.62, Balance: 95000.38
-Date: 2024-05-14 00:00:00, Type: buy, Shares: 8459.0, Price: 11.23, Balance: 5.81
-Date: 2024-05-16 00:00:00, Type: sell, Shares: 8459.0, Price: 12.35, Balance: 104499.83
-300649 Initial Balance: 100000.00
-300649 Final Balance: 104499.83
-300649 Stock Value: 0.00
-300649 Total Profit/Loss: 4499.83
-===
-模拟交易策略 002308 的数据
-Date: 2024-03-05 00:00:00, Type: buy, Shares: 36363.0, Price: 2.75, Balance: 1.75
-Date: 2024-03-20 00:00:00, Type: sell, Shares: 36363.0, Price: 3.03, Balance: 109999.83
-002308 Initial Balance: 100000.00
-002308 Final Balance: 109999.83
-002308 Stock Value: 0.00
-002308 Total Profit/Loss: 9999.83
-===
-模拟交易策略 300855 的数据
-Date: 2024-02-28 00:00:00, Type: buy, Shares: 4239.0, Price: 23.59, Balance: 1.99
-Date: 2024-02-29 00:00:00, Type: sell, Shares: 4239.0, Price: 22.41, Balance: 95000.10
-Date: 2024-04-30 00:00:00, Type: buy, Shares: 3888.0, Price: 24.43, Balance: 16.26
-Date: 2024-05-09 00:00:00, Type: sell, Shares: 3888.0, Price: 26.87, Balance: 104498.48
-300855 Initial Balance: 100000.00
-300855 Final Balance: 104498.48
-300855 Stock Value: 0.00
-300855 Total Profit/Loss: 4498.48
-===
-模拟交易策略 002736 的数据
-Date: 2024-02-23 00:00:00, Type: buy, Shares: 12180.0, Price: 8.21, Balance: 2.20
-Date: 2024-04-18 00:00:00, Type: sell, Shares: 12180.0, Price: 9.03, Balance: 109999.78
-Date: 2024-06-05 00:00:00, Type: buy, Shares: 12429.0, Price: 8.85, Balance: 3.13
-002736 Initial Balance: 100000.00
-002736 Final Balance: 3.13
-002736 Stock Value: 108008.01
-002736 Total Profit/Loss: 8011.14
-===
-模拟交易策略 300456 的数据
-Date: 2024-02-29 00:00:00, Type: buy, Shares: 5271.0, Price: 18.97, Balance: 9.13
-Date: 2024-03-01 00:00:00, Type: sell, Shares: 5271.0, Price: 20.87, Balance: 109999.09
-300456 Initial Balance: 100000.00
-300456 Final Balance: 109999.09
-300456 Stock Value: 0.00
-300456 Total Profit/Loss: 9999.09
-===
-模拟交易策略 002358 的数据
-Date: 2024-03-06 00:00:00, Type: buy, Shares: 26737.0, Price: 3.74, Balance: 3.62
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 26737.0, Price: 4.11, Balance: 109999.64
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 28205.0, Price: 3.90, Balance: 0.14
-Date: 2024-06-03 00:00:00, Type: sell, Shares: 28205.0, Price: 3.70, Balance: 104499.66
-002358 Initial Balance: 100000.00
-002358 Final Balance: 104499.66
-002358 Stock Value: 0.00
-002358 Total Profit/Loss: 4499.66
-===
-模拟交易策略 300317 的数据
-Date: 2024-03-08 00:00:00, Type: buy, Shares: 25380.0, Price: 3.94, Balance: 2.80
-Date: 2024-03-11 00:00:00, Type: sell, Shares: 25380.0, Price: 4.33, Balance: 109999.72
-Date: 2024-05-13 00:00:00, Type: buy, Shares: 23912.0, Price: 4.60, Balance: 4.52
-Date: 2024-05-15 00:00:00, Type: sell, Shares: 23912.0, Price: 4.37, Balance: 104499.96
-300317 Initial Balance: 100000.00
-300317 Final Balance: 104499.96
-300317 Stock Value: 0.00
-300317 Total Profit/Loss: 4499.96
-===
-模拟交易策略 002594 的数据
-Date: 2024-02-29 00:00:00, Type: buy, Shares: 534.0, Price: 187.01, Balance: 136.66
-Date: 2024-03-12 00:00:00, Type: sell, Shares: 534.0, Price: 205.71, Balance: 109986.33
-Date: 2024-05-06 00:00:00, Type: buy, Shares: 488.0, Price: 225.00, Balance: 186.33
-Date: 2024-05-23 00:00:00, Type: sell, Shares: 488.0, Price: 213.75, Balance: 104496.33
-Date: 2024-06-03 00:00:00, Type: buy, Shares: 456.0, Price: 229.01, Balance: 67.77
-Date: 2024-06-13 00:00:00, Type: sell, Shares: 456.0, Price: 251.91, Balance: 114939.19
-002594 Initial Balance: 100000.00
-002594 Final Balance: 114939.19
-002594 Stock Value: 0.00
-002594 Total Profit/Loss: 14939.19
-===
-模拟交易策略 002765 的数据
-Date: 2024-03-07 00:00:00, Type: buy, Shares: 20283.0, Price: 4.93, Balance: 4.81
-Date: 2024-03-21 00:00:00, Type: sell, Shares: 20283.0, Price: 5.42, Balance: 109999.52
-Date: 2024-05-09 00:00:00, Type: buy, Shares: 21194.0, Price: 5.19, Balance: 2.66
-Date: 2024-06-06 00:00:00, Type: sell, Shares: 21194.0, Price: 4.93, Balance: 104499.68
-002765 Initial Balance: 100000.00
-002765 Final Balance: 104499.68
-002765 Stock Value: 0.00
-002765 Total Profit/Loss: 4499.68
-===
-Total Cash: 9545358.96
-Total Stock Value: 714771.32
-Total Portfolio Value: 10260130.28
+获取股票信息失败，重试 1/5...
+获取股票信息失败，重试 2/5...
+模拟交易策略 *ST巴安 (300262) 的数据
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 43290.0, Price: 2.31, Balance: 0.10
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 43290.0, Price: 2.54, Balance: 109999.99
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 43290.0, Price: 2.31, Balance: 0.10
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 43290.0, Price: 2.54, Balance: 109999.99
+300262 (*ST巴安) Initial Balance: 100000.00
+300262 (*ST巴安) Final Balance: 109999.99
+300262 (*ST巴安) Stock Value: 0.00
+300262 (*ST巴安) Total Profit/Loss: 9999.99
+===
+模拟交易策略 上海雅仕 (603329) 的数据
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 7194.0, Price: 13.90, Balance: 3.40
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 7194.0, Price: 13.21, Balance: 95000.17
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 6776.0, Price: 14.02, Balance: 0.65
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 6776.0, Price: 13.32, Balance: 90250.19
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 6525.0, Price: 13.83, Balance: 9.44
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 6525.0, Price: 13.14, Balance: 85738.16
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 7194.0, Price: 13.90, Balance: 3.40
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 7194.0, Price: 13.21, Balance: 95000.17
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 6776.0, Price: 14.02, Balance: 0.65
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 6776.0, Price: 13.32, Balance: 90250.19
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 6525.0, Price: 13.83, Balance: 9.44
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 6525.0, Price: 13.14, Balance: 85738.16
+603329 (上海雅仕) Initial Balance: 100000.00
+603329 (上海雅仕) Final Balance: 85738.16
+603329 (上海雅仕) Stock Value: 0.00
+603329 (上海雅仕) Total Profit/Loss: -14261.84
+===
+模拟交易策略 凯格精机 (301338) 的数据
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 3027.0, Price: 33.03, Balance: 18.19
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 3027.0, Price: 31.38, Balance: 95000.91
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 3265.0, Price: 29.09, Balance: 22.06
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3265.0, Price: 27.64, Balance: 90251.97
+Date: 2024-06-20 00:00:00, Type: buy, Shares: 2919.0, Price: 30.91, Balance: 25.68
+Date: 2024-06-21 00:00:00, Type: sell, Shares: 2919.0, Price: 29.36, Balance: 85740.65
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 3027.0, Price: 33.03, Balance: 18.19
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 3027.0, Price: 31.38, Balance: 95000.91
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 3265.0, Price: 29.09, Balance: 22.06
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3265.0, Price: 27.64, Balance: 90251.97
+Date: 2024-06-20 00:00:00, Type: buy, Shares: 2919.0, Price: 30.91, Balance: 25.68
+Date: 2024-06-21 00:00:00, Type: sell, Shares: 2919.0, Price: 29.36, Balance: 85740.65
+301338 (凯格精机) Initial Balance: 100000.00
+301338 (凯格精机) Final Balance: 85740.65
+301338 (凯格精机) Stock Value: 0.00
+301338 (凯格精机) Total Profit/Loss: -14259.35
+===
+模拟交易策略 迎丰股份 (605055) 的数据
+Date: 2024-03-15 00:00:00, Type: buy, Shares: 19646.0, Price: 5.09, Balance: 1.86
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 19646.0, Price: 5.60, Balance: 109999.81
+Date: 2024-03-15 00:00:00, Type: buy, Shares: 19646.0, Price: 5.09, Balance: 1.86
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 19646.0, Price: 5.60, Balance: 109999.81
+605055 (迎丰股份) Initial Balance: 100000.00
+605055 (迎丰股份) Final Balance: 109999.81
+605055 (迎丰股份) Stock Value: 0.00
+605055 (迎丰股份) Total Profit/Loss: 9999.81
+===
+模拟交易策略 京基智农 (000048) 的数据
+Date: 2024-03-22 00:00:00, Type: buy, Shares: 5425.0, Price: 18.43, Balance: 17.25
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 5425.0, Price: 17.51, Balance: 95000.86
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 5481.0, Price: 17.33, Balance: 15.13
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 5481.0, Price: 19.06, Balance: 104499.44
+Date: 2024-03-22 00:00:00, Type: buy, Shares: 5425.0, Price: 18.43, Balance: 17.25
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 5425.0, Price: 17.51, Balance: 95000.86
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 5481.0, Price: 17.33, Balance: 15.13
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 5481.0, Price: 19.06, Balance: 104499.44
+000048 (京基智农) Initial Balance: 100000.00
+000048 (京基智农) Final Balance: 104499.44
+000048 (京基智农) Stock Value: 0.00
+000048 (京基智农) Total Profit/Loss: 4499.44
+===
+模拟交易策略 耐科装备 (688419) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 3767.0, Price: 26.54, Balance: 23.82
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 3767.0, Price: 29.19, Balance: 109997.62
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 4027.0, Price: 27.31, Balance: 20.25
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4027.0, Price: 25.94, Balance: 104498.75
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 3767.0, Price: 26.54, Balance: 23.82
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 3767.0, Price: 29.19, Balance: 109997.62
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 4027.0, Price: 27.31, Balance: 20.25
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4027.0, Price: 25.94, Balance: 104498.75
+688419 (耐科装备) Initial Balance: 100000.00
+688419 (耐科装备) Final Balance: 104498.75
+688419 (耐科装备) Stock Value: 0.00
+688419 (耐科装备) Total Profit/Loss: 4498.75
+===
+模拟交易策略 兴蓉环境 (000598) 的数据
+000598 (兴蓉环境) Initial Balance: 100000.00
+000598 (兴蓉环境) Final Balance: 100000.00
+000598 (兴蓉环境) Stock Value: 0.00
+000598 (兴蓉环境) Total Profit/Loss: 0.00
+===
+模拟交易策略 扬农化工 (600486) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 1858.0, Price: 53.82, Balance: 2.44
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 1858.0, Price: 51.13, Balance: 95000.12
+Date: 2024-04-10 00:00:00, Type: buy, Shares: 1731.0, Price: 54.86, Balance: 37.46
+Date: 2024-04-19 00:00:00, Type: sell, Shares: 1731.0, Price: 60.35, Balance: 104496.39
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 1858.0, Price: 53.82, Balance: 2.44
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 1858.0, Price: 51.13, Balance: 95000.12
+Date: 2024-04-10 00:00:00, Type: buy, Shares: 1731.0, Price: 54.86, Balance: 37.46
+Date: 2024-04-19 00:00:00, Type: sell, Shares: 1731.0, Price: 60.35, Balance: 104496.39
+600486 (扬农化工) Initial Balance: 100000.00
+600486 (扬农化工) Final Balance: 104496.39
+600486 (扬农化工) Stock Value: 0.00
+600486 (扬农化工) Total Profit/Loss: 4496.39
+===
+模拟交易策略 大连友谊 (000679) 的数据
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 24038.0, Price: 4.16, Balance: 1.92
+Date: 2024-04-02 00:00:00, Type: sell, Shares: 24038.0, Price: 4.58, Balance: 109999.81
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 24038.0, Price: 4.16, Balance: 1.92
+Date: 2024-04-02 00:00:00, Type: sell, Shares: 24038.0, Price: 4.58, Balance: 109999.81
+000679 (大连友谊) Initial Balance: 100000.00
+000679 (大连友谊) Final Balance: 109999.81
+000679 (大连友谊) Stock Value: 0.00
+000679 (大连友谊) Total Profit/Loss: 9999.81
+===
+模拟交易策略 安正时尚 (603839) 的数据
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 17331.0, Price: 5.77, Balance: 0.13
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 17331.0, Price: 5.48, Balance: 95000.01
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 17025.0, Price: 5.58, Balance: 0.51
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 17025.0, Price: 6.14, Balance: 104499.96
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 17331.0, Price: 5.77, Balance: 0.13
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 17331.0, Price: 5.48, Balance: 95000.01
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 17025.0, Price: 5.58, Balance: 0.51
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 17025.0, Price: 6.14, Balance: 104499.96
+603839 (安正时尚) Initial Balance: 100000.00
+603839 (安正时尚) Final Balance: 104499.96
+603839 (安正时尚) Stock Value: 0.00
+603839 (安正时尚) Total Profit/Loss: 4499.96
+===
+模拟交易策略 海昇药业 (870656) 的数据
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 6743.0, Price: 14.83, Balance: 1.31
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 6743.0, Price: 14.09, Balance: 95000.07
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 6743.0, Price: 14.83, Balance: 1.31
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 6743.0, Price: 14.09, Balance: 95000.07
+870656 (海昇药业) Initial Balance: 100000.00
+870656 (海昇药业) Final Balance: 95000.07
+870656 (海昇药业) Stock Value: 0.00
+870656 (海昇药业) Total Profit/Loss: -4999.93
+===
+模拟交易策略 华电能源 (600726) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 49504.0, Price: 2.02, Balance: 1.92
+Date: 2024-04-11 00:00:00, Type: sell, Shares: 49504.0, Price: 2.22, Balance: 109999.81
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 48034.0, Price: 2.29, Balance: 1.95
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 48034.0, Price: 2.52, Balance: 120999.59
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 49504.0, Price: 2.02, Balance: 1.92
+Date: 2024-04-11 00:00:00, Type: sell, Shares: 49504.0, Price: 2.22, Balance: 109999.81
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 48034.0, Price: 2.29, Balance: 1.95
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 48034.0, Price: 2.52, Balance: 120999.59
+600726 (华电能源) Initial Balance: 100000.00
+600726 (华电能源) Final Balance: 120999.59
+600726 (华电能源) Stock Value: 0.00
+600726 (华电能源) Total Profit/Loss: 20999.59
+===
+模拟交易策略 常青股份 (603768) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 7241.0, Price: 13.81, Balance: 1.79
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 7241.0, Price: 15.19, Balance: 109999.82
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 7241.0, Price: 13.81, Balance: 1.79
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 7241.0, Price: 15.19, Balance: 109999.82
+603768 (常青股份) Initial Balance: 100000.00
+603768 (常青股份) Final Balance: 109999.82
+603768 (常青股份) Stock Value: 0.00
+603768 (常青股份) Total Profit/Loss: 9999.82
+===
+模拟交易策略 开立医疗 (300633) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2619.0, Price: 38.17, Balance: 32.77
+Date: 2024-03-15 00:00:00, Type: sell, Shares: 2619.0, Price: 41.99, Balance: 109996.72
+Date: 2024-04-30 00:00:00, Type: buy, Shares: 2699.0, Price: 40.75, Balance: 12.47
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 2699.0, Price: 38.71, Balance: 104497.51
+Date: 2024-06-14 00:00:00, Type: buy, Shares: 2421.0, Price: 43.16, Balance: 7.15
+Date: 2024-06-20 00:00:00, Type: sell, Shares: 2421.0, Price: 41.00, Balance: 99272.99
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2619.0, Price: 38.17, Balance: 32.77
+Date: 2024-03-15 00:00:00, Type: sell, Shares: 2619.0, Price: 41.99, Balance: 109996.72
+Date: 2024-04-30 00:00:00, Type: buy, Shares: 2699.0, Price: 40.75, Balance: 12.47
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 2699.0, Price: 38.71, Balance: 104497.51
+Date: 2024-06-14 00:00:00, Type: buy, Shares: 2421.0, Price: 43.16, Balance: 7.15
+Date: 2024-06-20 00:00:00, Type: sell, Shares: 2421.0, Price: 41.00, Balance: 99272.99
+300633 (开立医疗) Initial Balance: 100000.00
+300633 (开立医疗) Final Balance: 99272.99
+300633 (开立医疗) Stock Value: 0.00
+300633 (开立医疗) Total Profit/Loss: -727.01
+===
+模拟交易策略 四川金顶 (600678) 的数据
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 11806.0, Price: 8.47, Balance: 3.18
+Date: 2024-03-05 00:00:00, Type: sell, Shares: 11806.0, Price: 8.05, Balance: 95000.16
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 15497.0, Price: 6.13, Balance: 3.55
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 15497.0, Price: 5.82, Balance: 90250.33
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 11806.0, Price: 8.47, Balance: 3.18
+Date: 2024-03-05 00:00:00, Type: sell, Shares: 11806.0, Price: 8.05, Balance: 95000.16
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 15497.0, Price: 6.13, Balance: 3.55
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 15497.0, Price: 5.82, Balance: 90250.33
+600678 (四川金顶) Initial Balance: 100000.00
+600678 (四川金顶) Final Balance: 90250.33
+600678 (四川金顶) Stock Value: 0.00
+600678 (四川金顶) Total Profit/Loss: -9749.67
+===
+模拟交易策略 苏州规划 (301505) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 3664.0, Price: 27.29, Balance: 9.44
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 3664.0, Price: 25.93, Balance: 95000.47
+Date: 2024-04-25 00:00:00, Type: buy, Shares: 3104.0, Price: 30.60, Balance: 18.07
+Date: 2024-04-26 00:00:00, Type: sell, Shares: 3104.0, Price: 29.07, Balance: 90251.35
+Date: 2024-07-01 00:00:00, Type: buy, Shares: 2821.0, Price: 31.99, Balance: 7.56
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 3664.0, Price: 27.29, Balance: 9.44
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 3664.0, Price: 25.93, Balance: 95000.47
+Date: 2024-04-25 00:00:00, Type: buy, Shares: 3104.0, Price: 30.60, Balance: 18.07
+Date: 2024-04-26 00:00:00, Type: sell, Shares: 3104.0, Price: 29.07, Balance: 90251.35
+Date: 2024-07-01 00:00:00, Type: buy, Shares: 2821.0, Price: 31.99, Balance: 7.56
+301505 (苏州规划) Initial Balance: 100000.00
+301505 (苏州规划) Final Balance: 7.56
+301505 (苏州规划) Stock Value: 95293.38
+301505 (苏州规划) Total Profit/Loss: -4699.06
+===
+模拟交易策略 中富电路 (300814) 的数据
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 3278.0, Price: 30.50, Balance: 21.00
+Date: 2024-03-11 00:00:00, Type: sell, Shares: 3278.0, Price: 33.55, Balance: 109997.90
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 4089.0, Price: 26.90, Balance: 3.80
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 4089.0, Price: 29.59, Balance: 120997.31
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 3278.0, Price: 30.50, Balance: 21.00
+Date: 2024-03-11 00:00:00, Type: sell, Shares: 3278.0, Price: 33.55, Balance: 109997.90
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 4089.0, Price: 26.90, Balance: 3.80
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 4089.0, Price: 29.59, Balance: 120997.31
+300814 (中富电路) Initial Balance: 100000.00
+300814 (中富电路) Final Balance: 120997.31
+300814 (中富电路) Stock Value: 0.00
+300814 (中富电路) Total Profit/Loss: 20997.31
+===
+模拟交易策略 黑芝麻 (000716) 的数据
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 20408.0, Price: 4.90, Balance: 0.80
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 20408.0, Price: 5.39, Balance: 109999.92
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 20408.0, Price: 4.90, Balance: 0.80
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 20408.0, Price: 5.39, Balance: 109999.92
+000716 (黑芝麻) Initial Balance: 100000.00
+000716 (黑芝麻) Final Balance: 109999.92
+000716 (黑芝麻) Stock Value: 0.00
+000716 (黑芝麻) Total Profit/Loss: 9999.92
+===
+模拟交易策略 东方中科 (002819) 的数据
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 3777.0, Price: 26.47, Balance: 22.81
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 3777.0, Price: 29.12, Balance: 109997.72
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 4473.0, Price: 24.59, Balance: 6.65
+Date: 2024-05-14 00:00:00, Type: sell, Shares: 4473.0, Price: 23.36, Balance: 104498.17
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 3777.0, Price: 26.47, Balance: 22.81
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 3777.0, Price: 29.12, Balance: 109997.72
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 4473.0, Price: 24.59, Balance: 6.65
+Date: 2024-05-14 00:00:00, Type: sell, Shares: 4473.0, Price: 23.36, Balance: 104498.17
+002819 (东方中科) Initial Balance: 100000.00
+002819 (东方中科) Final Balance: 104498.17
+002819 (东方中科) Stock Value: 0.00
+002819 (东方中科) Total Profit/Loss: 4498.17
+===
+模拟交易策略 浙能电力 (600023) 的数据
+Date: 2024-05-29 00:00:00, Type: buy, Shares: 14598.0, Price: 6.85, Balance: 3.70
+Date: 2024-05-29 00:00:00, Type: buy, Shares: 14598.0, Price: 6.85, Balance: 3.70
+600023 (浙能电力) Initial Balance: 100000.00
+600023 (浙能电力) Final Balance: 3.70
+600023 (浙能电力) Stock Value: 103937.76
+600023 (浙能电力) Total Profit/Loss: 3941.46
+===
+模拟交易策略 广安爱众 (600979) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 27397.0, Price: 3.65, Balance: 0.95
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 27397.0, Price: 3.47, Balance: 95000.05
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 27456.0, Price: 3.46, Balance: 2.29
+Date: 2024-05-09 00:00:00, Type: sell, Shares: 27456.0, Price: 3.81, Balance: 104499.82
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 27397.0, Price: 3.65, Balance: 0.95
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 27397.0, Price: 3.47, Balance: 95000.05
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 27456.0, Price: 3.46, Balance: 2.29
+Date: 2024-05-09 00:00:00, Type: sell, Shares: 27456.0, Price: 3.81, Balance: 104499.82
+600979 (广安爱众) Initial Balance: 100000.00
+600979 (广安爱众) Final Balance: 104499.82
+600979 (广安爱众) Stock Value: 0.00
+600979 (广安爱众) Total Profit/Loss: 4499.82
+===
+模拟交易策略 赣锋锂业 (002460) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 2531.0, Price: 39.50, Balance: 25.50
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 2531.0, Price: 37.52, Balance: 95001.27
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 2410.0, Price: 39.41, Balance: 23.18
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 2410.0, Price: 37.44, Balance: 90252.37
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 2531.0, Price: 39.50, Balance: 25.50
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 2531.0, Price: 37.52, Balance: 95001.27
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 2410.0, Price: 39.41, Balance: 23.18
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 2410.0, Price: 37.44, Balance: 90252.37
+002460 (赣锋锂业) Initial Balance: 100000.00
+002460 (赣锋锂业) Final Balance: 90252.37
+002460 (赣锋锂业) Stock Value: 0.00
+002460 (赣锋锂业) Total Profit/Loss: -9747.63
+===
+模拟交易策略 闰土股份 (002440) 的数据
+Date: 2024-02-28 00:00:00, Type: buy, Shares: 17574.0, Price: 5.69, Balance: 3.94
+Date: 2024-04-02 00:00:00, Type: sell, Shares: 17574.0, Price: 6.26, Balance: 109999.61
+Date: 2024-02-28 00:00:00, Type: buy, Shares: 17574.0, Price: 5.69, Balance: 3.94
+Date: 2024-04-02 00:00:00, Type: sell, Shares: 17574.0, Price: 6.26, Balance: 109999.61
+002440 (闰土股份) Initial Balance: 100000.00
+002440 (闰土股份) Final Balance: 109999.61
+002440 (闰土股份) Stock Value: 0.00
+002440 (闰土股份) Total Profit/Loss: 9999.61
+===
+模拟交易策略 京东方Ａ (000725) 的数据
+Date: 2024-04-01 00:00:00, Type: buy, Shares: 24691.0, Price: 4.05, Balance: 1.45
+Date: 2024-05-06 00:00:00, Type: sell, Shares: 24691.0, Price: 4.46, Balance: 109999.86
+Date: 2024-04-01 00:00:00, Type: buy, Shares: 24691.0, Price: 4.05, Balance: 1.45
+Date: 2024-05-06 00:00:00, Type: sell, Shares: 24691.0, Price: 4.46, Balance: 109999.86
+000725 (京东方Ａ) Initial Balance: 100000.00
+000725 (京东方Ａ) Final Balance: 109999.86
+000725 (京东方Ａ) Stock Value: 0.00
+000725 (京东方Ａ) Total Profit/Loss: 9999.86
+===
+模拟交易策略 丰林集团 (601996) 的数据
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 45454.0, Price: 2.20, Balance: 1.20
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 45454.0, Price: 2.09, Balance: 95000.06
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 45238.0, Price: 2.10, Balance: 0.26
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 45238.0, Price: 1.99, Balance: 90250.07
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 45454.0, Price: 2.20, Balance: 1.20
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 45454.0, Price: 2.09, Balance: 95000.06
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 45238.0, Price: 2.10, Balance: 0.26
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 45238.0, Price: 1.99, Balance: 90250.07
+601996 (丰林集团) Initial Balance: 100000.00
+601996 (丰林集团) Final Balance: 90250.07
+601996 (丰林集团) Stock Value: 0.00
+601996 (丰林集团) Total Profit/Loss: -9749.93
+===
+模拟交易策略 苏利股份 (603585) 的数据
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 8305.0, Price: 12.04, Balance: 7.80
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 8305.0, Price: 11.44, Balance: 95000.39
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7667.0, Price: 12.39, Balance: 6.26
+Date: 2024-05-31 00:00:00, Type: sell, Shares: 7667.0, Price: 11.77, Balance: 90250.68
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 8305.0, Price: 12.04, Balance: 7.80
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 8305.0, Price: 11.44, Balance: 95000.39
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7667.0, Price: 12.39, Balance: 6.26
+Date: 2024-05-31 00:00:00, Type: sell, Shares: 7667.0, Price: 11.77, Balance: 90250.68
+603585 (苏利股份) Initial Balance: 100000.00
+603585 (苏利股份) Final Balance: 90250.68
+603585 (苏利股份) Stock Value: 0.00
+603585 (苏利股份) Total Profit/Loss: -9749.32
+===
+模拟交易策略 深粮控股 (000019) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 15723.0, Price: 6.36, Balance: 1.72
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 15723.0, Price: 6.04, Balance: 95000.09
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 14548.0, Price: 6.53, Balance: 1.65
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 14548.0, Price: 6.20, Balance: 90250.16
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 15723.0, Price: 6.36, Balance: 1.72
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 15723.0, Price: 6.04, Balance: 95000.09
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 14548.0, Price: 6.53, Balance: 1.65
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 14548.0, Price: 6.20, Balance: 90250.16
+000019 (深粮控股) Initial Balance: 100000.00
+000019 (深粮控股) Final Balance: 90250.16
+000019 (深粮控股) Stock Value: 0.00
+000019 (深粮控股) Total Profit/Loss: -9749.84
+===
+模拟交易策略 特瑞斯 (834014) 的数据
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 11961.0, Price: 8.36, Balance: 6.04
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 11961.0, Price: 7.94, Balance: 95000.30
+Date: 2024-05-28 00:00:00, Type: buy, Shares: 12907.0, Price: 7.36, Balance: 4.78
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 12907.0, Price: 6.99, Balance: 90250.53
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 11961.0, Price: 8.36, Balance: 6.04
+Date: 2024-03-25 00:00:00, Type: sell, Shares: 11961.0, Price: 7.94, Balance: 95000.30
+Date: 2024-05-28 00:00:00, Type: buy, Shares: 12907.0, Price: 7.36, Balance: 4.78
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 12907.0, Price: 6.99, Balance: 90250.53
+834014 (特瑞斯) Initial Balance: 100000.00
+834014 (特瑞斯) Final Balance: 90250.53
+834014 (特瑞斯) Stock Value: 0.00
+834014 (特瑞斯) Total Profit/Loss: -9749.47
+===
+模拟交易策略 光线传媒 (300251) 的数据
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 11750.0, Price: 8.51, Balance: 7.50
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 11750.0, Price: 9.36, Balance: 109999.25
+Date: 2024-06-14 00:00:00, Type: buy, Shares: 12021.0, Price: 9.15, Balance: 7.10
+Date: 2024-06-24 00:00:00, Type: sell, Shares: 12021.0, Price: 8.69, Balance: 104499.64
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 11750.0, Price: 8.51, Balance: 7.50
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 11750.0, Price: 9.36, Balance: 109999.25
+Date: 2024-06-14 00:00:00, Type: buy, Shares: 12021.0, Price: 9.15, Balance: 7.10
+Date: 2024-06-24 00:00:00, Type: sell, Shares: 12021.0, Price: 8.69, Balance: 104499.64
+300251 (光线传媒) Initial Balance: 100000.00
+300251 (光线传媒) Final Balance: 104499.64
+300251 (光线传媒) Stock Value: 0.00
+300251 (光线传媒) Total Profit/Loss: 4499.64
+===
+模拟交易策略 风华高科 (000636) 的数据
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 8561.0, Price: 11.68, Balance: 7.52
+Date: 2024-03-15 00:00:00, Type: sell, Shares: 8561.0, Price: 12.85, Balance: 109999.25
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8764.0, Price: 12.55, Balance: 11.05
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 8764.0, Price: 11.92, Balance: 104499.84
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 8561.0, Price: 11.68, Balance: 7.52
+Date: 2024-03-15 00:00:00, Type: sell, Shares: 8561.0, Price: 12.85, Balance: 109999.25
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8764.0, Price: 12.55, Balance: 11.05
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 8764.0, Price: 11.92, Balance: 104499.84
+000636 (风华高科) Initial Balance: 100000.00
+000636 (风华高科) Final Balance: 104499.84
+000636 (风华高科) Stock Value: 0.00
+000636 (风华高科) Total Profit/Loss: 4499.84
+===
+模拟交易策略 诚志股份 (000990) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 13927.0, Price: 7.18, Balance: 4.14
+Date: 2024-03-28 00:00:00, Type: sell, Shares: 13927.0, Price: 6.82, Balance: 95000.21
+Date: 2024-04-11 00:00:00, Type: buy, Shares: 13049.0, Price: 7.28, Balance: 3.49
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 13049.0, Price: 6.92, Balance: 90250.37
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 13927.0, Price: 7.18, Balance: 4.14
+Date: 2024-03-28 00:00:00, Type: sell, Shares: 13927.0, Price: 6.82, Balance: 95000.21
+Date: 2024-04-11 00:00:00, Type: buy, Shares: 13049.0, Price: 7.28, Balance: 3.49
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 13049.0, Price: 6.92, Balance: 90250.37
+000990 (诚志股份) Initial Balance: 100000.00
+000990 (诚志股份) Final Balance: 90250.37
+000990 (诚志股份) Stock Value: 0.00
+000990 (诚志股份) Total Profit/Loss: -9749.63
+===
+模拟交易策略 润达医疗 (603108) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 5934.0, Price: 16.85, Balance: 12.10
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 5934.0, Price: 18.54, Balance: 109998.79
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 5934.0, Price: 16.85, Balance: 12.10
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 5934.0, Price: 18.54, Balance: 109998.79
+603108 (润达医疗) Initial Balance: 100000.00
+603108 (润达医疗) Final Balance: 109998.79
+603108 (润达医疗) Stock Value: 0.00
+603108 (润达医疗) Total Profit/Loss: 9998.79
+===
+模拟交易策略 京北方 (002987) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 9469.0, Price: 10.56, Balance: 7.36
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 9469.0, Price: 11.62, Balance: 109999.26
+Date: 2024-04-24 00:00:00, Type: buy, Shares: 9490.0, Price: 11.59, Balance: 10.16
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 9490.0, Price: 11.01, Balance: 104499.81
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 9469.0, Price: 10.56, Balance: 7.36
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 9469.0, Price: 11.62, Balance: 109999.26
+Date: 2024-04-24 00:00:00, Type: buy, Shares: 9490.0, Price: 11.59, Balance: 10.16
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 9490.0, Price: 11.01, Balance: 104499.81
+002987 (京北方) Initial Balance: 100000.00
+002987 (京北方) Final Balance: 104499.81
+002987 (京北方) Stock Value: 0.00
+002987 (京北方) Total Profit/Loss: 4499.81
+===
+模拟交易策略 海容冷链 (603187) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 7209.0, Price: 13.87, Balance: 11.17
+Date: 2024-03-13 00:00:00, Type: sell, Shares: 7209.0, Price: 15.26, Balance: 109998.88
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 7638.0, Price: 14.40, Balance: 11.68
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 7638.0, Price: 13.68, Balance: 104499.52
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 7209.0, Price: 13.87, Balance: 11.17
+Date: 2024-03-13 00:00:00, Type: sell, Shares: 7209.0, Price: 15.26, Balance: 109998.88
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 7638.0, Price: 14.40, Balance: 11.68
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 7638.0, Price: 13.68, Balance: 104499.52
+603187 (海容冷链) Initial Balance: 100000.00
+603187 (海容冷链) Final Balance: 104499.52
+603187 (海容冷链) Stock Value: 0.00
+603187 (海容冷链) Total Profit/Loss: 4499.52
+===
+模拟交易策略 比依股份 (603215) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 6075.0, Price: 16.46, Balance: 5.50
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 6075.0, Price: 18.11, Balance: 109999.45
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 6075.0, Price: 16.46, Balance: 5.50
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 6075.0, Price: 18.11, Balance: 109999.45
+603215 (比依股份) Initial Balance: 100000.00
+603215 (比依股份) Final Balance: 109999.45
+603215 (比依股份) Stock Value: 0.00
+603215 (比依股份) Total Profit/Loss: 9999.45
+===
+模拟交易策略 华林证券 (002945) 的数据
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 8038.0, Price: 12.44, Balance: 7.28
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 8038.0, Price: 11.82, Balance: 95000.36
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 8126.0, Price: 11.69, Balance: 7.42
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 8126.0, Price: 11.11, Balance: 90250.72
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 8038.0, Price: 12.44, Balance: 7.28
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 8038.0, Price: 11.82, Balance: 95000.36
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 8126.0, Price: 11.69, Balance: 7.42
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 8126.0, Price: 11.11, Balance: 90250.72
+002945 (华林证券) Initial Balance: 100000.00
+002945 (华林证券) Final Balance: 90250.72
+002945 (华林证券) Stock Value: 0.00
+002945 (华林证券) Total Profit/Loss: -9749.28
+===
+模拟交易策略 海印股份 (000861) 的数据
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 65789.0, Price: 1.52, Balance: 0.72
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 65789.0, Price: 1.44, Balance: 95000.04
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 61688.0, Price: 1.54, Balance: 0.52
+Date: 2024-05-29 00:00:00, Type: sell, Shares: 61688.0, Price: 1.46, Balance: 90250.06
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 65789.0, Price: 1.52, Balance: 0.72
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 65789.0, Price: 1.44, Balance: 95000.04
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 61688.0, Price: 1.54, Balance: 0.52
+Date: 2024-05-29 00:00:00, Type: sell, Shares: 61688.0, Price: 1.46, Balance: 90250.06
+000861 (海印股份) Initial Balance: 100000.00
+000861 (海印股份) Final Balance: 90250.06
+000861 (海印股份) Stock Value: 0.00
+000861 (海印股份) Total Profit/Loss: -9749.94
+===
+模拟交易策略 宏源药业 (301246) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 4566.0, Price: 21.90, Balance: 4.60
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 4566.0, Price: 20.80, Balance: 95000.23
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 5594.0, Price: 16.98, Balance: 14.11
+Date: 2024-05-15 00:00:00, Type: sell, Shares: 5594.0, Price: 16.13, Balance: 90250.92
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 4566.0, Price: 21.90, Balance: 4.60
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 4566.0, Price: 20.80, Balance: 95000.23
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 5594.0, Price: 16.98, Balance: 14.11
+Date: 2024-05-15 00:00:00, Type: sell, Shares: 5594.0, Price: 16.13, Balance: 90250.92
+301246 (宏源药业) Initial Balance: 100000.00
+301246 (宏源药业) Final Balance: 90250.92
+301246 (宏源药业) Stock Value: 0.00
+301246 (宏源药业) Total Profit/Loss: -9749.08
+===
+模拟交易策略 泰晶科技 (603738) 的数据
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 7293.0, Price: 13.71, Balance: 12.97
+Date: 2024-04-10 00:00:00, Type: sell, Shares: 7293.0, Price: 13.02, Balance: 95000.65
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 6985.0, Price: 13.60, Balance: 4.65
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 6985.0, Price: 12.92, Balance: 90250.85
+Date: 2024-06-19 00:00:00, Type: buy, Shares: 6554.0, Price: 13.77, Balance: 2.27
+Date: 2024-06-21 00:00:00, Type: sell, Shares: 6554.0, Price: 13.08, Balance: 85738.42
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 7293.0, Price: 13.71, Balance: 12.97
+Date: 2024-04-10 00:00:00, Type: sell, Shares: 7293.0, Price: 13.02, Balance: 95000.65
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 6985.0, Price: 13.60, Balance: 4.65
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 6985.0, Price: 12.92, Balance: 90250.85
+Date: 2024-06-19 00:00:00, Type: buy, Shares: 6554.0, Price: 13.77, Balance: 2.27
+Date: 2024-06-21 00:00:00, Type: sell, Shares: 6554.0, Price: 13.08, Balance: 85738.42
+603738 (泰晶科技) Initial Balance: 100000.00
+603738 (泰晶科技) Final Balance: 85738.42
+603738 (泰晶科技) Stock Value: 0.00
+603738 (泰晶科技) Total Profit/Loss: -14261.58
+===
+模拟交易策略 野马电池 (605378) 的数据
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 7716.0, Price: 12.96, Balance: 0.64
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 7716.0, Price: 14.26, Balance: 109999.94
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 7208.0, Price: 15.26, Balance: 5.86
+Date: 2024-05-30 00:00:00, Type: sell, Shares: 7208.0, Price: 16.79, Balance: 120999.34
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 7716.0, Price: 12.96, Balance: 0.64
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 7716.0, Price: 14.26, Balance: 109999.94
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 7208.0, Price: 15.26, Balance: 5.86
+Date: 2024-05-30 00:00:00, Type: sell, Shares: 7208.0, Price: 16.79, Balance: 120999.34
+605378 (野马电池) Initial Balance: 100000.00
+605378 (野马电池) Final Balance: 120999.34
+605378 (野马电池) Stock Value: 0.00
+605378 (野马电池) Total Profit/Loss: 20999.34
+===
+模拟交易策略 罗曼股份 (605289) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 2861.0, Price: 34.95, Balance: 8.05
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 2861.0, Price: 38.45, Balance: 109999.20
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 3386.0, Price: 32.48, Balance: 21.92
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3386.0, Price: 30.86, Balance: 104500.33
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 2861.0, Price: 34.95, Balance: 8.05
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 2861.0, Price: 38.45, Balance: 109999.20
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 3386.0, Price: 32.48, Balance: 21.92
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3386.0, Price: 30.86, Balance: 104500.33
+605289 (罗曼股份) Initial Balance: 100000.00
+605289 (罗曼股份) Final Balance: 104500.33
+605289 (罗曼股份) Stock Value: 0.00
+605289 (罗曼股份) Total Profit/Loss: 4500.33
+===
+模拟交易策略 狮头股份 (600539) 的数据
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 19493.0, Price: 5.13, Balance: 0.91
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 19493.0, Price: 4.87, Balance: 95000.05
+Date: 2024-05-15 00:00:00, Type: buy, Shares: 20000.0, Price: 4.75, Balance: 0.05
+Date: 2024-05-20 00:00:00, Type: sell, Shares: 20000.0, Price: 5.23, Balance: 104500.05
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 19493.0, Price: 5.13, Balance: 0.91
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 19493.0, Price: 4.87, Balance: 95000.05
+Date: 2024-05-15 00:00:00, Type: buy, Shares: 20000.0, Price: 4.75, Balance: 0.05
+Date: 2024-05-20 00:00:00, Type: sell, Shares: 20000.0, Price: 5.23, Balance: 104500.05
+600539 (狮头股份) Initial Balance: 100000.00
+600539 (狮头股份) Final Balance: 104500.05
+600539 (狮头股份) Stock Value: 0.00
+600539 (狮头股份) Total Profit/Loss: 4500.05
+===
+模拟交易策略 安琪酵母 (600298) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 3028.0, Price: 33.02, Balance: 15.44
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 3028.0, Price: 31.37, Balance: 95000.77
+Date: 2024-04-30 00:00:00, Type: buy, Shares: 3232.0, Price: 29.39, Balance: 12.29
+Date: 2024-05-08 00:00:00, Type: sell, Shares: 3232.0, Price: 32.33, Balance: 104499.62
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 3028.0, Price: 33.02, Balance: 15.44
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 3028.0, Price: 31.37, Balance: 95000.77
+Date: 2024-04-30 00:00:00, Type: buy, Shares: 3232.0, Price: 29.39, Balance: 12.29
+Date: 2024-05-08 00:00:00, Type: sell, Shares: 3232.0, Price: 32.33, Balance: 104499.62
+600298 (安琪酵母) Initial Balance: 100000.00
+600298 (安琪酵母) Final Balance: 104499.62
+600298 (安琪酵母) Stock Value: 0.00
+600298 (安琪酵母) Total Profit/Loss: 4499.62
+===
+模拟交易策略 大洋生物 (003017) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 5494.0, Price: 18.20, Balance: 9.20
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 5494.0, Price: 17.29, Balance: 95000.46
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 4922.0, Price: 19.30, Balance: 5.86
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4922.0, Price: 18.34, Balance: 90250.73
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 5494.0, Price: 18.20, Balance: 9.20
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 5494.0, Price: 17.29, Balance: 95000.46
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 4922.0, Price: 19.30, Balance: 5.86
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4922.0, Price: 18.34, Balance: 90250.73
+003017 (大洋生物) Initial Balance: 100000.00
+003017 (大洋生物) Final Balance: 90250.73
+003017 (大洋生物) Stock Value: 0.00
+003017 (大洋生物) Total Profit/Loss: -9749.27
+===
+模拟交易策略 雅运股份 (603790) 的数据
+Date: 2024-03-15 00:00:00, Type: buy, Shares: 10060.0, Price: 9.94, Balance: 3.60
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 10060.0, Price: 10.93, Balance: 109999.64
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 9581.0, Price: 11.48, Balance: 9.76
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 9581.0, Price: 10.91, Balance: 104500.15
+Date: 2024-03-15 00:00:00, Type: buy, Shares: 10060.0, Price: 9.94, Balance: 3.60
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 10060.0, Price: 10.93, Balance: 109999.64
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 9581.0, Price: 11.48, Balance: 9.76
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 9581.0, Price: 10.91, Balance: 104500.15
+603790 (雅运股份) Initial Balance: 100000.00
+603790 (雅运股份) Final Balance: 104500.15
+603790 (雅运股份) Stock Value: 0.00
+603790 (雅运股份) Total Profit/Loss: 4500.15
+===
+模拟交易策略 亚康股份 (301085) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2180.0, Price: 45.87, Balance: 3.40
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 2180.0, Price: 50.46, Balance: 109999.66
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 2236.0, Price: 49.19, Balance: 10.82
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2236.0, Price: 46.73, Balance: 104500.22
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2180.0, Price: 45.87, Balance: 3.40
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 2180.0, Price: 50.46, Balance: 109999.66
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 2236.0, Price: 49.19, Balance: 10.82
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2236.0, Price: 46.73, Balance: 104500.22
+301085 (亚康股份) Initial Balance: 100000.00
+301085 (亚康股份) Final Balance: 104500.22
+301085 (亚康股份) Stock Value: 0.00
+301085 (亚康股份) Total Profit/Loss: 4500.22
+===
+模拟交易策略 西陇科学 (002584) 的数据
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 13495.0, Price: 7.41, Balance: 2.05
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 13495.0, Price: 8.15, Balance: 109999.80
+Date: 2024-04-11 00:00:00, Type: buy, Shares: 13002.0, Price: 8.46, Balance: 2.88
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 13002.0, Price: 8.04, Balance: 104499.95
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 13495.0, Price: 7.41, Balance: 2.05
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 13495.0, Price: 8.15, Balance: 109999.80
+Date: 2024-04-11 00:00:00, Type: buy, Shares: 13002.0, Price: 8.46, Balance: 2.88
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 13002.0, Price: 8.04, Balance: 104499.95
+002584 (西陇科学) Initial Balance: 100000.00
+002584 (西陇科学) Final Balance: 104499.95
+002584 (西陇科学) Stock Value: 0.00
+002584 (西陇科学) Total Profit/Loss: 4499.95
+===
+模拟交易策略 海光信息 (688041) 的数据
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 1317.0, Price: 75.90, Balance: 39.70
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 1317.0, Price: 72.11, Balance: 95001.99
+Date: 2024-06-19 00:00:00, Type: buy, Shares: 1271.0, Price: 74.70, Balance: 58.29
+Date: 2024-06-25 00:00:00, Type: sell, Shares: 1271.0, Price: 70.97, Balance: 90254.80
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 1317.0, Price: 75.90, Balance: 39.70
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 1317.0, Price: 72.11, Balance: 95001.99
+Date: 2024-06-19 00:00:00, Type: buy, Shares: 1271.0, Price: 74.70, Balance: 58.29
+Date: 2024-06-25 00:00:00, Type: sell, Shares: 1271.0, Price: 70.97, Balance: 90254.80
+688041 (海光信息) Initial Balance: 100000.00
+688041 (海光信息) Final Balance: 90254.80
+688041 (海光信息) Stock Value: 0.00
+688041 (海光信息) Total Profit/Loss: -9745.20
+===
+模拟交易策略 广发证券 (000776) 的数据
+Date: 2024-02-23 00:00:00, Type: buy, Shares: 7037.0, Price: 14.21, Balance: 4.23
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 7037.0, Price: 13.50, Balance: 95000.21
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 7229.0, Price: 13.14, Balance: 11.15
+Date: 2024-06-07 00:00:00, Type: sell, Shares: 7229.0, Price: 12.48, Balance: 90250.76
+Date: 2024-02-23 00:00:00, Type: buy, Shares: 7037.0, Price: 14.21, Balance: 4.23
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 7037.0, Price: 13.50, Balance: 95000.21
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 7229.0, Price: 13.14, Balance: 11.15
+Date: 2024-06-07 00:00:00, Type: sell, Shares: 7229.0, Price: 12.48, Balance: 90250.76
+000776 (广发证券) Initial Balance: 100000.00
+000776 (广发证券) Final Balance: 90250.76
+000776 (广发证券) Stock Value: 0.00
+000776 (广发证券) Total Profit/Loss: -9749.24
+===
+模拟交易策略 北方长龙 (301357) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 3723.0, Price: 26.86, Balance: 0.22
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 3723.0, Price: 25.52, Balance: 95000.01
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 3806.0, Price: 24.96, Balance: 2.25
+Date: 2024-05-10 00:00:00, Type: sell, Shares: 3806.0, Price: 27.46, Balance: 104499.79
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 3723.0, Price: 26.86, Balance: 0.22
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 3723.0, Price: 25.52, Balance: 95000.01
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 3806.0, Price: 24.96, Balance: 2.25
+Date: 2024-05-10 00:00:00, Type: sell, Shares: 3806.0, Price: 27.46, Balance: 104499.79
+301357 (北方长龙) Initial Balance: 100000.00
+301357 (北方长龙) Final Balance: 104499.79
+301357 (北方长龙) Stock Value: 0.00
+301357 (北方长龙) Total Profit/Loss: 4499.79
+===
+模拟交易策略 汇得科技 (603192) 的数据
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 6906.0, Price: 14.48, Balance: 1.12
+Date: 2024-03-26 00:00:00, Type: sell, Shares: 6906.0, Price: 15.93, Balance: 109999.89
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7028.0, Price: 15.65, Balance: 11.69
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 7028.0, Price: 14.87, Balance: 104500.48
+Date: 2024-03-14 00:00:00, Type: buy, Shares: 6906.0, Price: 14.48, Balance: 1.12
+Date: 2024-03-26 00:00:00, Type: sell, Shares: 6906.0, Price: 15.93, Balance: 109999.89
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7028.0, Price: 15.65, Balance: 11.69
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 7028.0, Price: 14.87, Balance: 104500.48
+603192 (汇得科技) Initial Balance: 100000.00
+603192 (汇得科技) Final Balance: 104500.48
+603192 (汇得科技) Stock Value: 0.00
+603192 (汇得科技) Total Profit/Loss: 4500.48
+===
+模拟交易策略 博杰股份 (002975) 的数据
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 2762.0, Price: 36.20, Balance: 15.60
+Date: 2024-03-04 00:00:00, Type: sell, Shares: 2762.0, Price: 34.39, Balance: 95000.78
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 3146.0, Price: 30.19, Balance: 23.04
+Date: 2024-05-17 00:00:00, Type: sell, Shares: 3146.0, Price: 33.21, Balance: 104498.55
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 2762.0, Price: 36.20, Balance: 15.60
+Date: 2024-03-04 00:00:00, Type: sell, Shares: 2762.0, Price: 34.39, Balance: 95000.78
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 3146.0, Price: 30.19, Balance: 23.04
+Date: 2024-05-17 00:00:00, Type: sell, Shares: 3146.0, Price: 33.21, Balance: 104498.55
+002975 (博杰股份) Initial Balance: 100000.00
+002975 (博杰股份) Final Balance: 104498.55
+002975 (博杰股份) Stock Value: 0.00
+002975 (博杰股份) Total Profit/Loss: 4498.55
+===
+模拟交易策略 云南白药 (000538) 的数据
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 2100.0, Price: 47.61, Balance: 19.00
+Date: 2024-04-17 00:00:00, Type: sell, Shares: 2100.0, Price: 52.37, Balance: 109998.10
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 2100.0, Price: 47.61, Balance: 19.00
+Date: 2024-04-17 00:00:00, Type: sell, Shares: 2100.0, Price: 52.37, Balance: 109998.10
+000538 (云南白药) Initial Balance: 100000.00
+000538 (云南白药) Final Balance: 109998.10
+000538 (云南白药) Stock Value: 0.00
+000538 (云南白药) Total Profit/Loss: 9998.10
+===
+模拟交易策略 福莱特 (601865) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 4118.0, Price: 24.28, Balance: 14.96
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 4118.0, Price: 26.71, Balance: 109998.50
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 4118.0, Price: 24.28, Balance: 14.96
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 4118.0, Price: 26.71, Balance: 109998.50
+601865 (福莱特) Initial Balance: 100000.00
+601865 (福莱特) Final Balance: 109998.50
+601865 (福莱特) Stock Value: 0.00
+601865 (福莱特) Total Profit/Loss: 9998.50
+===
+模拟交易策略 数字认证 (300579) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 4692.0, Price: 21.31, Balance: 13.48
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 4692.0, Price: 23.44, Balance: 109998.65
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 5723.0, Price: 19.22, Balance: 2.59
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 5723.0, Price: 18.26, Balance: 104498.85
+Date: 2024-06-25 00:00:00, Type: buy, Shares: 5639.0, Price: 18.53, Balance: 8.18
+Date: 2024-06-26 00:00:00, Type: sell, Shares: 5639.0, Price: 20.38, Balance: 114947.92
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 4692.0, Price: 21.31, Balance: 13.48
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 4692.0, Price: 23.44, Balance: 109998.65
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 5723.0, Price: 19.22, Balance: 2.59
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 5723.0, Price: 18.26, Balance: 104498.85
+Date: 2024-06-25 00:00:00, Type: buy, Shares: 5639.0, Price: 18.53, Balance: 8.18
+Date: 2024-06-26 00:00:00, Type: sell, Shares: 5639.0, Price: 20.38, Balance: 114947.92
+300579 (数字认证) Initial Balance: 100000.00
+300579 (数字认证) Final Balance: 114947.92
+300579 (数字认证) Stock Value: 0.00
+300579 (数字认证) Total Profit/Loss: 14947.92
+===
+模拟交易策略 农 产 品 (000061) 的数据
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 16556.0, Price: 6.04, Balance: 1.76
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 16556.0, Price: 5.74, Balance: 95000.09
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 16129.0, Price: 5.89, Balance: 0.28
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 16129.0, Price: 5.60, Balance: 90250.10
+Date: 2024-02-27 00:00:00, Type: buy, Shares: 16556.0, Price: 6.04, Balance: 1.76
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 16556.0, Price: 5.74, Balance: 95000.09
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 16129.0, Price: 5.89, Balance: 0.28
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 16129.0, Price: 5.60, Balance: 90250.10
+000061 (农 产 品) Initial Balance: 100000.00
+000061 (农 产 品) Final Balance: 90250.10
+000061 (农 产 品) Stock Value: 0.00
+000061 (农 产 品) Total Profit/Loss: -9749.90
+===
+模拟交易策略 涪陵榨菜 (002507) 的数据
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 7385.0, Price: 13.54, Balance: 7.10
+Date: 2024-04-09 00:00:00, Type: sell, Shares: 7385.0, Price: 12.86, Balance: 95000.35
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 6761.0, Price: 14.05, Balance: 8.30
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 6761.0, Price: 13.35, Balance: 90250.75
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 7385.0, Price: 13.54, Balance: 7.10
+Date: 2024-04-09 00:00:00, Type: sell, Shares: 7385.0, Price: 12.86, Balance: 95000.35
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 6761.0, Price: 14.05, Balance: 8.30
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 6761.0, Price: 13.35, Balance: 90250.75
+002507 (涪陵榨菜) Initial Balance: 100000.00
+002507 (涪陵榨菜) Final Balance: 90250.75
+002507 (涪陵榨菜) Stock Value: 0.00
+002507 (涪陵榨菜) Total Profit/Loss: -9749.25
+===
+模拟交易策略 神通科技 (605228) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 11210.0, Price: 8.92, Balance: 6.80
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 11210.0, Price: 9.81, Balance: 109999.32
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 10036.0, Price: 10.96, Balance: 4.76
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 10036.0, Price: 10.41, Balance: 104499.59
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 11210.0, Price: 8.92, Balance: 6.80
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 11210.0, Price: 9.81, Balance: 109999.32
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 10036.0, Price: 10.96, Balance: 4.76
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 10036.0, Price: 10.41, Balance: 104499.59
+605228 (神通科技) Initial Balance: 100000.00
+605228 (神通科技) Final Balance: 104499.59
+605228 (神通科技) Stock Value: 0.00
+605228 (神通科技) Total Profit/Loss: 4499.59
+===
+模拟交易策略 朗威股份 (301202) 的数据
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 3943.0, Price: 25.36, Balance: 5.52
+Date: 2024-03-04 00:00:00, Type: sell, Shares: 3943.0, Price: 27.90, Balance: 109999.45
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 3342.0, Price: 32.91, Balance: 14.23
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3342.0, Price: 31.26, Balance: 104500.19
+Date: 2024-03-01 00:00:00, Type: buy, Shares: 3943.0, Price: 25.36, Balance: 5.52
+Date: 2024-03-04 00:00:00, Type: sell, Shares: 3943.0, Price: 27.90, Balance: 109999.45
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 3342.0, Price: 32.91, Balance: 14.23
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3342.0, Price: 31.26, Balance: 104500.19
+301202 (朗威股份) Initial Balance: 100000.00
+301202 (朗威股份) Final Balance: 104500.19
+301202 (朗威股份) Stock Value: 0.00
+301202 (朗威股份) Total Profit/Loss: 4500.19
+===
+模拟交易策略 上海机电 (600835) 的数据
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 8718.0, Price: 11.47, Balance: 4.54
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 8718.0, Price: 12.62, Balance: 109999.55
+Date: 2024-04-18 00:00:00, Type: buy, Shares: 8757.0, Price: 12.56, Balance: 11.63
+Date: 2024-05-14 00:00:00, Type: sell, Shares: 8757.0, Price: 13.82, Balance: 120998.34
+Date: 2024-02-22 00:00:00, Type: buy, Shares: 8718.0, Price: 11.47, Balance: 4.54
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 8718.0, Price: 12.62, Balance: 109999.55
+Date: 2024-04-18 00:00:00, Type: buy, Shares: 8757.0, Price: 12.56, Balance: 11.63
+Date: 2024-05-14 00:00:00, Type: sell, Shares: 8757.0, Price: 13.82, Balance: 120998.34
+600835 (上海机电) Initial Balance: 100000.00
+600835 (上海机电) Final Balance: 120998.34
+600835 (上海机电) Stock Value: 0.00
+600835 (上海机电) Total Profit/Loss: 20998.34
+===
+模拟交易策略 欢瑞世纪 (000892) 的数据
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 33112.0, Price: 3.02, Balance: 1.76
+Date: 2024-03-13 00:00:00, Type: sell, Shares: 33112.0, Price: 3.32, Balance: 109999.82
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 37288.0, Price: 2.95, Balance: 0.22
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 37288.0, Price: 2.80, Balance: 104499.84
+Date: 2024-03-11 00:00:00, Type: buy, Shares: 33112.0, Price: 3.02, Balance: 1.76
+Date: 2024-03-13 00:00:00, Type: sell, Shares: 33112.0, Price: 3.32, Balance: 109999.82
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 37288.0, Price: 2.95, Balance: 0.22
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 37288.0, Price: 2.80, Balance: 104499.84
+000892 (欢瑞世纪) Initial Balance: 100000.00
+000892 (欢瑞世纪) Final Balance: 104499.84
+000892 (欢瑞世纪) Stock Value: 0.00
+000892 (欢瑞世纪) Total Profit/Loss: 4499.84
+===
+模拟交易策略 好莱客 (603898) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 11467.0, Price: 8.72, Balance: 7.76
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 11467.0, Price: 9.59, Balance: 109999.22
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 12154.0, Price: 9.05, Balance: 5.52
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 12154.0, Price: 8.60, Balance: 104499.54
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 11176.0, Price: 9.35, Balance: 3.94
+Date: 2024-05-21 00:00:00, Type: sell, Shares: 11176.0, Price: 8.88, Balance: 99274.76
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 11467.0, Price: 8.72, Balance: 7.76
+Date: 2024-04-01 00:00:00, Type: sell, Shares: 11467.0, Price: 9.59, Balance: 109999.22
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 12154.0, Price: 9.05, Balance: 5.52
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 12154.0, Price: 8.60, Balance: 104499.54
+Date: 2024-05-20 00:00:00, Type: buy, Shares: 11176.0, Price: 9.35, Balance: 3.94
+Date: 2024-05-21 00:00:00, Type: sell, Shares: 11176.0, Price: 8.88, Balance: 99274.76
+603898 (好莱客) Initial Balance: 100000.00
+603898 (好莱客) Final Balance: 99274.76
+603898 (好莱客) Stock Value: 0.00
+603898 (好莱客) Total Profit/Loss: -725.24
+===
+模拟交易策略 国网英大 (600517) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 21367.0, Price: 4.68, Balance: 2.44
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 21367.0, Price: 5.15, Balance: 109999.76
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 21367.0, Price: 4.68, Balance: 2.44
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 21367.0, Price: 5.15, Balance: 109999.76
+600517 (国网英大) Initial Balance: 100000.00
+600517 (国网英大) Final Balance: 109999.76
+600517 (国网英大) Stock Value: 0.00
+600517 (国网英大) Total Profit/Loss: 9999.76
+===
+模拟交易策略 龙软科技 (688078) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 3491.0, Price: 28.64, Balance: 17.76
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 3491.0, Price: 31.50, Balance: 109998.22
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 4171.0, Price: 26.37, Balance: 8.95
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4171.0, Price: 25.05, Balance: 104498.76
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 3491.0, Price: 28.64, Balance: 17.76
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 3491.0, Price: 31.50, Balance: 109998.22
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 4171.0, Price: 26.37, Balance: 8.95
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 4171.0, Price: 25.05, Balance: 104498.76
+688078 (龙软科技) Initial Balance: 100000.00
+688078 (龙软科技) Final Balance: 104498.76
+688078 (龙软科技) Stock Value: 0.00
+688078 (龙软科技) Total Profit/Loss: 4498.76
+===
+模拟交易策略 华创云信 (600155) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 13245.0, Price: 7.55, Balance: 0.25
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 13245.0, Price: 7.17, Balance: 95000.01
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 12803.0, Price: 7.42, Balance: 1.75
+Date: 2024-05-21 00:00:00, Type: sell, Shares: 12803.0, Price: 7.05, Balance: 90250.10
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 13245.0, Price: 7.55, Balance: 0.25
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 13245.0, Price: 7.17, Balance: 95000.01
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 12803.0, Price: 7.42, Balance: 1.75
+Date: 2024-05-21 00:00:00, Type: sell, Shares: 12803.0, Price: 7.05, Balance: 90250.10
+600155 (华创云信) Initial Balance: 100000.00
+600155 (华创云信) Final Balance: 90250.10
+600155 (华创云信) Stock Value: 0.00
+600155 (华创云信) Total Profit/Loss: -9749.90
+===
+模拟交易策略 中基健康 (000972) 的数据
+Date: 2024-04-15 00:00:00, Type: buy, Shares: 26455.0, Price: 3.78, Balance: 0.10
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 26455.0, Price: 3.59, Balance: 95000.01
+Date: 2024-04-15 00:00:00, Type: buy, Shares: 26455.0, Price: 3.78, Balance: 0.10
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 26455.0, Price: 3.59, Balance: 95000.01
+000972 (中基健康) Initial Balance: 100000.00
+000972 (中基健康) Final Balance: 95000.01
+000972 (中基健康) Stock Value: 0.00
+000972 (中基健康) Total Profit/Loss: -4999.99
+===
+模拟交易策略 亚信安全 (688225) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 6802.0, Price: 14.70, Balance: 10.60
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 6802.0, Price: 16.17, Balance: 109998.94
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7304.0, Price: 15.06, Balance: 0.70
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 7304.0, Price: 14.31, Balance: 104499.03
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 6802.0, Price: 14.70, Balance: 10.60
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 6802.0, Price: 16.17, Balance: 109998.94
+Date: 2024-05-09 00:00:00, Type: buy, Shares: 7304.0, Price: 15.06, Balance: 0.70
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 7304.0, Price: 14.31, Balance: 104499.03
+688225 (亚信安全) Initial Balance: 100000.00
+688225 (亚信安全) Final Balance: 104499.03
+688225 (亚信安全) Stock Value: 0.00
+688225 (亚信安全) Total Profit/Loss: 4499.03
+===
+模拟交易策略 厦钨新能 (688778) 的数据
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 2890.0, Price: 34.60, Balance: 6.00
+Date: 2024-03-05 00:00:00, Type: sell, Shares: 2890.0, Price: 32.87, Balance: 95000.30
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 2585.0, Price: 36.75, Balance: 1.55
+Date: 2024-05-15 00:00:00, Type: sell, Shares: 2585.0, Price: 34.91, Balance: 90250.36
+Date: 2024-03-04 00:00:00, Type: buy, Shares: 2890.0, Price: 34.60, Balance: 6.00
+Date: 2024-03-05 00:00:00, Type: sell, Shares: 2890.0, Price: 32.87, Balance: 95000.30
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 2585.0, Price: 36.75, Balance: 1.55
+Date: 2024-05-15 00:00:00, Type: sell, Shares: 2585.0, Price: 34.91, Balance: 90250.36
+688778 (厦钨新能) Initial Balance: 100000.00
+688778 (厦钨新能) Final Balance: 90250.36
+688778 (厦钨新能) Stock Value: 0.00
+688778 (厦钨新能) Total Profit/Loss: -9749.64
+===
+模拟交易策略 罗 牛 山 (000735) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 19723.0, Price: 5.07, Balance: 4.39
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 19723.0, Price: 5.58, Balance: 109999.56
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 21868.0, Price: 5.03, Balance: 3.52
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 21868.0, Price: 4.78, Balance: 104499.76
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 19723.0, Price: 5.07, Balance: 4.39
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 19723.0, Price: 5.58, Balance: 109999.56
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 21868.0, Price: 5.03, Balance: 3.52
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 21868.0, Price: 4.78, Balance: 104499.76
+000735 (罗 牛 山) Initial Balance: 100000.00
+000735 (罗 牛 山) Final Balance: 104499.76
+000735 (罗 牛 山) Stock Value: 0.00
+000735 (罗 牛 山) Total Profit/Loss: 4499.76
+===
+模拟交易策略 瑞松科技 (688090) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 5543.0, Price: 18.04, Balance: 4.28
+Date: 2024-03-18 00:00:00, Type: sell, Shares: 5543.0, Price: 19.84, Balance: 109999.57
+Date: 2024-05-21 00:00:00, Type: buy, Shares: 6455.0, Price: 17.04, Balance: 6.37
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 6455.0, Price: 18.74, Balance: 120998.89
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 5543.0, Price: 18.04, Balance: 4.28
+Date: 2024-03-18 00:00:00, Type: sell, Shares: 5543.0, Price: 19.84, Balance: 109999.57
+Date: 2024-05-21 00:00:00, Type: buy, Shares: 6455.0, Price: 17.04, Balance: 6.37
+Date: 2024-05-24 00:00:00, Type: sell, Shares: 6455.0, Price: 18.74, Balance: 120998.89
+688090 (瑞松科技) Initial Balance: 100000.00
+688090 (瑞松科技) Final Balance: 120998.89
+688090 (瑞松科技) Stock Value: 0.00
+688090 (瑞松科技) Total Profit/Loss: 20998.89
+===
+模拟交易策略 福成股份 (600965) 的数据
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 20040.0, Price: 4.99, Balance: 0.40
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 20040.0, Price: 4.74, Balance: 95000.02
+Date: 2024-05-21 00:00:00, Type: buy, Shares: 19750.0, Price: 4.81, Balance: 2.52
+Date: 2024-05-23 00:00:00, Type: sell, Shares: 19750.0, Price: 4.57, Balance: 90250.15
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 20040.0, Price: 4.99, Balance: 0.40
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 20040.0, Price: 4.74, Balance: 95000.02
+Date: 2024-05-21 00:00:00, Type: buy, Shares: 19750.0, Price: 4.81, Balance: 2.52
+Date: 2024-05-23 00:00:00, Type: sell, Shares: 19750.0, Price: 4.57, Balance: 90250.15
+600965 (福成股份) Initial Balance: 100000.00
+600965 (福成股份) Final Balance: 90250.15
+600965 (福成股份) Stock Value: 0.00
+600965 (福成股份) Total Profit/Loss: -9749.85
+===
+模拟交易策略 津投城开 (600322) 的数据
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 54347.0, Price: 1.84, Balance: 1.52
+Date: 2024-03-26 00:00:00, Type: sell, Shares: 54347.0, Price: 2.02, Balance: 109999.85
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 63218.0, Price: 1.74, Balance: 0.53
+Date: 2024-05-16 00:00:00, Type: sell, Shares: 63218.0, Price: 1.91, Balance: 120999.78
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 54347.0, Price: 1.84, Balance: 1.52
+Date: 2024-03-26 00:00:00, Type: sell, Shares: 54347.0, Price: 2.02, Balance: 109999.85
+Date: 2024-05-14 00:00:00, Type: buy, Shares: 63218.0, Price: 1.74, Balance: 0.53
+Date: 2024-05-16 00:00:00, Type: sell, Shares: 63218.0, Price: 1.91, Balance: 120999.78
+600322 (津投城开) Initial Balance: 100000.00
+600322 (津投城开) Final Balance: 120999.78
+600322 (津投城开) Stock Value: 0.00
+600322 (津投城开) Total Profit/Loss: 20999.78
+===
+模拟交易策略 远大控股 (000626) 的数据
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 18148.0, Price: 5.51, Balance: 4.52
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 18148.0, Price: 6.06, Balance: 109999.55
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 19607.0, Price: 5.61, Balance: 4.28
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 19607.0, Price: 5.33, Balance: 104499.78
+Date: 2024-03-19 00:00:00, Type: buy, Shares: 18148.0, Price: 5.51, Balance: 4.52
+Date: 2024-04-03 00:00:00, Type: sell, Shares: 18148.0, Price: 6.06, Balance: 109999.55
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 19607.0, Price: 5.61, Balance: 4.28
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 19607.0, Price: 5.33, Balance: 104499.78
+000626 (远大控股) Initial Balance: 100000.00
+000626 (远大控股) Final Balance: 104499.78
+000626 (远大控股) Stock Value: 0.00
+000626 (远大控股) Total Profit/Loss: 4499.78
+===
+模拟交易策略 麒麟信安 (688152) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 2070.0, Price: 48.30, Balance: 19.00
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 2070.0, Price: 45.88, Balance: 95000.95
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 2021.0, Price: 47.00, Balance: 13.95
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2021.0, Price: 44.65, Balance: 90251.60
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 2070.0, Price: 48.30, Balance: 19.00
+Date: 2024-03-08 00:00:00, Type: sell, Shares: 2070.0, Price: 45.88, Balance: 95000.95
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 2021.0, Price: 47.00, Balance: 13.95
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2021.0, Price: 44.65, Balance: 90251.60
+688152 (麒麟信安) Initial Balance: 100000.00
+688152 (麒麟信安) Final Balance: 90251.60
+688152 (麒麟信安) Stock Value: 0.00
+688152 (麒麟信安) Total Profit/Loss: -9748.40
+===
+模拟交易策略 逸飞激光 (688646) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 3402.0, Price: 29.39, Balance: 15.22
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 3402.0, Price: 32.33, Balance: 109998.48
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 3612.0, Price: 30.45, Balance: 13.08
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 3612.0, Price: 28.93, Balance: 104499.21
+Date: 2024-06-21 00:00:00, Type: buy, Shares: 2740.0, Price: 38.13, Balance: 23.01
+Date: 2024-06-24 00:00:00, Type: sell, Shares: 2740.0, Price: 36.22, Balance: 99275.40
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 3402.0, Price: 29.39, Balance: 15.22
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 3402.0, Price: 32.33, Balance: 109998.48
+Date: 2024-05-13 00:00:00, Type: buy, Shares: 3612.0, Price: 30.45, Balance: 13.08
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 3612.0, Price: 28.93, Balance: 104499.21
+Date: 2024-06-21 00:00:00, Type: buy, Shares: 2740.0, Price: 38.13, Balance: 23.01
+Date: 2024-06-24 00:00:00, Type: sell, Shares: 2740.0, Price: 36.22, Balance: 99275.40
+688646 (逸飞激光) Initial Balance: 100000.00
+688646 (逸飞激光) Final Balance: 99275.40
+688646 (逸飞激光) Stock Value: 0.00
+688646 (逸飞激光) Total Profit/Loss: -724.60
+===
+模拟交易策略 寒武纪 (688256) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 717.0, Price: 139.40, Balance: 50.20
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 717.0, Price: 153.34, Balance: 109994.98
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 632.0, Price: 173.99, Balance: 33.30
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 632.0, Price: 165.29, Balance: 104496.90
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 717.0, Price: 139.40, Balance: 50.20
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 717.0, Price: 153.34, Balance: 109994.98
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 632.0, Price: 173.99, Balance: 33.30
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 632.0, Price: 165.29, Balance: 104496.90
+688256 (寒武纪) Initial Balance: 100000.00
+688256 (寒武纪) Final Balance: 104496.90
+688256 (寒武纪) Stock Value: 0.00
+688256 (寒武纪) Total Profit/Loss: 4496.90
+===
+模拟交易策略 珠城科技 (301280) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 3228.0, Price: 30.97, Balance: 28.84
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 3228.0, Price: 34.07, Balance: 109997.12
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 2792.0, Price: 39.39, Balance: 20.24
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2792.0, Price: 37.42, Balance: 104498.27
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 3228.0, Price: 30.97, Balance: 28.84
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 3228.0, Price: 34.07, Balance: 109997.12
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 2792.0, Price: 39.39, Balance: 20.24
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 2792.0, Price: 37.42, Balance: 104498.27
+301280 (珠城科技) Initial Balance: 100000.00
+301280 (珠城科技) Final Balance: 104498.27
+301280 (珠城科技) Stock Value: 0.00
+301280 (珠城科技) Total Profit/Loss: 4498.27
+===
+模拟交易策略 神奇制药 (600613) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 15552.0, Price: 6.43, Balance: 0.64
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 15552.0, Price: 6.11, Balance: 95000.03
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 14285.0, Price: 6.65, Balance: 4.78
+Date: 2024-05-23 00:00:00, Type: sell, Shares: 14285.0, Price: 6.32, Balance: 90250.27
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 15552.0, Price: 6.43, Balance: 0.64
+Date: 2024-03-06 00:00:00, Type: sell, Shares: 15552.0, Price: 6.11, Balance: 95000.03
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 14285.0, Price: 6.65, Balance: 4.78
+Date: 2024-05-23 00:00:00, Type: sell, Shares: 14285.0, Price: 6.32, Balance: 90250.27
+600613 (神奇制药) Initial Balance: 100000.00
+600613 (神奇制药) Final Balance: 90250.27
+600613 (神奇制药) Stock Value: 0.00
+600613 (神奇制药) Total Profit/Loss: -9749.73
+===
+模拟交易策略 盛天网络 (300494) 的数据
+Date: 2024-02-28 00:00:00, Type: buy, Shares: 6426.0, Price: 15.56, Balance: 11.44
+Date: 2024-02-29 00:00:00, Type: sell, Shares: 6426.0, Price: 14.78, Balance: 95000.57
+Date: 2024-02-28 00:00:00, Type: buy, Shares: 6426.0, Price: 15.56, Balance: 11.44
+Date: 2024-02-29 00:00:00, Type: sell, Shares: 6426.0, Price: 14.78, Balance: 95000.57
+300494 (盛天网络) Initial Balance: 100000.00
+300494 (盛天网络) Final Balance: 95000.57
+300494 (盛天网络) Stock Value: 0.00
+300494 (盛天网络) Total Profit/Loss: -4999.43
+===
+模拟交易策略 贝特瑞 (835185) 的数据
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 5552.0, Price: 18.01, Balance: 8.48
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 5552.0, Price: 19.81, Balance: 109999.15
+Date: 2024-06-20 00:00:00, Type: buy, Shares: 5888.0, Price: 18.68, Balance: 11.31
+Date: 2024-03-08 00:00:00, Type: buy, Shares: 5552.0, Price: 18.01, Balance: 8.48
+Date: 2024-03-27 00:00:00, Type: sell, Shares: 5552.0, Price: 19.81, Balance: 109999.15
+Date: 2024-06-20 00:00:00, Type: buy, Shares: 5888.0, Price: 18.68, Balance: 11.31
+835185 (贝特瑞) Initial Balance: 100000.00
+835185 (贝特瑞) Final Balance: 11.31
+835185 (贝特瑞) Stock Value: 107102.72
+835185 (贝特瑞) Total Profit/Loss: 7114.03
+===
+模拟交易策略 辰安科技 (300523) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 4215.0, Price: 23.72, Balance: 20.20
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 4215.0, Price: 22.53, Balance: 95001.01
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 4215.0, Price: 23.72, Balance: 20.20
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 4215.0, Price: 22.53, Balance: 95001.01
+300523 (辰安科技) Initial Balance: 100000.00
+300523 (辰安科技) Final Balance: 95001.01
+300523 (辰安科技) Stock Value: 0.00
+300523 (辰安科技) Total Profit/Loss: -4998.99
+===
+模拟交易策略 北矿科技 (600980) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 7320.0, Price: 13.66, Balance: 8.80
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 7320.0, Price: 15.03, Balance: 109999.12
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 7740.0, Price: 14.21, Balance: 13.72
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 7740.0, Price: 13.50, Balance: 104499.85
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 7320.0, Price: 13.66, Balance: 8.80
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 7320.0, Price: 15.03, Balance: 109999.12
+Date: 2024-05-17 00:00:00, Type: buy, Shares: 7740.0, Price: 14.21, Balance: 13.72
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 7740.0, Price: 13.50, Balance: 104499.85
+600980 (北矿科技) Initial Balance: 100000.00
+600980 (北矿科技) Final Balance: 104499.85
+600980 (北矿科技) Stock Value: 0.00
+600980 (北矿科技) Total Profit/Loss: 4499.85
+===
+模拟交易策略 芯导科技 (688230) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 3217.0, Price: 31.08, Balance: 15.64
+Date: 2024-03-18 00:00:00, Type: sell, Shares: 3217.0, Price: 34.19, Balance: 109998.44
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 3323.0, Price: 33.10, Balance: 7.14
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3323.0, Price: 31.45, Balance: 104498.87
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 3217.0, Price: 31.08, Balance: 15.64
+Date: 2024-03-18 00:00:00, Type: sell, Shares: 3217.0, Price: 34.19, Balance: 109998.44
+Date: 2024-05-08 00:00:00, Type: buy, Shares: 3323.0, Price: 33.10, Balance: 7.14
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 3323.0, Price: 31.45, Balance: 104498.87
+688230 (芯导科技) Initial Balance: 100000.00
+688230 (芯导科技) Final Balance: 104498.87
+688230 (芯导科技) Stock Value: 0.00
+688230 (芯导科技) Total Profit/Loss: 4498.87
+===
+模拟交易策略 凯盛新能 (600876) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 8136.0, Price: 12.29, Balance: 8.56
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 8136.0, Price: 11.68, Balance: 95000.43
+Date: 2024-05-22 00:00:00, Type: buy, Shares: 7593.0, Price: 12.51, Balance: 12.00
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 7593.0, Price: 11.88, Balance: 90251.01
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 8136.0, Price: 12.29, Balance: 8.56
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 8136.0, Price: 11.68, Balance: 95000.43
+Date: 2024-05-22 00:00:00, Type: buy, Shares: 7593.0, Price: 12.51, Balance: 12.00
+Date: 2024-05-28 00:00:00, Type: sell, Shares: 7593.0, Price: 11.88, Balance: 90251.01
+600876 (凯盛新能) Initial Balance: 100000.00
+600876 (凯盛新能) Final Balance: 90251.01
+600876 (凯盛新能) Stock Value: 0.00
+600876 (凯盛新能) Total Profit/Loss: -9748.99
+===
+模拟交易策略 四方光电 (688665) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2732.0, Price: 36.59, Balance: 36.12
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 2732.0, Price: 40.25, Balance: 109996.39
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 2986.0, Price: 36.83, Balance: 22.01
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 2986.0, Price: 34.99, Balance: 104497.67
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 2732.0, Price: 36.59, Balance: 36.12
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 2732.0, Price: 40.25, Balance: 109996.39
+Date: 2024-04-12 00:00:00, Type: buy, Shares: 2986.0, Price: 36.83, Balance: 22.01
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 2986.0, Price: 34.99, Balance: 104497.67
+688665 (四方光电) Initial Balance: 100000.00
+688665 (四方光电) Final Balance: 104497.67
+688665 (四方光电) Stock Value: 0.00
+688665 (四方光电) Total Profit/Loss: 4497.67
+===
+模拟交易策略 天银机电 (300342) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 8326.0, Price: 12.01, Balance: 4.74
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 8326.0, Price: 13.21, Balance: 109999.53
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 7735.0, Price: 14.22, Balance: 7.83
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 7735.0, Price: 13.51, Balance: 104499.94
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 8326.0, Price: 12.01, Balance: 4.74
+Date: 2024-03-01 00:00:00, Type: sell, Shares: 8326.0, Price: 13.21, Balance: 109999.53
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 7735.0, Price: 14.22, Balance: 7.83
+Date: 2024-05-13 00:00:00, Type: sell, Shares: 7735.0, Price: 13.51, Balance: 104499.94
+300342 (天银机电) Initial Balance: 100000.00
+300342 (天银机电) Final Balance: 104499.94
+300342 (天银机电) Stock Value: 0.00
+300342 (天银机电) Total Profit/Loss: 4499.94
+===
+模拟交易策略 益民集团 (600824) 的数据
+Date: 2024-03-20 00:00:00, Type: buy, Shares: 28901.0, Price: 3.46, Balance: 2.54
+Date: 2024-04-10 00:00:00, Type: sell, Shares: 28901.0, Price: 3.81, Balance: 109999.75
+Date: 2024-05-27 00:00:00, Type: buy, Shares: 33333.0, Price: 3.30, Balance: 0.85
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 33333.0, Price: 3.13, Balance: 104499.80
+Date: 2024-03-20 00:00:00, Type: buy, Shares: 28901.0, Price: 3.46, Balance: 2.54
+Date: 2024-04-10 00:00:00, Type: sell, Shares: 28901.0, Price: 3.81, Balance: 109999.75
+Date: 2024-05-27 00:00:00, Type: buy, Shares: 33333.0, Price: 3.30, Balance: 0.85
+Date: 2024-06-03 00:00:00, Type: sell, Shares: 33333.0, Price: 3.13, Balance: 104499.80
+600824 (益民集团) Initial Balance: 100000.00
+600824 (益民集团) Final Balance: 104499.80
+600824 (益民集团) Stock Value: 0.00
+600824 (益民集团) Total Profit/Loss: 4499.80
+===
+模拟交易策略 锦盛新材 (300849) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 8230.0, Price: 12.15, Balance: 5.50
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 8230.0, Price: 13.37, Balance: 109999.45
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8136.0, Price: 13.52, Balance: 0.73
+Date: 2024-05-20 00:00:00, Type: sell, Shares: 8136.0, Price: 12.84, Balance: 104499.51
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 8230.0, Price: 12.15, Balance: 5.50
+Date: 2024-03-21 00:00:00, Type: sell, Shares: 8230.0, Price: 13.37, Balance: 109999.45
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8136.0, Price: 13.52, Balance: 0.73
+Date: 2024-05-20 00:00:00, Type: sell, Shares: 8136.0, Price: 12.84, Balance: 104499.51
+300849 (锦盛新材) Initial Balance: 100000.00
+300849 (锦盛新材) Final Balance: 104499.51
+300849 (锦盛新材) Stock Value: 0.00
+300849 (锦盛新材) Total Profit/Loss: 4499.51
+===
+模拟交易策略 银都股份 (603277) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 4025.0, Price: 24.84, Balance: 19.00
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 4025.0, Price: 27.32, Balance: 109998.10
+Date: 2024-04-25 00:00:00, Type: buy, Shares: 3750.0, Price: 29.33, Balance: 10.60
+Date: 2024-05-06 00:00:00, Type: sell, Shares: 3750.0, Price: 32.26, Balance: 120996.85
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 4025.0, Price: 24.84, Balance: 19.00
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 4025.0, Price: 27.32, Balance: 109998.10
+Date: 2024-04-25 00:00:00, Type: buy, Shares: 3750.0, Price: 29.33, Balance: 10.60
+Date: 2024-05-06 00:00:00, Type: sell, Shares: 3750.0, Price: 32.26, Balance: 120996.85
+603277 (银都股份) Initial Balance: 100000.00
+603277 (银都股份) Final Balance: 120996.85
+603277 (银都股份) Stock Value: 0.00
+603277 (银都股份) Total Profit/Loss: 20996.85
+===
+模拟交易策略 光智科技 (300489) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 6443.0, Price: 15.52, Balance: 4.64
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 6443.0, Price: 17.07, Balance: 109999.54
+Date: 2024-06-25 00:00:00, Type: buy, Shares: 5248.0, Price: 20.96, Balance: 1.46
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 6443.0, Price: 15.52, Balance: 4.64
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 6443.0, Price: 17.07, Balance: 109999.54
+Date: 2024-06-25 00:00:00, Type: buy, Shares: 5248.0, Price: 20.96, Balance: 1.46
+300489 (光智科技) Initial Balance: 100000.00
+300489 (光智科技) Final Balance: 1.46
+300489 (光智科技) Stock Value: 107321.60
+300489 (光智科技) Total Profit/Loss: 7323.06
+===
+模拟交易策略 东峰集团 (601515) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 26666.0, Price: 3.75, Balance: 2.50
+Date: 2024-03-28 00:00:00, Type: sell, Shares: 26666.0, Price: 3.56, Balance: 95000.12
+Date: 2024-05-15 00:00:00, Type: buy, Shares: 24296.0, Price: 3.91, Balance: 2.76
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 24296.0, Price: 4.30, Balance: 104499.86
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 26666.0, Price: 3.75, Balance: 2.50
+Date: 2024-03-28 00:00:00, Type: sell, Shares: 26666.0, Price: 3.56, Balance: 95000.12
+Date: 2024-05-15 00:00:00, Type: buy, Shares: 24296.0, Price: 3.91, Balance: 2.76
+Date: 2024-05-22 00:00:00, Type: sell, Shares: 24296.0, Price: 4.30, Balance: 104499.86
+601515 (东峰集团) Initial Balance: 100000.00
+601515 (东峰集团) Final Balance: 104499.86
+601515 (东峰集团) Stock Value: 0.00
+601515 (东峰集团) Total Profit/Loss: 4499.86
+===
+模拟交易策略 西力科技 (688616) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 9881.0, Price: 10.12, Balance: 4.28
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 9881.0, Price: 9.61, Balance: 95000.21
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8098.0, Price: 11.73, Balance: 10.67
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 8098.0, Price: 12.90, Balance: 104499.17
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 9881.0, Price: 10.12, Balance: 4.28
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 9881.0, Price: 9.61, Balance: 95000.21
+Date: 2024-05-07 00:00:00, Type: buy, Shares: 8098.0, Price: 11.73, Balance: 10.67
+Date: 2024-05-27 00:00:00, Type: sell, Shares: 8098.0, Price: 12.90, Balance: 104499.17
+688616 (西力科技) Initial Balance: 100000.00
+688616 (西力科技) Final Balance: 104499.17
+688616 (西力科技) Stock Value: 0.00
+688616 (西力科技) Total Profit/Loss: 4499.17
+===
+模拟交易策略 安邦护卫 (603373) 的数据
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 3314.0, Price: 30.17, Balance: 16.62
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 3314.0, Price: 33.19, Balance: 109998.34
+Date: 2024-05-27 00:00:00, Type: buy, Shares: 3385.0, Price: 32.49, Balance: 19.69
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 3385.0, Price: 30.87, Balance: 104499.41
+Date: 2024-03-18 00:00:00, Type: buy, Shares: 3314.0, Price: 30.17, Balance: 16.62
+Date: 2024-03-19 00:00:00, Type: sell, Shares: 3314.0, Price: 33.19, Balance: 109998.34
+Date: 2024-05-27 00:00:00, Type: buy, Shares: 3385.0, Price: 32.49, Balance: 19.69
+Date: 2024-06-04 00:00:00, Type: sell, Shares: 3385.0, Price: 30.87, Balance: 104499.41
+603373 (安邦护卫) Initial Balance: 100000.00
+603373 (安邦护卫) Final Balance: 104499.41
+603373 (安邦护卫) Stock Value: 0.00
+603373 (安邦护卫) Total Profit/Loss: 4499.41
+===
+模拟交易策略 ST红太阳 (000525) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 13774.0, Price: 7.26, Balance: 0.76
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 13774.0, Price: 7.99, Balance: 109999.92
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 13774.0, Price: 7.26, Balance: 0.76
+Date: 2024-03-20 00:00:00, Type: sell, Shares: 13774.0, Price: 7.99, Balance: 109999.92
+000525 (ST红太阳) Initial Balance: 100000.00
+000525 (ST红太阳) Final Balance: 109999.92
+000525 (ST红太阳) Stock Value: 0.00
+000525 (ST红太阳) Total Profit/Loss: 9999.92
+===
+模拟交易策略 掌趣科技 (300315) 的数据
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 19120.0, Price: 5.23, Balance: 2.40
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 19120.0, Price: 5.75, Balance: 109999.76
+Date: 2024-02-26 00:00:00, Type: buy, Shares: 19120.0, Price: 5.23, Balance: 2.40
+Date: 2024-02-27 00:00:00, Type: sell, Shares: 19120.0, Price: 5.75, Balance: 109999.76
+300315 (掌趣科技) Initial Balance: 100000.00
+300315 (掌趣科技) Final Balance: 109999.76
+300315 (掌趣科技) Stock Value: 0.00
+300315 (掌趣科技) Total Profit/Loss: 9999.76
+===
+模拟交易策略 溢多利 (300381) 的数据
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 18832.0, Price: 5.31, Balance: 2.08
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 18832.0, Price: 5.04, Balance: 95000.10
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 12040.0, Price: 7.89, Balance: 4.50
+Date: 2024-05-07 00:00:00, Type: sell, Shares: 12040.0, Price: 8.68, Balance: 104499.66
+Date: 2024-03-13 00:00:00, Type: buy, Shares: 18832.0, Price: 5.31, Balance: 2.08
+Date: 2024-04-15 00:00:00, Type: sell, Shares: 18832.0, Price: 5.04, Balance: 95000.10
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 12040.0, Price: 7.89, Balance: 4.50
+Date: 2024-05-07 00:00:00, Type: sell, Shares: 12040.0, Price: 8.68, Balance: 104499.66
+300381 (溢多利) Initial Balance: 100000.00
+300381 (溢多利) Final Balance: 104499.66
+300381 (溢多利) Stock Value: 0.00
+300381 (溢多利) Total Profit/Loss: 4499.66
+===
+模拟交易策略 银河电子 (002519) 的数据
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 21413.0, Price: 4.67, Balance: 1.29
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 21413.0, Price: 4.44, Balance: 95000.06
+Date: 2024-04-26 00:00:00, Type: buy, Shares: 18060.0, Price: 5.26, Balance: 4.46
+Date: 2024-06-06 00:00:00, Type: sell, Shares: 18060.0, Price: 5.00, Balance: 90250.28
+Date: 2024-03-06 00:00:00, Type: buy, Shares: 21413.0, Price: 4.67, Balance: 1.29
+Date: 2024-04-16 00:00:00, Type: sell, Shares: 21413.0, Price: 4.44, Balance: 95000.06
+Date: 2024-04-26 00:00:00, Type: buy, Shares: 18060.0, Price: 5.26, Balance: 4.46
+Date: 2024-06-06 00:00:00, Type: sell, Shares: 18060.0, Price: 5.00, Balance: 90250.28
+002519 (银河电子) Initial Balance: 100000.00
+002519 (银河电子) Final Balance: 90250.28
+002519 (银河电子) Stock Value: 0.00
+002519 (银河电子) Total Profit/Loss: -9749.72
+===
+模拟交易策略 红星发展 (600367) 的数据
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 9900.0, Price: 10.10, Balance: 10.00
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 9900.0, Price: 11.11, Balance: 109999.00
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 8994.0, Price: 12.23, Balance: 2.38
+Date: 2024-05-08 00:00:00, Type: sell, Shares: 8994.0, Price: 13.45, Balance: 120998.66
+Date: 2024-03-07 00:00:00, Type: buy, Shares: 9900.0, Price: 10.10, Balance: 10.00
+Date: 2024-03-14 00:00:00, Type: sell, Shares: 9900.0, Price: 11.11, Balance: 109999.00
+Date: 2024-05-06 00:00:00, Type: buy, Shares: 8994.0, Price: 12.23, Balance: 2.38
+Date: 2024-05-08 00:00:00, Type: sell, Shares: 8994.0, Price: 13.45, Balance: 120998.66
+600367 (红星发展) Initial Balance: 100000.00
+600367 (红星发展) Final Balance: 120998.66
+600367 (红星发展) Stock Value: 0.00
+600367 (红星发展) Total Profit/Loss: 20998.66
+===
+模拟交易策略 夏厦精密 (001306) 的数据
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 1656.0, Price: 60.37, Balance: 27.28
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 1656.0, Price: 66.41, Balance: 109997.27
+Date: 2024-03-05 00:00:00, Type: buy, Shares: 1656.0, Price: 60.37, Balance: 27.28
+Date: 2024-03-07 00:00:00, Type: sell, Shares: 1656.0, Price: 66.41, Balance: 109997.27
+001306 (夏厦精密) Initial Balance: 100000.00
+001306 (夏厦精密) Final Balance: 109997.27
+001306 (夏厦精密) Stock Value: 0.00
+001306 (夏厦精密) Total Profit/Loss: 9997.27
+===
+模拟交易策略 正泰电器 (601877) 的数据
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 5165.0, Price: 19.36, Balance: 5.60
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 5165.0, Price: 21.30, Balance: 109999.44
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 5397.0, Price: 20.38, Balance: 8.58
+Date: 2024-06-20 00:00:00, Type: sell, Shares: 5397.0, Price: 19.36, Balance: 104499.90
+Date: 2024-02-29 00:00:00, Type: buy, Shares: 5165.0, Price: 19.36, Balance: 5.60
+Date: 2024-03-12 00:00:00, Type: sell, Shares: 5165.0, Price: 21.30, Balance: 109999.44
+Date: 2024-05-10 00:00:00, Type: buy, Shares: 5397.0, Price: 20.38, Balance: 8.58
+Date: 2024-06-20 00:00:00, Type: sell, Shares: 5397.0, Price: 19.36, Balance: 104499.90
+601877 (正泰电器) Initial Balance: 100000.00
+601877 (正泰电器) Final Balance: 104499.90
+601877 (正泰电器) Stock Value: 0.00
+601877 (正泰电器) Total Profit/Loss: 4499.90
+===
+Total Cash: 9828986.46
+Total Stock Value: 413655.46
+Total Portfolio Value: 10242641.92
 Number of Stocks Simulated: 100
-Number of Profitable Stocks: 63
-Number of Losing Stocks: 37
-Average Profit: 8514.71
-Average Loss: -7467.47
+Number of Profitable Stocks: 66
+Number of Losing Stocks: 34
+Average Profit: 7981.54
+Average Loss: -8357.06
