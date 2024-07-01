@@ -56,7 +56,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
-            print(f"Date: {today.name}, Type: buy, Shares: {shares_to_buy}, Price: {buy_price:.2f}, Balance: {balance:.2f}")
+            print(f"D: {today.name.date()}, T: buy, S: {shares_to_buy}, P: {buy_price:.2f}, B: {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.1 * buy_price) or today['low'] <= 0.95 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
             if today['high'] >= 1.1 * buy_price:
@@ -66,7 +66,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             income = shares * sell_price
             balance += income
             transactions.append((today.name, 'sell', shares, sell_price, balance))
-            print(f"Date: {today.name}, Type: sell, Shares: {shares}, Price: {sell_price:.2f}, Balance: {balance:.2f}")
+            print(f"D: {today.name.date()}, T: sell, S: {shares}, P: {sell_price:.2f}, B: {balance:.2f}")
             shares = 0
             buy_price = 0
 
@@ -76,7 +76,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 def main():
     init_date = '2024-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
-    num_stocks = 300
+    num_stocks = 100
 
     # 随机选择多支股票
     stock_info = get_stock_info_with_retry()
@@ -122,7 +122,7 @@ def main():
 
         # 打印交易信息
         for transaction in transactions:
-            print(f"Date: {transaction[0]}, Type: {transaction[1]}, Shares: {transaction[2]}, Price: {transaction[3]:.2f}, Balance: {transaction[4]:.2f}")
+            print(f"D: {transaction[0].date()}, T: {transaction[1]}, S: {transaction[2]}, P: {transaction[3]:.2f}, B: {transaction[4]:.2f}")
 
         # 打印最终结果
         initial_balance = 100000
