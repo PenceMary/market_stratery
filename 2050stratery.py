@@ -55,7 +55,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
             cost = shares_to_buy * buy_price
             balance -= cost
             shares += shares_to_buy
-            transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
+            #transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
             print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.1 * buy_price) or today['low'] <= 0.95 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
@@ -65,7 +65,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
                 sell_price = 0.95 * buy_price
             income = shares * sell_price
             balance += income
-            transactions.append((today.name, 'sell', shares, sell_price, balance))
+            #transactions.append((today.name, 'sell', shares, sell_price, balance))
             print(f"{today.name.date()}, S, {shares}, {sell_price:.2f}, {balance:.2f}")
             shares = 0
             buy_price = 0
@@ -121,8 +121,7 @@ def main():
             total_loss += profit_or_loss
 
         # 打印交易信息
-        for transaction in transactions:
-            break
+        #for transaction in transactions:
             #print(f"D: {transaction[0].date()}, T: {transaction[1]}, S: {transaction[2]}, P: {transaction[3]:.2f}, B: {transaction[4]:.2f}")
 
         # 打印最终结果
