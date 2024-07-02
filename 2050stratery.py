@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import random
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # 获取股票信息的函数，增加重试机制
 def get_stock_info_with_retry(retries=5, delay=5):
@@ -40,6 +40,8 @@ def simulate_strategy(stock_df, initial_balance=100000):
     shares = 0
     transactions = []
     buy_price = 0
+    consecutive_losses = 0
+    last_loss_date = None
 
     stock_df['ma5'] = stock_df['close'].rolling(window=5).mean()
     stock_df['ma30'] = stock_df['close'].rolling(window=30).mean()
@@ -48,14 +50,16 @@ def simulate_strategy(stock_df, initial_balance=100000):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
 
+        if last_loss_date is not None and today.name <= last_loss_date + timedelta(days=60):
+            continue  # 如果在两个月内，不进行交易
+
         if yesterday['ma5'] <= yesterday['ma30'] and today['ma5'] > today['ma30'] and shares == 0:
             # 买入信号（次日开盘价买入）
             buy_price = today['open']
-            shares_to_buy = balance // buy_price
+            shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
             cost = shares_to_buy * buy_price
             balance -= cost
             shares += shares_to_buy
-            #transactions.append((today.name, 'buy', shares_to_buy, buy_price, balance))
             print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.09 * buy_price) or today['low'] <= 0.94 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
@@ -65,10 +69,16 @@ def simulate_strategy(stock_df, initial_balance=100000):
                 sell_price = 0.94 * buy_price
             income = shares * sell_price
             balance += income
-            #transactions.append((today.name, 'sell', shares, sell_price, balance))
             print(f"{today.name.date()}, S, {shares}, {sell_price:.2f}, {balance:.2f}")
             shares = 0
-            buy_price = 0
+
+            # 计算是否亏损
+            if sell_price < buy_price:
+                consecutive_losses += 1
+                if consecutive_losses >= 2:
+                    last_loss_date = today.name
+            else:
+                consecutive_losses = 0
 
     return transactions, balance, shares
 
