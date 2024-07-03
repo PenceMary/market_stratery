@@ -84,7 +84,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 
 # 主函数
 def main():
-    init_date = '2023-06-01'
+    init_date = '2024-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
     num_stocks = 100
 
