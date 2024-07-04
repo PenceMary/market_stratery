@@ -49,6 +49,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
     for i in range(1, len(stock_df)):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
+        day_before_yesterday = stock_df.iloc[i - 2] if i >= 2 else None
 
         # 判断30日均线是否连续3日上涨
         if i >= 3:
@@ -61,8 +62,8 @@ def simulate_strategy(stock_df, initial_balance=100000):
         if last_loss_date is not None and today.name <= last_loss_date + timedelta(days=60):
             continue  # 如果在两个月内，不进行交易
 
-        if yesterday['ma5'] <= yesterday['ma30'] and today['ma5'] > today['ma30'] and shares == 0 and is_ma30_upward:
-            # 买入信号（次日开盘价买入）
+        if day_before_yesterday is not None and day_before_yesterday['ma5'] < day_before_yesterday['ma30'] and yesterday['ma5'] > yesterday['ma30'] and shares == 0 and is_ma30_upward:
+            # 买入信号（以今天开盘价买入）
             buy_price = today['open']
             shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
             cost = shares_to_buy * buy_price
