@@ -52,7 +52,7 @@ def check_stocks_for_condition(stock_list, end_date):
     return selected_stocks
 
 # 主函数
-def main(num_stocks=100):
+def main(num_stocks=1000):
     current_date = datetime.now().strftime('%Y-%m-%d')
 
     # 获取所有A股股票代码
