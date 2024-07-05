@@ -43,7 +43,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
     consecutive_losses = 0
     last_loss_date = None
 
-    stock_df['ma5'] = stock_df['close'].rolling(window=5).mean()
+    stock_df['ma10'] = stock_df['close'].rolling(window=10).mean()
     stock_df['ma30'] = stock_df['close'].rolling(window=30).mean()
 
     for i in range(1, len(stock_df)):
@@ -62,7 +62,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
         if last_loss_date is not None and today.name <= last_loss_date + timedelta(days=60):
             continue  # 如果在两个月内，不进行交易
 
-        if day_before_yesterday is not None and day_before_yesterday['ma5'] < day_before_yesterday['ma30'] and yesterday['ma5'] > yesterday['ma30'] and shares == 0 and is_ma30_upward:
+        if day_before_yesterday is not None and day_before_yesterday['ma10'] < day_before_yesterday['ma30'] and yesterday['ma10'] >= yesterday['ma30'] and shares == 0:# and is_ma30_upward:
             # 买入信号（以今天开盘价买入）
             buy_price = today['open']
             shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
@@ -95,7 +95,7 @@ def simulate_strategy(stock_df, initial_balance=100000):
 def main():
     init_date = '2024-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
-    num_stocks = 100
+    num_stocks = 300
 
     # 随机选择多支股票
     stock_info = get_stock_info_with_retry()
