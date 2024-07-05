@@ -27,15 +27,17 @@ def get_stock_data(ticker, start, end):
     stock.index = pd.to_datetime(stock.index)
     return stock
 
-# 下载所有需要的股票数据
-def download_all_stock_data(tickers, start_date, end_date):
-    all_stock_data = {}
-    for ticker in tickers:
-        all_stock_data[ticker] = get_stock_data(ticker, start_date, end_date)
-    return all_stock_data
+# 下载股票数据
+def download_stock_data(tickers, start_date, end_date):
+    stock_data = {}
+    total_tickers = len(tickers)
+    for i, ticker in enumerate(tickers, 1):
+        stock_data[ticker] = get_stock_data(ticker, start_date, end_date)
+        print(f"Downloaded {i}/{total_tickers} stocks")
+    return stock_data
 
 # 模拟交易策略函数
-def simulate_strategy(stock_df, initial_balance=100000):
+def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
     balance = initial_balance
     shares = 0
     transactions = []
@@ -43,26 +45,26 @@ def simulate_strategy(stock_df, initial_balance=100000):
     consecutive_losses = 0
     last_loss_date = None
 
-    stock_df['ma10'] = stock_df['close'].rolling(window=10).mean()
-    stock_df['ma30'] = stock_df['close'].rolling(window=30).mean()
+    stock_df[f'ma{ma_short}'] = stock_df['close'].rolling(window=ma_short).mean()
+    stock_df[f'ma{ma_long}'] = stock_df['close'].rolling(window=ma_long).mean()
 
     for i in range(1, len(stock_df)):
         today = stock_df.iloc[i]
         yesterday = stock_df.iloc[i - 1]
         day_before_yesterday = stock_df.iloc[i - 2] if i >= 2 else None
 
-        # 判断30日均线是否连续3日上涨
+        # 判断长均线是否连续3日上涨
         if i >= 3:
             last_three_days = stock_df.iloc[i-3:i]
-            ma30_trend = last_three_days['ma30'].diff().dropna() > 0
-            is_ma30_upward = ma30_trend.all()
+            ma_long_trend = last_three_days[f'ma{ma_long}'].diff().dropna() > 0
+            is_ma_long_upward = ma_long_trend.all()
         else:
-            is_ma30_upward = False
+            is_ma_long_upward = False
 
         if last_loss_date is not None and today.name <= last_loss_date + timedelta(days=60):
             continue  # 如果在两个月内，不进行交易
 
-        if day_before_yesterday is not None and day_before_yesterday['ma10'] < day_before_yesterday['ma30'] and yesterday['ma10'] >= yesterday['ma30'] and shares == 0:# and is_ma30_upward:
+        if day_before_yesterday is not None and day_before_yesterday[f'ma{ma_short}'] < day_before_yesterday[f'ma{ma_long}'] and yesterday[f'ma{ma_short}'] >= yesterday[f'ma{ma_long}'] and shares == 0:
             # 买入信号（以今天开盘价买入）
             buy_price = today['open']
             shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
@@ -93,20 +95,35 @@ def simulate_strategy(stock_df, initial_balance=100000):
 
 # 主函数
 def main():
+    try:
+        num_stocks = int(input("Enter the number of stocks to simulate: "))
+        ma_short = int(input("Enter the short moving average period: "))
+        ma_long = int(input("Enter the long moving average period: "))
+        
+        if num_stocks < 1 or ma_short < 1 or ma_long < 1:
+            raise ValueError("All input values must be positive integers.")
+        
+    except ValueError as e:
+        print(f"Invalid input: {e}")
+        return
+
+    # 如果ma_short大于ma_long，交换它们的值
+    if ma_short > ma_long:
+        ma_short, ma_long = ma_long, ma_short
+
     init_date = '2024-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
-    num_stocks = 300
+    batch_size = 50
 
-    # 随机选择多支股票
+    # 获取所有A股股票代码
     stock_info = get_stock_info_with_retry()
     stock_list = stock_info['code'].tolist()
     stock_names = stock_info['name'].tolist()
+
+    # 随机选择指定数量的股票
     selected_indices = random.sample(range(len(stock_list)), num_stocks)
     tickers = [stock_list[i] for i in selected_indices]
     stock_names = [stock_names[i] for i in selected_indices]
-
-    # 预先下载所有股票数据
-    all_stock_data = download_all_stock_data(tickers, init_date, current_date)
 
     total_cash = 0
     total_stock_value = 0
@@ -115,46 +132,54 @@ def main():
     total_profit = 0
     total_loss = 0
 
-    for idx, ticker in enumerate(all_stock_data.keys()):
-        stock_name = stock_names[idx]
-        print(f"模拟交易策略 {stock_name} ({ticker}) 的数据")
-        transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker])
+    for i in range(0, len(tickers), batch_size):
+        batch_tickers = tickers[i:i + batch_size]
+        batch_names = stock_names[i:i + batch_size]
 
-        # 计算截止到当前日期的股票市值
-        current_stock_price = all_stock_data[ticker]['close'].iloc[-1]
-        stock_value = shares * current_stock_price
+        # 下载当前批次的股票数据
+        all_stock_data = download_stock_data(batch_tickers, init_date, current_date)
 
-        # 累计总现金和股票市值
-        total_cash += final_balance
-        total_stock_value += stock_value
+        for idx, ticker in enumerate(batch_tickers):
+            stock_name = batch_names[idx]
+            print(f"模拟交易策略 {stock_name} ({ticker}) 的数据")
+            transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker], ma_short, ma_long)
 
-        # 计算利润或损失
-        total_balance = final_balance + stock_value
-        profit_or_loss = total_balance - 100000
+            # 计算截止到当前日期的股票市值
+            current_stock_price = all_stock_data[ticker]['close'].iloc[-1]
+            stock_value = shares * current_stock_price
 
-        if profit_or_loss > 0:
-            num_profitable += 1
-            total_profit += profit_or_loss
-        else:
-            num_loss += 1
-            total_loss += profit_or_loss
+            # 累计总现金和股票市值
+            total_cash += final_balance
+            total_stock_value += stock_value
 
-        # 打印交易信息
-        #for transaction in transactions:
-            #print(f"D: {transaction[0].date()}, T: {transaction[1]}, S: {transaction[2]}, P: {transaction[3]:.2f}, B: {transaction[4]:.2f}")
+            # 计算利润或损失
+            total_balance = final_balance + stock_value
+            profit_or_loss = total_balance - 100000
 
-        # 打印最终结果
-        initial_balance = 100000
-        print(f"{ticker} ({stock_name}) Initial Balance: {initial_balance:.2f}")
-        print(f"{ticker} ({stock_name}) Final Balance: {final_balance:.2f}")
-        print(f"{ticker} ({stock_name}) Stock Value: {stock_value:.2f}")
-        print(f"{ticker} ({stock_name}) Total Profit/Loss: {profit_or_loss:.2f}")
-        print("===")
+            if profit_or_loss > 0:
+                num_profitable += 1
+                total_profit += profit_or_loss
+            else:
+                num_loss += 1
+                total_loss += profit_or_loss
+
+            # 打印交易信息
+            # for transaction in transactions:
+            #     print(f"D: {transaction[0].date()}, T: {transaction[1]}, S: {transaction[2]}, P: {transaction[3]:.2f}, B: {transaction[4]:.2f}")
+
+            # 打印最终结果
+            initial_balance = 100000
+            print(f"{ticker} ({stock_name}) Initial Balance: {initial_balance:.2f}")
+            print(f"{ticker} ({stock_name}) Final Balance: {final_balance:.2f}")
+            print(f"{ticker} ({stock_name}) Stock Value: {stock_value:.2f}")
+            print(f"{ticker} ({stock_name}) Total Profit/Loss: {profit_or_loss:.2f}")
+            print("===")
 
     # 打印累计结果
     total_value = total_cash + total_stock_value
     avg_profit = total_profit / num_profitable if num_profitable > 0 else 0
     avg_loss = total_loss / num_loss if num_loss > 0 else 0
+    win_rate = (num_profitable / num_stocks) * 100 if num_stocks > 0 else 0
 
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
@@ -162,6 +187,7 @@ def main():
     print(f"Number of Stocks Simulated: {num_stocks}")
     print(f"Number of Profitable Stocks: {num_profitable}")
     print(f"Number of Losing Stocks: {num_loss}")
+    print(f"Win Rate: {win_rate:.2f}%")
     print(f"Average Profit: {avg_profit:.2f}")
     print(f"Average Loss: {avg_loss:.2f}")
 
