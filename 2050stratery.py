@@ -65,13 +65,14 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
             continue  # 如果在两个月内，不进行交易
 
         if day_before_yesterday is not None and day_before_yesterday[f'ma{ma_short}'] < day_before_yesterday[f'ma{ma_long}'] and yesterday[f'ma{ma_short}'] >= yesterday[f'ma{ma_long}'] and shares == 0:
+            if is_ma_long_upward:
             # 买入信号（以今天开盘价买入）
-            buy_price = today['open']
-            shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
-            cost = shares_to_buy * buy_price
-            balance -= cost
-            shares += shares_to_buy
-            print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
+                buy_price = today['open']
+                shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
+                cost = shares_to_buy * buy_price
+                balance -= cost
+                shares += shares_to_buy
+                   print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.09 * buy_price) or today['low'] <= 0.94 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
             if today['high'] >= 1.09 * buy_price:
