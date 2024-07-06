@@ -72,7 +72,7 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
                 cost = shares_to_buy * buy_price
                 balance -= cost
                 shares += shares_to_buy
-                   print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
+print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
         elif shares > 0 and (today['high'] >= (1.09 * buy_price) or today['low'] <= 0.94 * buy_price):
             # 卖出信号（当日最高价达到10%涨幅时卖出）
             if today['high'] >= 1.09 * buy_price:
