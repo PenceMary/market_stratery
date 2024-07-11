@@ -192,17 +192,17 @@ def execute_strategy(strategy):
 
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
-    print(f"TotalPortfolio Value: {total_value:.2f}”)
-    print(f”Number of Stocks Simulated: {num_stocks}”)
-    print(f”Number of Profitable Stocks: {num_profitable}”)
-    print(f”Number of Losing Stocks: {num_loss}”)
-    print(f”Win Rate: {win_rate:.2f}%”)
-    print(f”Average Profit: {avg_profit:.2f}”)
-    print(f”Average Loss: {avg_loss:.2f}”)
+    print(f"TotalPortfolio Value: {total_value:.2f}")
+    print(f"Number of Stocks Simulated: {num_stocks}")
+    print(f"Number of Profitable Stocks: {num_profitable}")
+    print(f"Number of Losing Stocks: {num_loss}")
+    print(f"Win Rate: {win_rate:.2f}%")
+    print(f"Average Profit: {avg_profit:.2f}")
+    print(f"Average Loss: {avg_loss:.2f}")
 
 def main():
     # 读取配置文件
-    with open(“2050stratery_conf.json”, “r”) as file:
+    with open("2050stratery_conf.json", "r") as file:
     config = json.load(file)
 
     strategies = [v for k, v in config.items() if k.startswith("stratery")]
@@ -211,5 +211,5 @@ def main():
         print(f"Executing strategy {idx + 1}...")
         execute_strategy(strat)
 
-if name == “main”:
+if name == "main":
     main()
