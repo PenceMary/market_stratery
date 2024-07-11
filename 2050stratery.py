@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import random
 import time
+import json
 from datetime import datetime, timedelta
 
 # 获取股票信息的函数，增加重试机制
@@ -104,19 +105,14 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
 
     return transactions, balance, shares
 
-# 主函数
-def main():
-    try:
-        num_stocks = int(input("Enter the number of stocks to simulate: "))
-        ma_short = int(input("Enter the short moving average period: "))
-        ma_long = int(input("Enter the long moving average period: "))
-        
-        if num_stocks < 1 or ma_short < 1 or ma_long < 1:
-            raise ValueError("All input values must be positive integers.")
-        
-    except ValueError as e:
-        print(f"Invalid input: {e}")
-        return
+# 执行策略函数
+def execute_strategy(strategy):
+    num_stocks = strategy['stockNum']
+    ma_short = strategy['ma_short']
+    ma_long = strategy['ma_long']
+    
+    if num_stocks < 1 or ma_short < 1 or ma_long < 1:
+        raise ValueError("All input values must be positive integers.")
 
     # 如果ma_short大于ma_long，交换它们的值
     if ma_short > ma_long:
@@ -196,13 +192,24 @@ def main():
 
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
-    print(f"Total Portfolio Value: {total_value:.2f}")
-    print(f"Number of Stocks Simulated: {num_stocks}")
-    print(f"Number of Profitable Stocks: {num_profitable}")
-    print(f"Number of Losing Stocks: {num_loss}")
-    print(f"Win Rate: {win_rate:.2f}%")
-    print(f"Average Profit: {avg_profit:.2f}")
-    print(f"Average Loss: {avg_loss:.2f}")
+    print(f"TotalPortfolio Value: {total_value:.2f}”)
+    print(f”Number of Stocks Simulated: {num_stocks}”)
+    print(f”Number of Profitable Stocks: {num_profitable}”)
+    print(f”Number of Losing Stocks: {num_loss}”)
+    print(f”Win Rate: {win_rate:.2f}%”)
+    print(f”Average Profit: {avg_profit:.2f}”)
+    print(f”Average Loss: {avg_loss:.2f}”)
 
-if __name__ == "__main__":
+def main():
+    # 读取配置文件
+    with open(“2050stratery_conf.json”, “r”) as file:
+    config = json.load(file)
+
+    strategies = [v for k, v in config.items() if k.startswith("stratery")]
+
+    for idx, strat in enumerate(strategies):
+        print(f"Executing strategy {idx + 1}...")
+        execute_strategy(strat)
+
+if name == “main”:
     main()
