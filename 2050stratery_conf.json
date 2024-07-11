@@ -2,11 +2,13 @@
   "name": "Straterys",
   "version": "1.0.0",
   "stratery1": {
+    "init_date": "2024-01-01",
     "stockNum": 10,
     "ma_short": 10,
     "ma_long": 30
   },
   "stratery2": {
+    "init_date": "2024-03-01",
     "stockNum": 20,
     "ma_short": 5,
     "ma_long": 30
