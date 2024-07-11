@@ -202,7 +202,7 @@ def execute_strategy(strategy):
 
 def main():
     # 读取配置文件
-    with open("2050stratery_conf.json", "r") as file:
+    open("2050stratery_conf.json", "r") as file:
     config = json.load(file)
 
     strategies = [v for k, v in config.items() if k.startswith("stratery")]
