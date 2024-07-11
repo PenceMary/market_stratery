@@ -104,7 +104,10 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
                 consecutive_losses = 0
 
     return transactions, balance, shares
-
+    
+    
+    
+    
 # 执行策略函数
 def execute_strategy(strategy):
     num_stocks = strategy['stockNum']
@@ -192,7 +195,7 @@ def execute_strategy(strategy):
 
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
-    print(f"TotalPortfolio Value: {total_value:.2f}")
+    print(f"Total Portfolio Value: {total_value:.2f}")
     print(f"Number of Stocks Simulated: {num_stocks}")
     print(f"Number of Profitable Stocks: {num_profitable}")
     print(f"Number of Losing Stocks: {num_loss}")
@@ -200,10 +203,11 @@ def execute_strategy(strategy):
     print(f"Average Profit: {avg_profit:.2f}")
     print(f"Average Loss: {avg_loss:.2f}")
 
+# 主函数
 def main():
     # 读取配置文件
-    open("2050stratery_conf.json", "r") as file:
-    config = json.load(file)
+    with open("conf.json", "r") as file:
+        config = json.load(file)
 
     strategies = [v for k, v in config.items() if k.startswith("stratery")]
 
@@ -211,5 +215,5 @@ def main():
         print(f"Executing strategy {idx + 1}...")
         execute_strategy(strat)
 
-if name == "main":
+if __name__ == "__main__":
     main()
