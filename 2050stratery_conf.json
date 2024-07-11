@@ -2,13 +2,13 @@
   "name": "Straterys",
   "version": "1.0.0",
   "stratery1": {
-    "stockNum": 1000,
-    "short": 10,
-    "long": 30
+    "stockNum": 10,
+    "ma_short": 10,
+    "ma_long": 30
   },
   "stratery2": {
-    "stockNum": 1000,
-    "short": 5,
-    "long": 30
+    "stockNum": 20,
+    "ma_short": 5,
+    "ma_long": 30
   }
 }
