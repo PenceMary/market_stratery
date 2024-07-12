@@ -48,7 +48,7 @@ def download_stock_data(tickers, start_date, end_date):
     return stock_data, True
 
 # 模拟交易策略函数
-def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
+def simulate_strategy(stock_df, ma_short, ma_long, up_ratio, down_ratio, initial_balance=100000):
     balance = initial_balance
     shares = 0
     transactions = []
@@ -84,12 +84,12 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
             balance -= cost
             shares += shares_to_buy
             print(f"{today.name.date()}, B, {shares_to_buy}, {buy_price:.2f}, {balance:.2f}")
-        elif shares > 0 and (today['high'] >= (1.09 * buy_price) or today['low'] <= 0.94 * buy_price):
-            # 卖出信号（当日最高价达到10%涨幅时卖出）
-            if today['high'] >= 1.09 * buy_price:
-                sell_price = 1.09 * buy_price  # 设定卖出价格为涨幅10%的价格
+        elif shares > 0 and (today['high'] >= (1 + up_ratio) * buy_price or today['low'] <= (1 - down_ratio) * buy_price):
+            # 卖出信号（当日最高价达到上涨比例时卖出）
+            if today['high'] >= (1 + up_ratio) * buy_price:
+                sell_price = (1 + up_ratio) * buy_price  # 设定卖出价格为涨幅比例
             else:
-                sell_price = 0.94 * buy_price
+                sell_price = (1 - down_ratio) * buy_price
             income = shares * sell_price
             balance += income
             print(f"{today.name.date()}, S, {shares}, {sell_price:.2f}, {balance:.2f}")
@@ -104,24 +104,23 @@ def simulate_strategy(stock_df, ma_short, ma_long, initial_balance=100000):
                 consecutive_losses = 0
 
     return transactions, balance, shares
-    
-    
-    
-    
+
 # 执行策略函数
-def execute_strategy(strategy):
+def execute_strategy(strategy, strategy_name):
     num_stocks = strategy['stockNum']
     ma_short = strategy['ma_short']
     ma_long = strategy['ma_long']
+    init_date = strategy['init_date']
+    up_ratio = strategy['up_ratio']
+    down_ratio = strategy['down_ratio']
     
-    if num_stocks < 1 or ma_short < 1 or ma_long < 1:
-        raise ValueError("All input values must be positive integers.")
+    if num_stocks < 1 or ma_short < 1 or ma_long < 1 or up_ratio <= 0 or down_ratio <= 0:
+        raise ValueError("All input values must be positive and up/down ratios must be greater than 0.")
 
     # 如果ma_short大于ma_long，交换它们的值
     if ma_short > ma_long:
         ma_short, ma_long = ma_long, ma_short
 
-    init_date = '2024-01-01'
     current_date = datetime.now().strftime('%Y-%m-%d')
     batch_size = 50
 
@@ -154,7 +153,7 @@ def execute_strategy(strategy):
         for idx, ticker in enumerate(batch_tickers):
             stock_name = batch_names[idx]
             print(f"模拟交易策略 {stock_name} ({ticker}) 的数据")
-            transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker], ma_short, ma_long)
+            transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker], ma_short, ma_long, up_ratio, down_ratio)
 
             # 计算截止到当前日期的股票市值
             current_stock_price = all_stock_data[ticker]['close'].iloc[-1]
@@ -193,6 +192,19 @@ def execute_strategy(strategy):
     avg_loss = total_loss / num_loss if num_loss > 0 else 0
     win_rate = (num_profitable / num_stocks) * 100 if num_stocks > 0 else 0
 
+    result = {
+        "strategy_name": strategy_name,
+        "total_cash": total_cash,
+        "total_stock_value": total_stock_value,
+        "total_value": total_value,
+        "num_stocks": num_stocks,
+        "num_profitable": num_profitable,
+        "num_loss": num_loss,
+        "win_rate": win_rate,
+        "avg_profit": avg_profit,
+        "avg_loss": avg_loss
+    }
+
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
     print(f"Total Portfolio Value: {total_value:.2f}")
@@ -203,17 +215,26 @@ def execute_strategy(strategy):
     print(f"Average Profit: {avg_profit:.2f}")
     print(f"Average Loss: {avg_loss:.2f}")
 
+    return result
+
 # 主函数
 def main():
     # 读取配置文件
     with open("2050stratery_conf.json", "r") as file:
         config = json.load(file)
 
-    strategies = [v for k, v in config.items() if k.startswith("stratery")]
+    strategies = {k: v for k, v in config.items() if k.startswith("stratery")}
+    results = []
 
-    for idx, strat in enumerate(strategies):
-        print(f"Executing strategy {idx + 1}...")
-        execute_strategy(strat)
+    for strategy_name, strat in strategies.items():
+        print(f"Executing {strategy_name}...")
+        result = execute_strategy(strat, strategy_name)
+        results.append(result)
+
+    # 打印所有策略的结果
+    print("\nAll Strategies Results:")
+    for result in results:
+        print(f"{result['strategy_name']}: Win Rate {result['win_rate']:.2f}%")
 
 if __name__ == "__main__":
     main()
