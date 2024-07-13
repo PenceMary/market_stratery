@@ -105,7 +105,7 @@ def simulate_strategy(stock_df, ma_short, ma_long, up_ratio, down_ratio, initial
     return transactions, balance, shares
 
 # 执行策略函数
-def execute_strategy(strategy, all_stock_data):
+def execute_strategy(strategy, all_stock_data, results):
     ma_short = strategy['ma_short']
     ma_long = strategy['ma_long']
     up_ratio = strategy['up_ratio']
@@ -126,6 +126,7 @@ def execute_strategy(strategy, all_stock_data):
     total_loss = 0
 
     for ticker, stock_data in all_stock_data.items():
+        stock_name = stock_data['name']
         transactions, final_balance, shares = simulate_strategy(stock_data, ma_short, ma_long, up_ratio, down_ratio)
 
         # 计算截止到当前日期的股票市值
@@ -147,36 +148,34 @@ def execute_strategy(strategy, all_stock_data):
             num_loss += 1
             total_loss += profit_or_loss
 
-    # 打印累计结果
-    total_value = total_cash + total_stock_value
-    avg_profit = total_profit / num_profitable if num_profitable > 0 else 0
-    avg_loss = total_loss / num_loss if num_loss > 0 else 0
-    win_rate = (num_profitable / len(all_stock_data)) * 100 if len(all_stock_data) > 0 else 0
+        # 打印每只股票的买卖结果
+        print(f"{ticker} ({stock_name}) Initial Balance: 100000.00")
+        print(f"{ticker} ({stock_name}) Final Balance: {final_balance:.2f}")
+        print(f"{ticker} ({stock_name}) Stock Value: {stock_value:.2f}")
+        print(f"{ticker} ({stock_name}) Total Profit/Loss: {profit_or_loss:.2f}")
+        print("===")
 
-    result = {
-        "strategy_name": strategy['name'],
-        "total_cash": total_cash,
-        "total_stock_value": total_stock_value,
-        "total_value": total_value,
-        "num_stocks": len(all_stock_data),
-        "num_profitable": num_profitable,
-        "num_loss": num_loss,
-        "win_rate": win_rate,
-        "avg_profit": avg_profit,
-        "avg_loss": avg_loss
-    }
+    # 合并统计结果
+    if strategy['name'] not in results:
+        results[strategy['name']] = {
+            "total_cash": 0,
+            "total_stock_value": 0,
+            "total_value": 0,
+            "num_stocks": 0,
+            "num_profitable": 0,
+            "num_loss": 0,
+            "total_profit": 0,
+            "total_loss": 0
+        }
 
-    print(f"Total Cash: {total_cash:.2f}")
-    print(f"Total Stock Value: {total_stock_value:.2f}")
-    print(f"Total Portfolio Value: {total_value:.2f}")
-    print(f"Number of Stocks Simulated: {len(all_stock_data)}")
-    print(f"Number of Profitable Stocks: {num_profitable}")
-    print(f"Number of Losing Stocks: {num_loss}")
-    print(f"Win Rate: {win_rate:.2f}%")
-    print(f"Average Profit: {avg_profit:.2f}")
-    print(f"Average Loss: {avg_loss:.2f}")
-
-    return result
+    results[strategy['name']]['total_cash'] += total_cash
+    results[strategy['name']]['total_stock_value'] += total_stock_value
+    results[strategy['name']]['total_value'] += total_cash + total_stock_value
+    results[strategy['name']]['num_stocks'] += len(all_stock_data)
+    results[strategy['name']]['num_profitable'] += num_profitable
+    results[strategy['name']]['num_loss'] += num_loss
+    results[strategy['name']]['total_profit'] += total_profit
+    results[strategy['name']]['total_loss'] += total_loss
 
 # 主函数
 def main():
@@ -187,7 +186,7 @@ def main():
     init_date = config['init_date']
     num_stocks = config['stockNum']
     strategies = {k: v for k, v in config.items() if k.startswith("strategy")}
-    results = []
+    results = {}
 
     current_date = datetime.now().strftime('%Y-%m-%d')
 
@@ -214,13 +213,26 @@ def main():
 
         for strategy_name, strat in strategies.items():
             print(f"Executing {strategy_name} for batch {i // batch_size + 1}...")
-            result = execute_strategy(strat, all_stock_data)
-            results.append(result)
+            strat['name'] = strategy_name  # 添加策略名称到策略对象
+            execute_strategy(strat, all_stock_data, results)
 
-    # 打印所有策略的结果
+    # 打印所有策略的合并结果
     print("\nAll Strategies Results:")
-    for result in results:
-        print(f"{result['strategy_name']}: Win Rate {result['win_rate']:.2f}%")
+    for strategy_name, result in results.items():
+        total_value = result['total_cash'] + result['total_stock_value']
+        win_rate = (result['num_profitable'] / result['num_stocks']) * 100 if result['num_stocks'] > 0 else 0
+        avg_profit = result['total_profit'] / result['num_profitable'] if result['num_profitable'] > 0 else 0
+        avg_loss = result['total_loss'] / result['num_loss'] if result['num_loss'] > 0 else 0
+
+        print(f"{strategy_name}: Win Rate {win_rate:.2f}%")
+        print(f"Total Cash: {result['total_cash']:.2f}")
+        print(f"Total Stock Value: {result['total_stock_value']:.2f}")
+        print(f"Total Portfolio Value: {total_value:.2f}")
+        print(f"Number of Stocks Simulated: {result['num_stocks']}")
+        print(f"Number of Profitable Stocks: {result['num_profitable']}")
+        print(f"Number of Losing Stocks: {result['num_loss']}")
+        print(f"Average Profit: {avg_profit:.2f}")
+        print(f"Average Loss: {avg_loss:.2f}")
 
 if __name__ == "__main__":
     main()
