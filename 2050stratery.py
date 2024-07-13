@@ -212,7 +212,7 @@ def main():
 
     init_date = config['init_date']
     num_stocks = config['stockNum']
-    strategies = {k: v for k, v in config.items() if k.startswith("stratery")}
+    strategies = {k: v for k, v in config.items() if k.startswith("strategy")}
     results = []
 
     current_date = datetime.now().strftime('%Y-%m-%d')
