@@ -13,18 +13,18 @@
     "ma_short": 10,
     "ma_long": 30,
     "up_ratio": 0.09,
-    "down_ratio": 0.06 
+    "down_ratio": 0.06
   },
   "stratery3": {
-    "ma_short": 10,
+    "ma_short": 5,
+    "ma_long": 30,
+    "up_ratio": 0.11,
+    "down_ratio": 0.04
+  },
+  "stratery4": {
+    "ma_short": 5,
     "ma_long": 30,
     "up_ratio": 0.09,
     "down_ratio": 0.06
-  },
-  "stratery4": {
-    "ma_short": 10,
-    "ma_long": 30,
-    "up_ratio": 0.06,
-    "down_ratio": 0.03
   }
 }
