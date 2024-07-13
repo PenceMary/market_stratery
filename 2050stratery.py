@@ -106,33 +106,20 @@ def simulate_strategy(stock_df, ma_short, ma_long, up_ratio, down_ratio, initial
     return transactions, balance, shares
 
 # 执行策略函数
-def execute_strategy(strategy, strategy_name):
-    num_stocks = strategy['stockNum']
+def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
     ma_short = strategy['ma_short']
     ma_long = strategy['ma_long']
-    init_date = strategy['init_date']
     up_ratio = strategy['up_ratio']
     down_ratio = strategy['down_ratio']
     
-    if num_stocks < 1 or ma_short < 1 or ma_long < 1 or up_ratio <= 0 or down_ratio <= 0:
+    if ma_short < 1 or ma_long < 1 or up_ratio <= 0 or down_ratio <= 0:
         raise ValueError("All input values must be positive and up/down ratios must be greater than 0.")
 
     # 如果ma_short大于ma_long，交换它们的值
     if ma_short > ma_long:
         ma_short, ma_long = ma_long, ma_short
 
-    current_date = datetime.now().strftime('%Y-%m-%d')
     batch_size = 50
-
-    # 获取所有A股股票代码
-    stock_info = get_stock_info_with_retry()
-    stock_list = stock_info['code'].tolist()
-    stock_names = stock_info['name'].tolist()
-
-    # 随机选择指定数量的股票
-    selected_indices = random.sample(range(len(stock_list)), num_stocks)
-    tickers = [stock_list[i] for i in selected_indices]
-    stock_names = [stock_names[i] for i in selected_indices]
 
     total_cash = 0
     total_stock_value = 0
@@ -190,14 +177,14 @@ def execute_strategy(strategy, strategy_name):
     total_value = total_cash + total_stock_value
     avg_profit = total_profit / num_profitable if num_profitable > 0 else 0
     avg_loss = total_loss / num_loss if num_loss > 0 else 0
-    win_rate = (num_profitable / num_stocks) * 100 if num_stocks > 0 else 0
+    win_rate = (num_profitable / len(tickers)) * 100 if len(tickers) > 0 else 0
 
     result = {
-        "strategy_name": strategy_name,
+        "strategy_name": strategy['name'],
         "total_cash": total_cash,
         "total_stock_value": total_stock_value,
         "total_value": total_value,
-        "num_stocks": num_stocks,
+        "num_stocks": len(tickers),
         "num_profitable": num_profitable,
         "num_loss": num_loss,
         "win_rate": win_rate,
@@ -208,7 +195,7 @@ def execute_strategy(strategy, strategy_name):
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
     print(f"Total Portfolio Value: {total_value:.2f}")
-    print(f"Number of Stocks Simulated: {num_stocks}")
+    print(f"Number of Stocks Simulated: {len(tickers)}")
     print(f"Number of Profitable Stocks: {num_profitable}")
     print(f"Number of Losing Stocks: {num_loss}")
     print(f"Win Rate: {win_rate:.2f}%")
@@ -223,12 +210,26 @@ def main():
     with open("2050stratery_conf.json", "r") as file:
         config = json.load(file)
 
+    init_date = config['init_date']
+    num_stocks = config['stockNum']
     strategies = {k: v for k, v in config.items() if k.startswith("stratery")}
     results = []
 
+    current_date = datetime.now().strftime('%Y-%m-%d')
+
+    # 获取所有A股股票代码
+    stock_info = get_stock_info_with_retry()
+    stock_list = stock_info['code'].tolist()
+    stock_names = stock_info['name'].tolist()
+
+    # 随机选择指定数量的股票
+    selected_indices = random.sample(range(len(stock_list)), num_stocks)
+    tickers = [stock_list[i] for i in selected_indices]
+    stock_names = [stock_names[i] for i in selected_indices]
+
     for strategy_name, strat in strategies.items():
         print(f"Executing {strategy_name}...")
-        result = execute_strategy(strat, strategy_name)
+        result = execute_strategy(strat, tickers, stock_names, init_date, current_date)
         results.append(result)
 
     # 打印所有策略的结果
