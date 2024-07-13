@@ -207,7 +207,7 @@ def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
 # 主函数
 def main():
     # 读取配置文件
-    with open("stratey_conf.json", "r") as file:
+    with open("strategy_conf.json", "r") as file:
         config = json.load(file)
 
     init_date = config['init_date']
