@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "init_date": "2024-01-01",
+  "stockNum": 100,
+  "strategy1": {
+    "name": "Strategy10301104",
+    "ma_short": 10,
+    "ma_long": 30,
+    "up_ratio": 0.11,
+    "down_ratio": 0.04
+  },
+  "strategy2": {
+    "name": "Strategy10300906",
+    "ma_short": 10,
+    "ma_long": 30,
+    "up_ratio": 0.09,
+    "down_ratio": 0.06
+  },
+  "strategy3": {
+    "name": "Strategy05301104",
+    "ma_short": 5,
+    "ma_long": 30,
+    "up_ratio": 0.11,
+    "down_ratio": 0.04
+  },
+  "strategy4": {
+    "name": "Strategy05300906",
+    "ma_short": 5,
+    "ma_long": 30,
+    "up_ratio": 0.09,
+    "down_ratio": 0.06
+  }
+}
