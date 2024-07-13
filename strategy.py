@@ -18,7 +18,7 @@ def get_stock_info_with_retry(retries=5, delay=5):
     raise Exception("多次重试后仍然无法获取股票信息")
 
 # 获取股票数据函数，增加重试机制
-def get_stock_data_with_retry(ticker, start, end, retries=5, delay=5):
+def get_stock_data_with_retry(ticker, name, start, end, retries=5, delay=5):
     for attempt in range(retries):
         try:
             start = start.replace("-", "")
@@ -28,6 +28,7 @@ def get_stock_data_with_retry(ticker, start, end, retries=5, delay=5):
             stock.columns = ['date', 'open', 'close', 'high', 'low', 'volume', 'amount']
             stock.set_index('date', inplace=True)
             stock.index = pd.to_datetime(stock.index)
+            stock['name'] = name
             return stock
         except Exception as e:
             print(f"下载股票数据失败 {ticker}，重试 {attempt + 1}/{retries}...")
@@ -35,12 +36,12 @@ def get_stock_data_with_retry(ticker, start, end, retries=5, delay=5):
     raise Exception(f"多次重试后仍然无法下载股票数据 {ticker}")
 
 # 下载股票数据，增加异常处理
-def download_stock_data(tickers, start_date, end_date):
+def download_stock_data(tickers, names, start_date, end_date):
     stock_data = {}
     total_tickers = len(tickers)
-    for i, ticker in enumerate(tickers, 1):
+    for i, (ticker, name) in enumerate(zip(tickers, names), 1):
         try:
-            stock_data[ticker] = get_stock_data_with_retry(ticker, start_date, end_date)
+            stock_data[ticker] = get_stock_data_with_retry(ticker, name, start_date, end_date)
             print(f"Downloaded {i}/{total_tickers} stocks")
         except Exception as e:
             print(f"下载股票数据失败，提前结束模拟。异常：{e}")
@@ -114,7 +115,7 @@ def execute_strategy(strategy, all_stock_data, results):
     if ma_short < 1 or ma_long < 1 or up_ratio <= 0 or down_ratio <= 0:
         raise ValueError("All input values must be positive and up/down ratios must be greater than 0.")
 
-    # 如果ma_short大于ma_long，交换它们的值
+    # 如果 ma_short 大于 ma_long，交换它们的值
     if ma_short > ma_long:
         ma_short, ma_long = ma_long, ma_short
 
@@ -126,7 +127,7 @@ def execute_strategy(strategy, all_stock_data, results):
     total_loss = 0
 
     for ticker, stock_data in all_stock_data.items():
-        stock_name = stock_data['name']
+        stock_name = stock_data['name'].iloc[0]
         transactions, final_balance, shares = simulate_strategy(stock_data, ma_short, ma_long, up_ratio, down_ratio)
 
         # 计算截止到当前日期的股票市值
@@ -180,7 +181,7 @@ def execute_strategy(strategy, all_stock_data, results):
 # 主函数
 def main():
     # 读取配置文件
-    with open("2050stratery_conf.json", "r") as file:
+    with open("strategy_conf.json", "r") as file:
         config = json.load(file)
 
     init_date = config['init_date']
@@ -207,7 +208,7 @@ def main():
         batch_names = stock_names[i:i + batch_size]
 
         # 下载当前批次的股票数据
-        all_stock_data, success = download_stock_data(batch_tickers, init_date, current_date)
+        all_stock_data, success = download_stock_data(batch_tickers, batch_names, init_date, current_date)
         if not success:
             break  # 如果下载失败，提前结束模拟
 
