@@ -76,7 +76,6 @@ def simulate_strategy(stock_df, ma_short, ma_long, up_ratio, down_ratio, initial
             continue  # 如果在两个月内，不进行交易
 
         if day_before_yesterday is not None and day_before_yesterday[f'ma{ma_short}'] < day_before_yesterday[f'ma{ma_long}'] and yesterday[f'ma{ma_short}'] >= yesterday[f'ma{ma_long}'] and shares == 0:
-            #if is_ma_long_upward:
             # 买入信号（以今天开盘价买入）
             buy_price = today['open']
             shares_to_buy = (balance // buy_price) // 100 * 100  # 使买入的数量是100的整数倍
@@ -106,7 +105,7 @@ def simulate_strategy(stock_df, ma_short, ma_long, up_ratio, down_ratio, initial
     return transactions, balance, shares
 
 # 执行策略函数
-def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
+def execute_strategy(strategy, all_stock_data):
     ma_short = strategy['ma_short']
     ma_long = strategy['ma_long']
     up_ratio = strategy['up_ratio']
@@ -119,8 +118,6 @@ def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
     if ma_short > ma_long:
         ma_short, ma_long = ma_long, ma_short
 
-    batch_size = 50
-
     total_cash = 0
     total_stock_value = 0
     num_profitable = 0
@@ -128,63 +125,40 @@ def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
     total_profit = 0
     total_loss = 0
 
-    for i in range(0, len(tickers), batch_size):
-        batch_tickers = tickers[i:i + batch_size]
-        batch_names = stock_names[i:i + batch_size]
+    for ticker, stock_data in all_stock_data.items():
+        transactions, final_balance, shares = simulate_strategy(stock_data, ma_short, ma_long, up_ratio, down_ratio)
 
-        # 下载当前批次的股票数据
-        all_stock_data, success = download_stock_data(batch_tickers, init_date, current_date)
-        if not success:
-            break  # 如果下载失败，提前结束模拟
+        # 计算截止到当前日期的股票市值
+        current_stock_price = stock_data['close'].iloc[-1]
+        stock_value = shares * current_stock_price
 
-        for idx, ticker in enumerate(batch_tickers):
-            stock_name = batch_names[idx]
-            print(f"模拟交易策略 {stock_name} ({ticker}) 的数据")
-            transactions, final_balance, shares = simulate_strategy(all_stock_data[ticker], ma_short, ma_long, up_ratio, down_ratio)
+        # 累计总现金和股票市值
+        total_cash += final_balance
+        total_stock_value += stock_value
 
-            # 计算截止到当前日期的股票市值
-            current_stock_price = all_stock_data[ticker]['close'].iloc[-1]
-            stock_value = shares * current_stock_price
+        # 计算利润或损失
+        total_balance = final_balance + stock_value
+        profit_or_loss = total_balance - 100000
 
-            # 累计总现金和股票市值
-            total_cash += final_balance
-            total_stock_value += stock_value
-
-            # 计算利润或损失
-            total_balance = final_balance + stock_value
-            profit_or_loss = total_balance - 100000
-
-            if profit_or_loss > 0:
-                num_profitable += 1
-                total_profit += profit_or_loss
-            else:
-                num_loss += 1
-                total_loss += profit_or_loss
-
-            # 打印交易信息
-            # for transaction in transactions:
-            #     print(f"D: {transaction[0].date()}, T: {transaction[1]}, S: {transaction[2]}, P: {transaction[3]:.2f}, B: {transaction[4]:.2f}")
-
-            # 打印最终结果
-            initial_balance = 100000
-            print(f"{ticker} ({stock_name}) Initial Balance: {initial_balance:.2f}")
-            print(f"{ticker} ({stock_name}) Final Balance: {final_balance:.2f}")
-            print(f"{ticker} ({stock_name}) Stock Value: {stock_value:.2f}")
-            print(f"{ticker} ({stock_name}) Total Profit/Loss: {profit_or_loss:.2f}")
-            print("===")
+        if profit_or_loss > 0:
+            num_profitable += 1
+            total_profit += profit_or_loss
+        else:
+            num_loss += 1
+            total_loss += profit_or_loss
 
     # 打印累计结果
     total_value = total_cash + total_stock_value
     avg_profit = total_profit / num_profitable if num_profitable > 0 else 0
     avg_loss = total_loss / num_loss if num_loss > 0 else 0
-    win_rate = (num_profitable / len(tickers)) * 100 if len(tickers) > 0 else 0
+    win_rate = (num_profitable / len(all_stock_data)) * 100 if len(all_stock_data) > 0 else 0
 
     result = {
         "strategy_name": strategy['name'],
         "total_cash": total_cash,
         "total_stock_value": total_stock_value,
         "total_value": total_value,
-        "num_stocks": len(tickers),
+        "num_stocks": len(all_stock_data),
         "num_profitable": num_profitable,
         "num_loss": num_loss,
         "win_rate": win_rate,
@@ -195,7 +169,7 @@ def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
     print(f"Total Cash: {total_cash:.2f}")
     print(f"Total Stock Value: {total_stock_value:.2f}")
     print(f"Total Portfolio Value: {total_value:.2f}")
-    print(f"Number of Stocks Simulated: {len(tickers)}")
+    print(f"Number of Stocks Simulated: {len(all_stock_data)}")
     print(f"Number of Profitable Stocks: {num_profitable}")
     print(f"Number of Losing Stocks: {num_loss}")
     print(f"Win Rate: {win_rate:.2f}%")
@@ -207,7 +181,7 @@ def execute_strategy(strategy, tickers, stock_names, init_date, current_date):
 # 主函数
 def main():
     # 读取配置文件
-    with open("strategy_conf.json", "r") as file:
+    with open("2050stratery_conf.json", "r") as file:
         config = json.load(file)
 
     init_date = config['init_date']
@@ -227,10 +201,21 @@ def main():
     tickers = [stock_list[i] for i in selected_indices]
     stock_names = [stock_names[i] for i in selected_indices]
 
-    for strategy_name, strat in strategies.items():
-        print(f"Executing {strategy_name}...")
-        result = execute_strategy(strat, tickers, stock_names, init_date, current_date)
-        results.append(result)
+    batch_size = 50
+
+    for i in range(0, len(tickers), batch_size):
+        batch_tickers = tickers[i:i + batch_size]
+        batch_names = stock_names[i:i + batch_size]
+
+        # 下载当前批次的股票数据
+        all_stock_data, success = download_stock_data(batch_tickers, init_date, current_date)
+        if not success:
+            break  # 如果下载失败，提前结束模拟
+
+        for strategy_name, strat in strategies.items():
+            print(f"Executing {strategy_name} for batch {i // batch_size + 1}...")
+            result = execute_strategy(strat, all_stock_data)
+            results.append(result)
 
     # 打印所有策略的结果
     print("\nAll Strategies Results:")
