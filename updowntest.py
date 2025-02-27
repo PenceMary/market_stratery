@@ -203,6 +203,6 @@ def backtest_stock_strategy(stock_code, a_percent, b_percent, commission_rate, s
 # 示例调用（使用最近 5 个交易日数据）
 if __name__ == "__main__":
     try:
-        backtest_stock_strategy("sh688981", 0.5, 0.5, 0.0003, 0.001, 300, 300)  # 买入 300 股，卖出 300 股
+        backtest_stock_strategy("sh688981", 2, 2, 0.0003, 0.001, 300, 300)  # 买入 300 股，卖出 300 股
     except ValueError as e:
         print(f"错误: {e}")
