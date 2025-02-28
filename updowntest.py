@@ -199,7 +199,7 @@ def main():
     stamp_duty_rate = 0.001
     buy_amount = 300
     sell_amount = 300
-    N = 20  # 随机选择2只股票进行测试
+    N = 2  # 随机选择2只股票进行测试
 
     stock_info = random_stocks(N)
     all_results = []
