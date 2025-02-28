@@ -199,7 +199,7 @@ def main():
     stamp_duty_rate = 0.001
     buy_amount = 300
     sell_amount = 300
-    N = 2  # 随机选择2只股票进行测试
+    N = 1  # 随机选择2只股票进行测试
 
     stock_info = random_stocks(N)
     all_results = []
@@ -208,6 +208,7 @@ def main():
         print(f"\n开始回测股票: {stock_code} - {stock_name}")
         try:
             result = backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate, buy_amount, sell_amount)
+            #result = backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate, buy_amount, sell_amount)
             all_results.append(result)
         except Exception as e:
             print(f"回测 {stock_code} 失败: {str(e)}")
