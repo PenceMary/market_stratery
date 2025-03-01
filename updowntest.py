@@ -109,10 +109,10 @@ def backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, c
         time = row['day']
         high = row['high']
         low = row['low']
-
+        #print(f"row_num:{row_num},row:{row}")
         price = current_price
         iteration = 0
-        while iteration < 100:
+        while iteration < 2:
             # 卖出逻辑
             if position >= sell_amount and high >= price * (1 + b):
                 sell_price = price * (1 + b)
@@ -204,7 +204,7 @@ def main():
     sell_percent = 1
     commission_rate = 0.0003
     stamp_duty_rate = 0.001
-    N = 200  # 随机选择20只股票进行测试
+    N = 100  # 随机选择20只股票进行测试
 
     stock_info = random_stocks(N)
     all_results = []
