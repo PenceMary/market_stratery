@@ -204,7 +204,7 @@ def main():
     sell_percent = 1
     commission_rate = 0.0003
     stamp_duty_rate = 0.001
-    N = 20  # 随机选择20只股票进行测试
+    N = 200  # 随机选择20只股票进行测试
 
     stock_info = random_stocks(N)
     all_results = []
