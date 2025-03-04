@@ -200,8 +200,8 @@ def random_stocks(N=5):
         raise ValueError(f"获取股票列表失败: {str(e)}")
 
 def main():
-    buy_percent = 0.2
-    sell_percent = 0.2
+    buy_percent = 0.1
+    sell_percent = 0.1
     commission_rate = 0.0003
     stamp_duty_rate = 0.001
     N = 1  # 随机选择20只股票进行测试
