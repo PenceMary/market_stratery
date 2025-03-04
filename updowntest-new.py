@@ -231,10 +231,10 @@ def main():
     sell_percent = 1
     commission_rate = 0.0003
     stamp_duty_rate = 0.001
-    N = 3  # 随机选择1只股票进行测试
+    N = 200  # 随机选择1只股票进行测试
 
     # 新增配置：支持场内基金回测
-    use_fixed_stocks = True  # 设置为True以使用固定股票和场内基金
+    use_fixed_stocks = False  # 设置为True以使用固定股票和场内基金
     fixed_stocks = [
         ("159740", "恒生科技ETF"),  # 深圳ETF，场内基金
         ("600030", "中信证券"),     # 上海主板股票
