@@ -206,14 +206,26 @@ def main():
     stamp_duty_rate = 0.001
     N = 1  # 随机选择20只股票进行测试
 
-    stock_info = random_stocks(N)
+    # 新增配置：支持场内基金回测
+    use_fixed_stocks = True  # 设置为True以使用固定股票和场内基金
+    fixed_stocks = [
+        ("600030", "中信证券"),     # 上海主板股票
+        ("600584", "长电科技"),     # 深圳主板股票
+        ("600000", "浦发银行"),     # 深圳主板股票
+    ]
+
+    # 根据开关选择股票列表
+    if use_fixed_stocks:
+        stock_info = fixed_stocks
+    else:
+        stock_info = random_stocks(N)
+
     all_results = []
 
     for stock_code, stock_name in stock_info:
-        print(f"\n开始回测股票: {stock_code} - {stock_name}")
+        print(f"\n开始回测: {stock_code} - {stock_name}")
         try:
-            #result = backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate)
-            result = backtest_stock_strategy(600030, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate)
+            result = backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate)
             all_results.append(result)
         except Exception as e:
             print(f"回测 {stock_code} 失败: {str(e)}")
