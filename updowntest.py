@@ -213,7 +213,7 @@ def main():
         print(f"\n开始回测股票: {stock_code} - {stock_name}")
         try:
             #result = backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, commission_rate, stamp_duty_rate)
-            result = backtest_stock_strategy('600030', '中信证券', buy_percent, sell_percent, commission_rate, stamp_duty_rate)
+            result = backtest_stock_strategy(600030, 中信证券, buy_percent, sell_percent, commission_rate, stamp_duty_rate)
             all_results.append(result)
         except Exception as e:
             print(f"回测 {stock_code} 失败: {str(e)}")
