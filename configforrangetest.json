@@ -1,0 +1,14 @@
+{
+    "buy_percent": 10,
+    "sell_percent": 10,
+    "commission_rate": 0.0003,
+    "stamp_duty_rate": 0.001,
+    "N": 10,
+    "use_fixed_stocks": false,
+    "fixed_stocks": [
+        ["159740", "恒生科技ETF"],
+        ["600030", "中信证券"],
+        ["600584", "长电科技"],
+        ["600000", "浦发银行"]
+    ]
+}
