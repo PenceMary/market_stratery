@@ -53,7 +53,7 @@ def backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, c
     b = sell_percent / 100.0
 
     # 获取最近15个交易日
-    recent_trading_days = get_recent_trading_days(stock_code, num_days=15)
+    recent_trading_days = get_recent_trading_days(stock_code, num_days=10)
 
     # 根据股票代码前缀调整分钟线代码，支持场内基金
     if stock_code.startswith('688'):
