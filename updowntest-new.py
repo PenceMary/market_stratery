@@ -237,6 +237,7 @@ def main():
     use_fixed_stocks = True  # 设置为True以使用固定股票和场内基金
     fixed_stocks = [
         ("159740", "恒生科技ETF"),
+        ("600000", "浦发银行"),
     ]
 
     # 根据开关选择股票列表
