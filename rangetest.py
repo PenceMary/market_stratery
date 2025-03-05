@@ -208,7 +208,7 @@ def random_stocks(N=5):
 
 def main():
     # 读取配置文件
-    with open('config.json', 'r', encoding='utf-8') as f:
+    with open('configforrangetest.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
 
     # 从配置文件中获取参数
