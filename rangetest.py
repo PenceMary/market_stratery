@@ -89,9 +89,12 @@ def backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, c
                     stock_data_list.append(tick_data)
                 else:
                     print(f"警告: {trade_date_str} 无逐笔成交数据")
+                for i in range(6):  # 等待 6 秒，避免请求过于频繁
+                    print(".", end="", flush=True)
+                    t.sleep(1)  # 避免请求过于频繁
         except Exception as e:
             print(f"获取 {trade_date_str} 的逐笔成交数据失败: {str(e)}")
-            for i in range(120):  # 等待 120 秒，避免请求过于频繁
+            for i in range(200):  # 等待 200 秒，避免请求过于频繁
                 print(".", end="", flush=True)
                 t.sleep(1)  # 避免请求过于频繁
 
