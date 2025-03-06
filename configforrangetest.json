@@ -1,6 +1,6 @@
 {
-    "buy_percent": 10,
-    "sell_percent": 10,
+    "buy_percent": 1,
+    "sell_percent": 1,
     "commission_rate": 0.0003,
     "stamp_duty_rate": 0.001,
     "N": 10,
