@@ -2,6 +2,7 @@ import akshare as ak
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+import time as t
 
 def get_previous_trading_day(date, stock_code):
     """获取指定日期前一个交易日的日期和收盘价"""
@@ -29,9 +30,9 @@ def get_previous_trading_day(date, stock_code):
     raise ValueError(f"无法在 {date.strftime('%Y-%m-%d')} 前找到有效的交易日数据")
 
 def get_recent_trading_days(stock_code, num_days=15):
-    """获取最近 num_days 个交易日的日期"""
+    """获取最近 num_days 个交易日的日期，确保不包含未来日期"""
     today = datetime.now()
-    start = (today - timedelta(days=45)).strftime("%Y%m%d")  # 确保覆盖足够日期
+    start = (today - timedelta(days=60)).strftime("%Y%m%d")  # 扩大范围以确保足够数据
     end = today.strftime("%Y%m%d")
 
     try:
@@ -41,8 +42,12 @@ def get_recent_trading_days(stock_code, num_days=15):
             stock_data = ak.stock_zh_a_hist(symbol=stock_code, period="daily", start_date=start, end_date=end, adjust="qfq")
         if stock_data.empty:
             raise ValueError("无法获取最近交易日数据")
-        trading_days = pd.to_datetime(stock_data['日期']).sort_values()
+        trading_days = pd.to_datetime(stock_data['日期'])
+        # 过滤掉未来的日期
+        trading_days = trading_days[trading_days <= pd.to_datetime(today)]
+        trading_days = trading_days.sort_values()
         recent_days = trading_days[-num_days:].tolist()
+        print(f"最近交易日: {[d.strftime('%Y%m%d') for d in recent_days]}")  # 调试输出
         return recent_days
     except Exception as e:
         raise ValueError(f"获取最近交易日失败: {str(e)}")
@@ -82,16 +87,19 @@ def backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, c
                 if not tick_data.empty:
                     tick_data['ticktime'] = pd.to_datetime(trade_date_str + ' ' + tick_data['ticktime'])
                     stock_data_list.append(tick_data)
-                continue
+                else:
+                    print(f"警告: {trade_date_str} 无逐笔成交数据")
         except Exception as e:
             print(f"获取 {trade_date_str} 的逐笔成交数据失败: {str(e)}")
+            for i in range(120):  # 等待 120 秒，避免请求过于频繁
+                print(".", end="", flush=True)
+                t.sleep(1)  # 避免请求过于频繁
 
     if not stock_data_list:
         raise ValueError(f"无法获取 {stock_code} 的逐笔成交数据")
 
     # 合并所有交易日的 tick 数据
     stock_data = pd.concat(stock_data_list)
-
     stock_data = stock_data.sort_values('ticktime').reset_index(drop=True)
 
     # 获取前一个交易日的收盘价
@@ -196,9 +204,7 @@ def backtest_stock_strategy(stock_code, stock_name, buy_percent, sell_percent, c
     }
 
 def random_stocks(N=5):
-    """
-    随机获取N只股票的代码和名称
-    """
+    """随机获取N只股票的代码和名称"""
     try:
         stock_list = ak.stock_zh_a_spot_em()
         selected = stock_list.sample(N)
@@ -208,7 +214,7 @@ def random_stocks(N=5):
 
 def main():
     # 读取配置文件
-    with open('configforrangetest.json', 'r', encoding='utf-8') as f:
+    with open('d:\\stock\\config.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
 
     # 从配置文件中获取参数
@@ -219,6 +225,7 @@ def main():
     N = config['N']
     use_fixed_stocks = config['use_fixed_stocks']
     fixed_stocks = config['fixed_stocks']
+    gap = config['gap']
 
     if use_fixed_stocks:
         stock_info = fixed_stocks
@@ -235,6 +242,10 @@ def main():
                 all_results.append(result)
         except Exception as e:
             print(f"回测 {stock_code} 失败: {str(e)}")
+
+        for i in range(gap):  # 等待 60 秒，避免请求过于频繁
+            print(".", end="", flush=True)
+            t.sleep(1)  # 避免请求过于频繁
 
     # 按总资产差值排序
     all_results.sort(key=lambda x: x["asset_change"])
