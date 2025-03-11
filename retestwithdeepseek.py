@@ -181,4 +181,4 @@ def analyze_stocks(config_file: str = 'config.json'):
 
 # 运行程序
 if __name__ == "__main__":
-    analyze_stocks('D:\\stock\\retestconfig.json')
+    analyze_stocks('retestconfig.json')
