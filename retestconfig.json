@@ -1,0 +1,9 @@
+{
+    "stock_selection": "specified",
+    "specified_stocks": ["600030"],
+    "random_stock_count": 5,
+    "start_date": "20250307",
+    "end_date": "20250310",
+    "prompt": "分析这只股票的成交明细，洞察这只股票近几日的买卖力道，是否有主力资金吸筹潜伏或者拉高出货？从散户投资的角度给予分析，并给我建议，是否值得买入？是否需要提防主力割韭菜？这只股票交易信息如下：{stock_data}",
+    "api_key": "sk-ce7b65526aa74113a046eb1e4c341807"
+}
