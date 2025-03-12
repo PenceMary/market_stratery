@@ -117,6 +117,7 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
 
 def upload_file(file_path, api_key):
     files = {"file": open(file_path, "rb")}
+    print("uploadfile:",files)
     headers = {"Authorization": f"Bearer {api_key}"}
     response = requests.post("https://api.deepseek.com/v1/upload", files=files, headers=headers)
     if response.status_code == 200:
