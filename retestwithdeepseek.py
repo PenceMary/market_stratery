@@ -167,13 +167,10 @@ def analyze_stocks(config_file: str = 'config.json'):
                 print(f"股票 {stock} 未获取到数据，跳过")
                 continue
 
-            if None != upload_file(filename,api_key):
-                file_id = upload_file(filename,api_key)
-                if file_id:
-                    response = chat_with_file(file_id, prompt_template.format(stock_data=""),api_key)
-                    print(f"股票 {stock} 的分析结果: {response}\n")
-                else:
-                    print(f"股票 {stock} 的分析结果: 上传文件失败！\n")
+            file_id = upload_file(filename,api_key)
+            if file_id != None:
+                response = chat_with_file(file_id, prompt_template.format(stock_data=""),api_key)
+                print(f"股票 {stock} 的分析结果: {response}\n")
             else:
                 print(f"股票 {stock} 的分析结果: 上传文件失败！\n")
 
