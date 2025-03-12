@@ -92,10 +92,11 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
         file_name = f"{stock}_{start_date}_to_{end_date}.csv"
         all_data.to_csv(file_name, index=False)
         print(f"数据已保存到 {file_name}")
+        return file_name
     except Exception as e:
         print(f"保存数据时出错: {e}")
     
-    return file_name
+    return None
 
 # 调用 DeepSeek API
 # def call_deepseek_api(messagein: str, api_key: str) -> str:
@@ -162,7 +163,7 @@ def analyze_stocks(config_file: str = 'config.json'):
         try:
         # 获取分时成交数据
             filename = get_stock_data(stock, start_date, end_date)
-            if filename.empty:
+            if None == filename:
                 print(f"股票 {stock} 未获取到数据，跳过")
                 continue
 
