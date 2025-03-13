@@ -146,6 +146,7 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
             print(chunk.model_dump())
 
     print({full_content})
+    return full_content
 
 # 主函数
 def analyze_stocks(config_file: str = 'config.json'):
