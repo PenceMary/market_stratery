@@ -88,6 +88,14 @@ def call_deepseek_api(messagein: str, api_key: str) -> str:
     print(f"call-deepseek-api,response:{response.choices[0].message.content}")
     return response.choices[0].message.content
 
+# 修正 JSON 转换时的时间格式问题
+def convert_datetime_to_str(df: pd.DataFrame, time_columns: List[str]) -> pd.DataFrame:
+    """确保 DataFrame 中的时间列保持原始字符串格式"""
+    for col in time_columns:
+        if col in df.columns:
+            df[col] = df[col].astype(str)
+    return df
+
 # 分析股票数据
 def analyze_stocks(config_file: str = 'retestconfig.json'):
     """分析股票数据"""
@@ -104,8 +112,10 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
         print(f"正在处理股票: {stock}")
         try:
             stock_data = get_stock_data(stock, start_date, end_date)
-            stock_json = stock_data.to_json(orient='records', force_ascii=True)
-
+            # 确保 ticktime 保持为字符串格式
+            stock_data = convert_datetime_to_str(stock_data, ['ticktime'])
+            # 生成 JSON 数据
+            stock_json = stock_data.to_json(orient='records', force_ascii=False)
             # 分割数据
             data_chunks = [stock_json[i:i + chunk_size] for i in range(0, len(stock_json), chunk_size)]
 
@@ -123,7 +133,11 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
                 print(f"股票 {stock} - 已发送分段 {idx + 1}")
 
             # 发送完成提示
-            call_deepseek_api("数据已发送完毕，请根据我的要求进行解读。", api_key)
+            init_prompt = (
+                f"{prompt_template}\n\n"
+                "以上是这只股票的近期成交明细，请根据我刚才发送的几次数据，按照我的要求综合后进行分析。"
+            )
+            call_deepseek_api(init_prompt, api_key)
 
         except Exception as e:
             print(f"分析股票 {stock} 失败: {e}")
