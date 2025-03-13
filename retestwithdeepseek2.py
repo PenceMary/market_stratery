@@ -76,13 +76,15 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
 # 调用 DeepSeek API
 def call_deepseek_api(messagein: str, api_key: str) -> str:
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+    print("call-deepseek-api,request:{messagein}")
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[{"role": "user", "content": messagein}],
-        max_tokens=1024,
+        max_tokens=4096,
         temperature=0.7,
         stream=False
     )
+    print("call-deepseek-api,response:{response.choices[0].message.content}")
     return response.choices[0].message.content
 
 # 分析股票数据
@@ -95,7 +97,7 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
     prompt_template = config['prompt']
     api_key = config.get('api_key', 'YOUR_API_KEY')
 
-    chunk_size = 1000  # 设定数据块大小
+    chunk_size = 14000  # 设定数据块大小
 
     for stock in stocks:
         print(f"正在处理股票: {stock}")
