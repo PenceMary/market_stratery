@@ -20,9 +20,9 @@ def load_config(config_file: str) -> Dict[str, Any]:
 # 选择股票
 def select_stocks(config: Dict[str, Any]) -> List[str]:
     """根据配置文件选择股票"""
-    if config['stock_selection'] == 'specified':
+    if config['stock_selection'] == 'spec':
         return config['specified_stocks']
-    elif config['stock_selection'] == 'random':
+    elif config['stock_selection'] == 'rand':
         all_stocks = ak.stock_zh_a_spot_em()['代码'].tolist()
         return random.sample(all_stocks, min(config['random_stock_count'], len(all_stocks)))
     else:
@@ -85,6 +85,9 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> str:
     
     all_data = pd.concat(stock_data_list)
     all_data = all_data.sort_values('ticktime').reset_index(drop=True)
+    
+    # 删除 symbol 和 name 列
+    all_data = all_data.drop(columns=['symbol', 'name'])
     
     # 保存到本地
     try:
