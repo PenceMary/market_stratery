@@ -76,7 +76,7 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
 # 调用 DeepSeek API
 def call_deepseek_api(messagein: str, api_key: str) -> str:
     client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
-    print("call-deepseek-api,request:{messagein}")
+    print(f"call-deepseek-api,request:{messagein}")
     response = client.chat.completions.create(
         model="deepseek-chat",
         messages=[{"role": "user", "content": messagein}],
@@ -84,7 +84,7 @@ def call_deepseek_api(messagein: str, api_key: str) -> str:
         temperature=0.7,
         stream=False
     )
-    print("call-deepseek-api,response:{response.choices[0].message.content}")
+    print(f"call-deepseek-api,response:{response.choices[0].message.content}")
     return response.choices[0].message.content
 
 # 分析股票数据
