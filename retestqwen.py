@@ -137,11 +137,15 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
         stream=True,
         stream_options={"include_usage": True}
     )
+
     full_content = ""
     for chunk in completion:
         if chunk.choices and chunk.choices[0].delta.content:
+            # 拼接输出内容
             full_content += chunk.choices[0].delta.content
-    return full_content
+            print(chunk.model_dump())
+
+    print({full_content})
 
 # 主函数
 def analyze_stocks(config_file: str = 'config.json'):
