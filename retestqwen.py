@@ -20,9 +20,9 @@ def load_config(config_file: str) -> Dict[str, Any]:
 # 选择股票
 def select_stocks(config: Dict[str, Any]) -> List[str]:
     """根据配置文件选择股票"""
-    if config['stock_selection'] == 'spec':
+    if config['stock_selection'] == 'specified':
         return config['specified_stocks']
-    elif config['stock_selection'] == 'rand':
+    elif config['stock_selection'] == 'random':
         all_stocks = ak.stock_zh_a_spot_em()['代码'].tolist()
         return random.sample(all_stocks, min(config['random_stock_count'], len(all_stocks)))
     else:
@@ -39,21 +39,21 @@ def get_trading_dates(start_date: str, end_date: str) -> List[str]:
     """
     calendar = ak.tool_trade_date_hist_sina()
     calendar['trade_date'] = pd.to_datetime(calendar['trade_date'])
-    start_date = pd.to_datetime(start_date)
-    end_date = pd.to_datetime(end_date)
-    trading_dates = calendar[(calendar['trade_date'] >= start_date) & 
-                             (calendar['trade_date'] <= end_date)]['trade_date']
+    start_date_dt = pd.to_datetime(start_date)
+    end_date_dt = pd.to_datetime(end_date)
+    trading_dates = calendar[(calendar['trade_date'] >= start_date_dt) & 
+                             (calendar['trade_date'] <= end_date_dt)]['trade_date']
     return trading_dates.dt.strftime('%Y%m%d').tolist()
 
-# 获取股票分时成交数据并保存到本地
-def get_stock_data(stock: str, start_date: str, end_date: str) -> str:
+# 获取分时成交数据
+def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
     """
-    获取指定股票在指定日期范围内的分时成交数据，并保存为 CSV 文件。
+    获取指定股票在指定日期范围内的分时成交数据。
     
     :param stock: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
-    :return: str, CSV 文件路径
+    :return: pd.DataFrame, 分时成交数据，symbol 和 name 列已删除
     """
     # 根据股票代码前缀调整分钟线代码
     if stock.startswith('688'):
@@ -85,18 +85,64 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> str:
     
     all_data = pd.concat(stock_data_list)
     all_data = all_data.sort_values('ticktime').reset_index(drop=True)
+    all_data = all_data.drop(columns=['symbol', 'name'], errors='ignore')
+    return all_data
+
+# 获取日K线数据
+def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.DataFrame:
+    """
+    获取指定股票最近 kline_days 个交易日的日K线数据。
     
-    # 删除 symbol 和 name 列
-    all_data = all_data.drop(columns=['symbol', 'name'])
+    :param symbol: str, 股票代码，例如 '300680'
+    :param end_date: str, 结束日期，格式 'YYYYMMDD'
+    :param kline_days: int, 需要的交易日数量，例如 60
+    :return: pd.DataFrame, 日K线数据
+    """
+    calendar = ak.tool_trade_date_hist_sina()
+    calendar['trade_date'] = pd.to_datetime(calendar['trade_date'])
+    end_dt = pd.to_datetime(end_date)
     
-    # 保存到本地
+    # 获取所有交易日 <= end_dt，降序排序，取前 kline_days 个（最新的）
+    trading_dates_filtered = calendar[calendar['trade_date'] <= end_dt]['trade_date'].sort_values(ascending=False).head(kline_days)
+    
+    if len(trading_dates_filtered) < kline_days:
+        print(f"Warning: Only {len(trading_dates_filtered)} trading days available up to {end_date}")
+    
+    start_dt_kline = trading_dates_filtered.iloc[-1]  # 最早的日期在最后面，因为是降序
+    end_dt_kline = trading_dates_filtered.iloc[0]  # 最晚的日期在最前面
+    
+    start_date_kline = start_dt_kline.strftime('%Y%m%d')
+    end_date_kline = end_dt_kline.strftime('%Y%m%d')
+    
+    # 获取日K线数据
+    stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
+    return stock_data
+
+# 获取并保存股票数据到Excel文件
+def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> str:
+    """
+    获取股票的分时成交数据和日K线数据，并保存到Excel文件中，分别在'intraday'和'daily'两个sheet中。
+    
+    :param stock: str, 股票代码，例如 '300680'
+    :param start_date: str, 分时数据的起始日期，格式 'YYYYMMDD'
+    :param end_date: str, 数据的结束日期，格式 'YYYYMMDD'
+    :param kline_days: int, 日K线数据的天数，例如 60
+    :return: str, 文件路径，如果失败返回 None
+    """
     try:
-        file_name = f"{stock}_{start_date}_to_{end_date}.csv"
-        all_data.to_csv(file_name, index=False)
-        print(f"数据已保存到 {file_name}")
+        df_intraday = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
+        df_daily = get_daily_kline_data(symbol=stock, end_date=end_date, kline_days=kline_days)
+        
+        file_name = f"{stock}_{start_date}_to_{end_date}.xlsx"
+        
+        with pd.ExcelWriter(file_name) as writer:
+            df_intraday.to_excel(writer, sheet_name='intraday', index=False)
+            df_daily.to_excel(writer, sheet_name='daily', index=False)
+        
+        print(f"Data saved to {file_name}")
         return file_name
     except Exception as e:
-        print(f"保存数据时出错: {e}")
+        print(f"Error processing stock {stock}: {e}")
         return None
 
 # 上传文件到平台
@@ -144,7 +190,6 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
     full_content = ""
     for chunk in completion:
         if chunk.choices and chunk.choices[0].delta.content:
-            # 拼接输出内容
             full_content += chunk.choices[0].delta.content
             print(chunk.model_dump())
 
@@ -161,29 +206,30 @@ def analyze_stocks(config_file: str = 'config.json'):
     end_date = config['end_date']
     prompt_template = config['prompt']
     api_key = config.get('api_key', 'YOUR_API_KEY')  # 从配置文件读取 API 密钥
+    kline_days = config.get('kline_days', 60)  # 默认60天，如果未指定
 
     # 2. 循环处理每只股票
     for stock in stocks:
         print(f"正在处理股票: {stock}")
         try:
-            # 获取分时成交数据并保存为 CSV 文件
-            file_path = get_stock_data(stock, start_date, end_date)
+            # 获取数据并保存到Excel文件
+            file_path = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
             if file_path is None:
-                print(f"股票 {stock} 未获取到数据，跳过")
+                print(f"股票 {stock} 获取数据失败，跳过")
                 continue
 
             # 上传文件到平台
-            file_id = upload_file(file_path, api_key)
+            file_id = upload_file(file_path=file_path, api_key=api_key)
             if file_id is None:
                 print(f"股票 {stock} 的文件上传失败，跳过")
                 continue
 
             # 与通义千问模型交互
-            response = chat_with_qwen(file_id, prompt_template.format(stock_data=""), api_key)
+            response = chat_with_qwen(file_id=file_id, question=prompt_template.format(stock_data=""), api_key=api_key)
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
             else:
-                print(f"股票 {stock} 的分析结果: 聊天请求失败！\n")
+                print(f"股票 {stock} 的聊天请求失败！\n")
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
