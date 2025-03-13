@@ -71,6 +71,7 @@ def get_stock_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
 
     all_data = pd.concat(stock_data_list)
     all_data = all_data.sort_values('ticktime').reset_index(drop=True)
+    print(f"all_data:{all_data}")
     return all_data
 
 # 调用 DeepSeek API
@@ -103,7 +104,7 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
         print(f"正在处理股票: {stock}")
         try:
             stock_data = get_stock_data(stock, start_date, end_date)
-            stock_json = stock_data.to_json(orient='records', force_ascii=False)
+            stock_json = stock_data.to_json(orient='records', force_ascii=True)
 
             # 分割数据
             data_chunks = [stock_json[i:i + chunk_size] for i in range(0, len(stock_json), chunk_size)]
@@ -112,7 +113,7 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
             init_prompt = (
                 f"{prompt_template}\n\n"
                 "由于我要发送给你的数据比较多，我将分段发送，期间你不需要解答，"
-                "等我把数据全部发完之后，我会告诉你，你再解答。"
+                "等我把数据全部发完之后，我会明确告诉你\"数据已发送完毕\"，你再进行解答。"
             )
             call_deepseek_api(init_prompt, api_key)
 
