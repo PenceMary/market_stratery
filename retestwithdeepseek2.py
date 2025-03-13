@@ -86,7 +86,7 @@ def call_deepseek_api(messagein: str, api_key: str) -> str:
     return response.choices[0].message.content
 
 # 分析股票数据
-def analyze_stocks(config_file: str = 'config.json'):
+def analyze_stocks(config_file: str = 'retestconfig.json'):
     """分析股票数据"""
     config = load_config(config_file)
     stocks = select_stocks(config)
