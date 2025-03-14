@@ -222,7 +222,7 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
             #print(chunk.model_dump())
             print(".", end="", flush=True)
 
-    print({full_content})
+    #print({full_content})
     return full_content
 
 # 主函数
