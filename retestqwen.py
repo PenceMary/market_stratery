@@ -110,11 +110,11 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
 
     if not stock_data_list:
         raise ValueError(f"无法获取 {minute_code} 的逐笔成交数据")
-    
+    stock_name = daily_data['name'][0]
     all_data = pd.concat(stock_data_list)
     all_data = all_data.sort_values('ticktime').reset_index(drop=True)
     all_data = all_data.drop(columns=['symbol', 'name'], errors='ignore')
-    return all_data
+    return all_data, stock_name
 
 # 获取日K线数据
 def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.DataFrame:
@@ -158,17 +158,17 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
     :return: str, 文件路径，如果失败返回 None
     """
     try:
-        df_intraday = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
+        df_intraday,stock_name = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
         df_daily = get_daily_kline_data(symbol=stock, end_date=end_date, kline_days=kline_days)
         
-        file_name = f"{stock}_{start_date}_to_{end_date}.xlsx"
+        file_name = f"{stock, stock_name}_{start_date}_to_{end_date}.xlsx"
         
         with pd.ExcelWriter(file_name) as writer:
             df_intraday.to_excel(writer, sheet_name='intraday', index=False)
             df_daily.to_excel(writer, sheet_name='daily', index=False)
         
         print(f"Data saved to {file_name}")
-        return file_name
+        return file_name, stock_name
     except Exception as e:
         print(f"Error processing stock {stock}: {e}")
         return None
@@ -241,38 +241,40 @@ def analyze_stocks(config_file: str = 'config.json'):
     email_receivers = config['email_receivers']  # 从配置文件读取收件人邮箱地址
 
     # 2. 循环处理每只股票
-    for stock in stocks:
-        print(f"正在处理股票: {stock}")
+    total = len(stocks)
+    for index, stock in enumerate(stocks):
+        print(f"正在处理股票: {stock} ({index+1}/{total})")
         try:
             # 获取数据并保存到Excel文件
-            file_path = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
+            file_path, stock_name = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
             if file_path is None:
-                print(f"股票 {stock} 获取数据失败，跳过")
+                print(f"股票 {stock, stock_name} 获取数据失败，跳过")
                 continue
 
             # 上传文件到平台
             file_id = upload_file(file_path=file_path, api_key=api_key)
             if file_id is None:
-                print(f"股票 {stock} 的文件上传失败，跳过")
+                print(f"股票 {stock, stock_name} 的文件上传失败，跳过")
                 continue
 
             # 与通义千问模型交互
             response = chat_with_qwen(file_id=file_id, question=prompt_template.format(stock_data=""), api_key=api_key)
             if response:
-                print(f"股票 {stock} 的分析结果: {response}\n")
+                print(f"股票 {stock, stock_name} 的分析结果: {response}\n")
             else:
-                print(f"股票 {stock} 的聊天请求失败！\n")
+                print(f"股票 {stock, stock_name} 的聊天请求失败！\n")
 
             # 发送邮件
             print(f"股票 {stock} 准备发送邮件 \n")
-            send_email(subject=f"股票 {stock} 分析结果", body=response, receivers=email_receivers, sender=email_sender, password=email_password)
-
-            for i in range(300):  # 等待 300 秒，避免请求过于频繁
-                print(".", end="", flush=True)
-                t.sleep(1)  # 避免请求过于频繁
+            send_email(subject=f"股票 {stock, stock_name} 分析结果", body=response, receivers=email_receivers, sender=email_sender, password=email_password)
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
+
+        if index < total - 1:
+            for i in range(300):  # 等待 300 秒，避免请求过于频繁
+                print(".", end="", flush=True)
+                t.sleep(1)  # 避免请求过于频繁
 
 # 运行程序
 if __name__ == "__main__":
