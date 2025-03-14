@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
+import time as t
 
 def send_email(subject: str, body: str, receivers: str, sender: str, password: str) -> None:
 
@@ -218,7 +219,8 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
     for chunk in completion:
         if chunk.choices and chunk.choices[0].delta.content:
             full_content += chunk.choices[0].delta.content
-            print(chunk.model_dump())
+            #print(chunk.model_dump())
+            print(".", end="", flush=True)
 
     print({full_content})
     return full_content
@@ -264,6 +266,10 @@ def analyze_stocks(config_file: str = 'config.json'):
             # 发送邮件
             print(f"股票 {stock} 准备发送邮件 \n")
             send_email(subject=f"股票 {stock} 分析结果", body=response, receivers=email_receivers, sender=email_sender, password=email_password)
+
+            for i in range(300):  # 等待 300 秒，避免请求过于频繁
+                print(".", end="", flush=True)
+                t.sleep(1)  # 避免请求过于频繁
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
