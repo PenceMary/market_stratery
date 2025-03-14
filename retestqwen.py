@@ -7,6 +7,33 @@ from typing import List, Dict, Any
 from openai import OpenAI
 import os
 from pathlib import Path
+import smtplib
+from email.mime.text import MIMEText
+
+def send_email(subject: str, body: str, receivers: str, sender: str, password: str) -> None:
+
+    # 创建文本邮件
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['From'] = sender  # 发件人
+    msg['To'] = ', '.join(receivers)  # 将收件人列表转换为逗号分隔的字符串
+    msg['Subject'] = subject
+
+    # SMTP服务器设置
+    smtp_server = 'applesmtp.163.com'
+    smtp_port = 465
+
+    # 登录凭证（使用授权码）
+    username = sender
+
+    # 发送邮件
+    try:
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(username, password)
+        server.sendmail(sender, receivers, msg.as_string())
+        server.quit()
+        print("邮件发送成功！")
+    except Exception as e:
+        print(f"邮件发送失败：{e}")
 
 # 读取配置文件
 def load_config(config_file: str) -> Dict[str, Any]:
@@ -205,8 +232,11 @@ def analyze_stocks(config_file: str = 'config.json'):
     start_date = config['start_date']
     end_date = config['end_date']
     prompt_template = config['prompt']
-    api_key = config.get('api_key', 'YOUR_API_KEY')  # 从配置文件读取 API 密钥
+    api_key = config['api_key']  # 从配置文件读取 API 密钥
     kline_days = config.get('kline_days', 60)  # 默认60天，如果未指定
+    email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
+    email_password = config['email_password']  # 从配置文件读取发件人邮箱密码
+    email_receivers = config['email_receivers']  # 从配置文件读取收件人邮箱地址
 
     # 2. 循环处理每只股票
     for stock in stocks:
@@ -230,6 +260,10 @@ def analyze_stocks(config_file: str = 'config.json'):
                 print(f"股票 {stock} 的分析结果: {response}\n")
             else:
                 print(f"股票 {stock} 的聊天请求失败！\n")
+
+            # 发送邮件
+            print(f"股票 {stock} 准备发送邮件 \n")
+            send_email(subject=f"股票 {stock} 分析结果", body=response, receivers=email_receivers, sender=email_sender, password=email_password)
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
