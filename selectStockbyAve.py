@@ -2,6 +2,9 @@ import json
 import random
 import akshare as ak
 import pandas as pd
+import smtplib
+from email.mime.text import MIMEText
+import time as t
 
 def load_config(config_path='selectbyAve.json'):
     with open(config_path, 'r') as f:
