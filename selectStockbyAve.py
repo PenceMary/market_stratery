@@ -106,7 +106,7 @@ def format_stock_info(stock, config):
         f"60日均线值: {float(stock['60日均线值']):.2f}",
         f"近{days}日的成交量: {[int(vol) for vol in stock[f'近{days}日的成交量']]}",
         f"{days}日成交量均值: {float(stock[f'{days}日成交量均值']):.2f}",
-        f"近{days}日的换手率: {[float(tor):.2f] for tor in stock[f'近{days}日的换手率']]}",
+        f"近{days}日的换手率: {[f'{float(tor):.2f}' for tor in stock[f'近{days}日的换手率']]}",
         f"{days}日成交量均值较60日均值的上涨比例: {float(stock[f'{days}日成交量均值较60日均值的上涨比例']):.2f}%"
     ]
     return "\n".join(lines)
