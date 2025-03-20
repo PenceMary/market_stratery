@@ -3,7 +3,7 @@ import random
 import akshare as ak
 import pandas as pd
 
-def load_config(config_path='selectbyAve.json'):
+def load_config(config_path='config.json'):
     with open(config_path, 'r') as f:
         config = json.load(f)
     return config
@@ -31,8 +31,13 @@ def analyze_stock(stock_code, stock_name, config):
 
     # 判断是否满足条件
     if all(recent_vol > vol_ma_60 * (1 + config['成交量上涨比例x'] / 100)):
+        # 获取上涨天数前一个交易日的数据
+        prev_vol = stock_data['成交量'].iloc[-config['上涨天数']-1]
+        if prev_vol > vol_ma.iloc[-config['上涨天数']-2] * (1 + config['成交量上涨比例x'] / 100):
+            return None  # 如果前一天也满足条件，则不纳入候选
+
         vol_ratio = (recent_vol_ma - vol_ma_60) / vol_ma_60 * 100
-        print(f"stock match the situation,code is : {stock_code}")
+        print(f"Stock {stock_code} selected: {stock_name}")
         return {
             '股票名称': stock_name,
             '股票代码': stock_code,
