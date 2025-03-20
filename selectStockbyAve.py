@@ -8,6 +8,31 @@ def load_config(config_path='selectbyAve.json'):
         config = json.load(f)
     return config
 
+def send_email(subject: str, body: str, receivers: str, sender: str, password: str) -> None:
+
+    # 创建文本邮件
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['From'] = sender  # 发件人
+    msg['To'] = ', '.join(receivers)  # 将收件人列表转换为逗号分隔的字符串
+    msg['Subject'] = subject
+
+    # SMTP服务器设置
+    smtp_server = 'applesmtp.163.com'
+    smtp_port = 465
+
+    # 登录凭证（使用授权码）
+    username = sender
+
+    # 发送邮件
+    try:
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(username, password)
+        server.sendmail(sender, receivers, msg.as_string())
+        server.quit()
+        print("邮件发送成功！")
+    except Exception as e:
+        print(f"邮件发送失败：{e}")
+        
 def get_stock_list():
     return ak.stock_info_a_code_name()
 
@@ -76,6 +101,8 @@ def main():
     # 打印结果
     for stock in sorted_result:
         print(stock)
+
+    send_email("hi 贱人，这是今天的候选佳丽！", sorted_result, config['receivers'], config['sender'], config['password'])
 
 if __name__ == "__main__":
     main()
