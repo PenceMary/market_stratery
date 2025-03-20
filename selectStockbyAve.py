@@ -104,7 +104,7 @@ def main():
 
     # 发送邮件
     print("准备发送邮件 \n")
-    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=sorted_result, receivers=config['receivers'], sender=config['sender'], password=config['password'])
+    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=sorted_result, receivers=config['email_receivers'], sender=config['email_sender'], password=config['email_password'])
 
 if __name__ == "__main__":
     main()
