@@ -5,6 +5,7 @@ import pandas as pd
 import smtplib
 from email.mime.text import MIMEText
 import time as t
+from datetime import datetime
 
 def load_config(config_path='selectbyAve.json'):
     with open(config_path, 'r') as f:
@@ -69,11 +70,23 @@ def analyze_stock(stock_code, stock_name, config):
             '股票名称': stock_name,
             '股票代码': stock_code,
             '60日均线值': vol_ma_60,
-            '近{}日的成交量'.format(config['上涨天数']): recent_vol.tolist(),
-            '{}日成交量均值'.format(config['上涨天数']): recent_vol_ma,
-            '{}日成交量均值较60日均值的上涨比例'.format(config['上涨天数']): vol_ratio
+            f'近{config["上涨天数"]}日的成交量': recent_vol.tolist(),
+            f'{config["上涨天数"]}日成交量均值': recent_vol_ma,
+            f'{config["上涨天数"]}日成交量均值较60日均值的上涨比例': vol_ratio
         }
     return None
+
+def format_stock_info(stock, config):
+    days = config['上涨天数']
+    lines = [
+        f"股票名称: {stock['股票名称']}",
+        f"股票代码: {stock['股票代码']}",
+        f"60日均线值: {float(stock['60日均线值']):.2f}",
+        f"近{days}日的成交量: {[int(vol) for vol in stock[f'近{days}日的成交量']]}",
+        f"{days}日成交量均值: {float(stock[f'{days}日成交量均值']):.2f}",
+        f"{days}日成交量均值较60日均值的上涨比例: {float(stock[f'{days}日成交量均值较60日均值的上涨比例']):.2f}"
+    ]
+    return "\n".join(lines)
 
 def main():
     config = load_config()
@@ -98,16 +111,18 @@ def main():
             print(f"Error processing stock {stock_code}: {e}")
 
     # 按上涨比例排序
-    sorted_result = sorted(result, key=lambda x: x['{}日成交量均值较60日均值的上涨比例'.format(config['上涨天数'])])
+    sorted_result = sorted(result, key=lambda x: x[f'{config["上涨天数"]}日成交量均值较60日均值的上涨比例'])
 
     # 打印结果
     for stock in sorted_result:
-        print(stock)
+        print(format_stock_info(stock, config))
 
     # 发送邮件
     print("准备发送邮件 \n")
-    email_body = "\n".join([str(stock) for stock in sorted_result])
-    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=email_body, receivers=config['email_receivers'], sender=config['email_sender'], password=config['email_password'])
+    today = datetime.now().strftime("%Y-%m-%d")
+    subject = f"hi 贱人，这是{today}的候选佳丽！"
+    email_body = "以下是今天的候选股票列表：\n\n" + "\n\n".join([format_stock_info(stock, config) for stock in sorted_result]) + "\n\n以上是今天的候选股票列表。"
+    send_email(subject=subject, body=email_body, receivers=config['email_receivers'], sender=config['email_sender'], password=config['email_password'])
 
 if __name__ == "__main__":
     main()
