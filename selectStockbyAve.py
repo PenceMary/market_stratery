@@ -11,8 +11,7 @@ def load_config(config_path='selectbyAve.json'):
         config = json.load(f)
     return config
 
-def send_email(subject: str, body: str, receivers: str, sender: str, password: str) -> None:
-
+def send_email(subject: str, body: str, receivers: list, sender: str, password: str) -> None:
     # 创建文本邮件
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['From'] = sender  # 发件人
@@ -35,7 +34,7 @@ def send_email(subject: str, body: str, receivers: str, sender: str, password: s
         print("邮件发送成功！")
     except Exception as e:
         print(f"邮件发送失败：{e}")
-        
+
 def get_stock_list():
     return ak.stock_info_a_code_name()
 
@@ -107,7 +106,8 @@ def main():
 
     # 发送邮件
     print("准备发送邮件 \n")
-    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=sorted_result, receivers=config['email_receivers'], sender=config['email_sender'], password=config['email_password'])
+    email_body = "\n".join([str(stock) for stock in sorted_result])
+    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=email_body, receivers=config['email_receivers'], sender=config['email_sender'], password=config['email_password'])
 
 if __name__ == "__main__":
     main()
