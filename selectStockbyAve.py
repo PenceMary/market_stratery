@@ -32,6 +32,7 @@ def analyze_stock(stock_code, stock_name, config):
     # 判断是否满足条件
     if all(recent_vol > vol_ma_60 * (1 + config['成交量上涨比例x'] / 100)):
         vol_ratio = (recent_vol_ma - vol_ma_60) / vol_ma_60 * 100
+        print(f"stock match the situation,code is : {stock_code}")
         return {
             '股票名称': stock_name,
             '股票代码': stock_code,
