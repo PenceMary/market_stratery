@@ -39,6 +39,16 @@ def send_email(subject: str, body: str, receivers: list, sender: str, password: 
 def get_stock_list():
     return ak.stock_info_a_code_name()
 
+def get_stock_industry(stock_code):
+    # 获取股票所属行业信息
+    try:
+        stock_individual_info = ak.stock_individual_info_em(symbol=stock_code)
+        industry = stock_individual_info[stock_individual_info['item'] == '行业']['value'].values[0]
+        return industry
+    except Exception as e:
+        print(f"无法获取股票 {stock_code} 的行业信息: {e}")
+        return "未知行业"
+
 def fetch_stock_data(stock_code):
     stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=stock_code, period="daily", adjust="qfq")
     stock_zh_a_hist_df['日期'] = pd.to_datetime(stock_zh_a_hist_df['日期'])
@@ -65,10 +75,12 @@ def analyze_stock(stock_code, stock_name, config):
             return None  # 如果前一天也满足条件，则不纳入候选
 
         vol_ratio = (recent_vol_ma - vol_ma_60) / vol_ma_60 * 100
-        print(f"Stock {stock_code} selected: {stock_name}")
+        industry = get_stock_industry(stock_code)  # 获取行业信息
+        print(f"Stock {stock_code} selected: {stock_name} ({industry})")
         return {
             '股票名称': stock_name,
             '股票代码': stock_code,
+            '行业': industry,
             '60日均线值': vol_ma_60,
             f'近{config["上涨天数"]}日的成交量': recent_vol.tolist(),
             f'{config["上涨天数"]}日成交量均值': recent_vol_ma,
@@ -79,12 +91,12 @@ def analyze_stock(stock_code, stock_name, config):
 def format_stock_info(stock, config):
     days = config['上涨天数']
     lines = [
-        f"股票名称: {stock['股票名称']}",
+        f"股票名称: {stock['股票名称']} ({stock['行业']})",
         f"股票代码: {stock['股票代码']}",
         f"60日均线值: {float(stock['60日均线值']):.2f}",
         f"近{days}日的成交量: {[int(vol) for vol in stock[f'近{days}日的成交量']]}",
         f"{days}日成交量均值: {float(stock[f'{days}日成交量均值']):.2f}",
-        f"{days}日成交量均值较60日均值的上涨比例: {float(stock[f'{days}日成交量均值较60日均值的上涨比例']):.2f}"
+        f"{days}日成交量均值较60日均值的上涨比例: {float(stock[f'{days}日成交量均值较60日均值的上涨比例']):.2f}%"
     ]
     return "\n".join(lines)
 
