@@ -102,7 +102,9 @@ def main():
     for stock in sorted_result:
         print(stock)
 
-    send_email("hi 贱人，这是今天的候选佳丽！", sorted_result, config['receivers'], config['sender'], config['password'])
+    # 发送邮件
+    print("准备发送邮件 \n")
+    send_email(subject="hi 贱人，这是今天的候选佳丽！", body=sorted_result, receivers=config['receivers'], sender=config['sender'], password=config['password'])
 
 if __name__ == "__main__":
     main()
