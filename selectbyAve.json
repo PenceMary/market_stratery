@@ -1,13 +1,14 @@
 {
     "是否全量股票": false,
-    "股票数量": 10,
-    "成交量上涨比例x": 20,
+    "股票数量": 1000,
+    "成交量上涨比例x": 30,
     "成交量基准天数": 60,
+    "TOR":[5,20],
     "上涨天数": 3,
     "email_sender": "lujianping9199@163.com",
     "email_receivers": [
         "lujianping9199@163.com",
-        "ljploveu@sina.com"
+        "93864142@qq.com"
     ],
-    "email_password": "YQtL4pup9qUn6t"
+    "email_password": "YQtL4pup9qUn6tHy"
 }
