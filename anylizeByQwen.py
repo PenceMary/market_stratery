@@ -112,7 +112,15 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                 if not daily_data.empty:
                     daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
                     stock_data_list.append(daily_data)
-                break  # 成功获取数据，跳出重试循环
+                    print(f"成功获取 {minute_code} 在 {date} 的数据")
+                    # 如果不是最后一个交易日，等待 2 分钟
+                    if date != trading_dates[-1]:
+                        print("等待 2 分钟以避免请求过快...")
+                        for _ in range(120):  # 等待 120 秒（2 分钟），每秒打印一个“.”
+                            print(".", end="", flush=True)
+                            t.sleep(1)
+                        print()  # 换行
+                    break  # 成功获取数据，跳出重试循环
             except Exception as e:
                 print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
                 if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
