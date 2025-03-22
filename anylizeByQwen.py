@@ -282,4 +282,4 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
 
 # 运行程序
 if __name__ == "__main__":
-    analyze_stocks('retestconfig.json', 'keys.json')
+    analyze_stocks('anylizeconfig.json', 'keys.json')
