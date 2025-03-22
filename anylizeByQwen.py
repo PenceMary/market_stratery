@@ -11,8 +11,8 @@ import smtplib
 from email.mime.text import MIMEText
 import time as t
 
-def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str) -> None:
-    """发送邮件"""
+def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, file_path: str = None) -> bool:
+    """发送邮件并返回是否成功"""
     # 创建文本邮件
     msg = MIMEText(body, 'plain', 'utf-8')
     msg['From'] = sender  # 发件人
@@ -33,8 +33,14 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
         server.sendmail(sender, receivers, msg.as_string())
         server.quit()
         print("邮件发送成功！")
+        # 如果邮件发送成功且提供了文件路径，则删除本地文件
+        if file_path and os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"本地文件 {file_path} 已删除")
+        return True
     except Exception as e:
         print(f"邮件发送失败：{e}")
+        return False
 
 def load_config(config_file: str, keys_file: str) -> Dict[str, Any]:
     """读取 JSON 配置文件并返回配置字典"""
@@ -248,12 +254,14 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
     total = len(stocks)
     for index, stock in enumerate(stocks):
         print(f"正在处理股票: {stock} ({index+1}/{total})")
+        file_path = None  # 初始化文件路径
         try:
             # 获取数据并保存到Excel文件
-            file_path, stock_name = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
-            if file_path is None:
+            result = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
+            if result is None:
                 print(f"股票 {stock} 获取数据失败，跳过")
                 continue
+            file_path, stock_name = result
 
             # 上传文件到平台
             file_id = upload_file(file_path=file_path, api_key=api_key)
@@ -268,9 +276,16 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
             else:
                 print(f"股票 {stock} 的聊天请求失败！\n")
 
-            # 发送邮件
+            # 发送邮件并根据结果决定是否删除文件
             print(f"股票 {stock} 准备发送邮件 \n")
-            send_email(subject=f"股票 {stock} 分析结果", body=response, receivers=email_receivers, sender=email_sender, password=email_password)
+            send_email(
+                subject=f"股票 {stock} 分析结果",
+                body=response,
+                receivers=email_receivers,
+                sender=email_sender,
+                password=email_password,
+                file_path=file_path  # 传递文件路径以便删除
+            )
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
