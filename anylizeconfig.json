@@ -1,11 +1,11 @@
 {
-    "stock_selection": "specified", 
+    "stock_selection": "random", 
     "specified_stocks": [
         "000026",
         "002198"
     ], 
-    "random_stock_count": 5, 
-    "start_date": "20250317", 
+    "random_stock_count": 50, 
+    "start_date": "20250310", 
     "end_date": "20250321", 
     "kline_days": 90, 
     "email_sender": "lujianping9199@163.com", 
@@ -16,7 +16,7 @@
     "prompt": {
         "analysis_request": {
             "analysis_purpose": {
-                "description": "我是一个个人投资者，希望从投资获益的角度获得建议。提供的excel表格中包含两个sheet页面：intraday和daily。"
+                "description": "我是个人投资者，希望从投资获益的角度获得建议。提供的excel表格中包含两个sheet页面：intraday_sheet和daily_sheet。"
             }, 
             "data_description": {
                 "intraday_sheet": {
@@ -47,15 +47,15 @@
                 }, 
                 {
                     "step": 2, 
-                    "description": "根据intraday中第2个交易日的交易实际情况，反思第1个交易日的预判，结合daily sheet数据和第2个交易日的实际交易数据，修正对主力动向和资金意图的分析，给出分析思路和数据，并预判第3个交易日的走势。"
+                    "description": "根据intraday中第2个交易日的交易实际情况，反思第1个交易日的预判，结合daily sheet数据，修正对主力动向和资金意图的分析，给出分析思路和数据，并预判第3个交易日的走势。"
                 }, 
                 {
                     "step": 3, 
-                    "description": "根据intraday中第3个交易日的交易实际情况，反思第2个交易日的预判，结合daily sheet数据和第3个交易日的实际交易数据，修正对主力动向和资金意图的分析，给出分析思路和数据，并预判第4个交易日的走势。以此类推，直到所有的交易日数据分析完。"
+                    "description": "根据intraday中第3个交易日的交易实际情况，反思第2个交易日的预判，结合daily sheet数据，修正对主力动向和资金意图的分析，给出分析思路和数据，并预判第4个交易日的走势。以此类推，直到所有的交易日数据分析完。"
                 }, 
                 {
                     "step": 4, 
-                    "description": "根据intraday中最后一个交易日的交易实际情况，反思前几个交易日的预判以及实际走势，给出分析思路和数据，给出最后一个交易日的后一个交易日的主力动向和走势预判。"
+                    "description": "根据intraday中最后一个交易日的交易实际情况，反思前1个交易日的预判，结合daily sheet数据，修正对主力动向和资金意图的分析，给出分析思路和数据，给出下一个交易日的走势预判。"
                 }
             ], 
             "output_requirements": [
