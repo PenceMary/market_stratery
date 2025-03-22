@@ -204,12 +204,12 @@ def upload_file(file_path: str, api_key: str) -> str:
     print(f"文件上传成功，文件 ID: {file_object.id}")
     return file_object.id
 
-def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
+def chat_with_qwen(file_id: str, question: Any, api_key: str) -> str:
     """
-    使用通义千问的 API 进行聊天。
+    使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
     
     :param file_id: str, 文件 ID
-    :param question: str, 用户提示或问题
+    :param question: Any, 用户提示或问题，可以是字符串或字典
     :param api_key: str, API 密钥
     :return: str, 聊天结果
     """
@@ -217,13 +217,48 @@ def chat_with_qwen(file_id: str, question: str, api_key: str) -> str:
         api_key=api_key,
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
     )
+
+    # 初始化 messages 列表
+    messages = [
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'system', 'content': f'fileid://{file_id}'}
+    ]
+
+    # 处理 question 参数
+    if isinstance(question, dict):
+        # 如果 question 是字典，假设它包含 analysis_request
+        analysis_request = question.get('analysis_request', {})
+
+        # 构造用户消息内容
+        user_content = (
+            f"{analysis_request.get('analysis_purpose', {}).get('description', '')}\n\n"
+            f"intraday sheet: {analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('description', '')}\n"
+            f"字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('fields', []))}\n"
+            f"daily sheet: {analysis_request.get('data_description', {}).get('daily_sheet', {}).get('description', '')}\n"
+            f"字段: {', '.join(analysis_request.get('data_description', {}).get('daily_sheet', {}).get('fields', []))}\n\n"
+            f"分析步骤:\n"
+        )
+
+        # 添加分析步骤
+        for step in analysis_request.get('analysis_steps', []):
+            user_content += f"步骤 {step.get('step', '')}: {step.get('description', '')}\n"
+
+        # 添加输出要求
+        user_content += "\n输出要求:\n"
+        for req in analysis_request.get('output_requirements', []):
+            user_content += f"{req.get('section', '')}. {req.get('title', '')}: {req.get('description', '')}\n"
+
+        messages.append({'role': 'user', 'content': user_content})
+    elif isinstance(question, str):
+        # 如果 question 是字符串，直接使用（保持后向兼容性）
+        messages.append({'role': 'user', 'content': question})
+    else:
+        raise ValueError("question 参数必须是字符串或字典类型")
+
+    # 调用 API
     completion = client.chat.completions.create(
         model="qwen-long",
-        messages=[
-            {'role': 'system', 'content': 'You are a helpful assistant.'},
-            {'role': 'system', 'content': f'fileid://{file_id}'},
-            {'role': 'user', 'content': question}
-        ],
+        messages=messages,
         stream=True,
         stream_options={"include_usage": True}
     )
@@ -243,7 +278,7 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
     stocks = select_stocks(config)
     start_date = config['start_date']
     end_date = config['end_date']
-    prompt_template = config['prompt']
+    prompt_template = config['prompt']  # 直接使用字典类型的 prompt
     api_key = config['api_key']  # 从 keys.json 读取 API 密钥
     kline_days = config.get('kline_days', 60)  # 默认60天，如果未指定
     email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
@@ -269,8 +304,8 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
                 print(f"股票 {stock} 的文件上传失败，跳过")
                 continue
 
-            # 与通义千问模型交互
-            response = chat_with_qwen(file_id=file_id, question=prompt_template.format(stock_data=""), api_key=api_key)
+            # 与通义千问模型交互，直接传递字典类型的 prompt_template
+            response = chat_with_qwen(file_id=file_id, question=prompt_template, api_key=api_key)
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
             else:
