@@ -13,7 +13,6 @@ import time as t
 import requests
 import re
 from io import StringIO
-from fake_useragent import UserAgent
 import math
 
 def get_tqdm(enable: bool = True):
