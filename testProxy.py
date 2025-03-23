@@ -108,5 +108,5 @@ def stock_intraday_sina_with_proxy(symbol: str = "sz000001", date: str = "202403
 if __name__ == "__main__":
     stock='sh600030'
     date='20250321'
-    proxies = {'http': '101.231.178.155:7028'}
+    proxies = {'http': '103.156.248.45:8080'}
     stock_intraday_sina_with_proxy(symbol=stock, date=date, proxies=proxies)
