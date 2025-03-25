@@ -115,8 +115,8 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                     print(f"成功获取 {minute_code} 在 {date} 的数据")
                     # 如果不是最后一个交易日，等待 2 分钟
                     if date != trading_dates[-1]:
-                        print("等待 1 分钟以避免请求过快...")
-                        for _ in range(60):  # 等待 120 秒（2 分钟），每秒打印一个“.”
+                        print("稍等一下...")
+                        for _ in range(random.randint(1, 10)):  # 等待随机秒数，每秒打印一个“.”
                             print(".", end="", flush=True)
                             t.sleep(1)
                         print()  # 换行
