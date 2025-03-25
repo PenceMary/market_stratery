@@ -1,5 +1,5 @@
 {
-    "stock_selection": "specified", 
+    "stock_selection": "random", 
     "specified_stocks": [
         "300398",
         "688129"
@@ -10,8 +10,7 @@
     "kline_days": 90, 
     "email_sender": "lujianping9199@163.com", 
     "email_receivers": [
-        "lujianping9199@163.com", 
-        "93864142@qq.com"
+        "lujianping9199@163.com"
     ], 
     "prompt": {
         "analysis_request": {
