@@ -9,6 +9,7 @@
     "kline_days": 90, 
     "email_sender": "lujianping9199@163.com", 
     "email_receivers": [
+        "93864142@qq.com",
         "lujianping9199@163.com"
     ], 
     "prompt": {
