@@ -1,7 +1,7 @@
 {
     "stock_selection": "specified", 
     "specified_stocks": [
-        "600584"
+        "002985"
     ], 
     "random_stock_count": 5, 
     "start_date": "20250401", 
