@@ -4,8 +4,8 @@
         "002985"
     ], 
     "random_stock_count": 5, 
-    "start_date": "20250401", 
-    "end_date": "20250410", 
+    "start_date": "20250411", 
+    "end_date": "20250420", 
     "kline_days": 90, 
     "email_sender": "lujianping9199@163.com", 
     "email_receivers": [
