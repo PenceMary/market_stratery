@@ -2,7 +2,7 @@ import akshare as ak
 import random
 import json
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from typing import List, Dict, Any
 from openai import OpenAI
 import os
@@ -35,7 +35,7 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
         print("邮件发送成功！")
         # 如果邮件发送成功且提供了文件路径，则删除本地文件
         if file_path and os.path.exists(file_path):
-            os.remove(file_path)
+            #os.remove(file_path)
             print(f"本地文件 {file_path} 已删除")
         return True
     except Exception as e:
@@ -124,8 +124,8 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
             except Exception as e:
                 print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
                 if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
-                    print("等待10分钟后重试...")
-                    for _ in range(300):  # 等待600秒（10分钟），每2秒打印一个“.”
+                    print("等待20秒后重试...")
+                    for _ in range(10):  # 等待600秒（10分钟），每2秒打印一个“.”
                         print(".", end="", flush=True)
                         t.sleep(2)
                     print()  # 换行
@@ -170,14 +170,14 @@ def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.Data
     stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
     return stock_data
 
-def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> pd.DataFrame:
+def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> tuple:
     """
-    根据股票代码获取对应的大盘指数日K线数据。
+    根据股票代码获取对应的大盘指数日K线数据和指数名称。
 
     :param stock_code: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
-    :return: pd.DataFrame, 大盘指数日K线数据
+    :return: tuple, (pd.DataFrame, str) - 大盘指数日K线数据和指数名称
     """
     print(f"正在获取股票 {stock_code} 对应的大盘指数数据...")
 
@@ -206,25 +206,25 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> pd
 
         if index_data.empty:
             print(f"❌ 获取 {index_name} 数据失败，返回空数据")
-            return pd.DataFrame()
+            return pd.DataFrame(), "未知指数"
 
         print(f"✅ {index_name} 数据获取成功，共 {len(index_data)} 条记录")
         print(f"   时间范围: {index_data['日期'].min()} 到 {index_data['日期'].max()}")
 
-        return index_data
+        return index_data, index_name
 
     except Exception as e:
         print(f"❌ 获取 {index_name} 数据时出错: {e}")
-        return pd.DataFrame()
+        return pd.DataFrame(), "未知指数"
 
-def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) -> pd.DataFrame:
+def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) -> tuple:
     """
-    获取股票所属行业板块的日K线数据。
+    获取股票所属行业板块的日K线数据和板块名称。
 
     :param stock_code: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
-    :return: pd.DataFrame, 行业板块日K线数据
+    :return: tuple, (pd.DataFrame, str) - 行业板块日K线数据和板块名称
     """
     print(f"正在获取股票 {stock_code} 所属行业板块数据...")
 
@@ -234,7 +234,7 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
 
         if stock_info_df.empty:
             print("❌ 获取股票基本信息失败")
-            return pd.DataFrame()
+            return pd.DataFrame(), "未知板块"
 
         # 从DataFrame中提取信息
         info_dict = dict(zip(stock_info_df['item'], stock_info_df['value']))
@@ -247,7 +247,7 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
 
         if industry_name == '未知' or not industry_name:
             print("❌ 无法获取行业分类信息")
-            return pd.DataFrame()
+            return pd.DataFrame(), "未知板块"
 
         # 步骤2: 获取行业板块数据
         print(f"正在获取 '{industry_name}' 行业板块数据...")
@@ -258,16 +258,16 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         if industry_data.empty:
             print(f"❌ 获取 '{industry_name}' 行业板块数据失败")
             print("   可能原因: 行业名称格式不匹配或数据不可用")
-            return pd.DataFrame()
+            return pd.DataFrame(), f"{industry_name}(数据获取失败)"
 
         print(f"✅ 行业板块数据获取成功，共 {len(industry_data)} 条记录")
         print(f"   时间范围: {industry_data['日期'].min()} 到 {industry_data['日期'].max()}")
 
-        return industry_data
+        return industry_data, industry_name
 
     except Exception as e:
         print(f"❌ 获取行业板块数据时出错: {e}")
-        return pd.DataFrame()
+        return pd.DataFrame(), "未知板块"
 
 def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> str:
     """
@@ -275,20 +275,23 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
 
     :param stock: str, 股票代码，例如 '300680'
     :param start_date: str, 分时数据的起始日期，格式 'YYYYMMDD'
-    :param end_date: str, 数据的结束日期，格式 'YYYYMMDD'
+    :param end_date: str, 分时数据的结束日期，格式 'YYYYMMDD'
     :param kline_days: int, 日K线数据的天数，例如 60
     :return: str, 文件路径，如果失败返回 None
     """
     try:
-        # 获取原有数据
+        # 分时数据使用传递的日期范围（来自daysBeforeToday）
         df_intraday, stock_name = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
-        df_daily = get_daily_kline_data(symbol=stock, end_date=end_date, kline_days=kline_days)
 
-        # 获取大盘指数数据
-        df_market = get_market_index_data(stock_code=stock, start_date=start_date, end_date=end_date)
+        # K线数据使用基于kline_days计算的日期范围
+        kline_start_date, kline_end_date = get_kline_date_range(kline_days)
+        df_daily = get_daily_kline_data(symbol=stock, end_date=kline_end_date, kline_days=kline_days)
 
-        # 获取行业板块数据
-        df_industry = get_industry_sector_data(stock_code=stock, start_date=start_date, end_date=end_date)
+        # 大盘指数数据使用K线数据的日期范围
+        df_market, market_index_name = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
+
+        # 行业板块数据使用K线数据的日期范围
+        df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
 
         # 生成三位随机数，避免文件名冲突
         random_suffix = str(random.randint(0, 999)).zfill(3)
@@ -394,16 +397,69 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str) -> str:
 
     return full_content
 
-def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'keys.json'):
+def select_prompt_by_model(config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    根据当前脚本使用的模型智能选择对应的prompt配置。
+
+    :param config: 配置字典
+    :return: 对应的prompt配置
+    """
+    # 对于qwen-long，使用原有的通用prompt（包含分时数据处理）
+    if 'prompt' in config:
+        print("🎯 检测到文件处理模型专用prompt配置")
+        return config['prompt']
+
+    # 回退到通用prompt
+    print("ℹ️ 未找到专用prompt，使用默认配置")
+    return {}
+
+def get_kline_date_range(kline_days: int) -> tuple:
+    """
+    根据kline_days计算K线数据的日期范围。
+
+    :param kline_days: int, K线数据的天数
+    :return: tuple, (start_date, end_date) 格式为YYYYMMDD
+    """
+    end_date = date.today().strftime('%Y%m%d')
+
+    # 计算K线数据的开始日期（往前kline_days个交易日）
+    calendar = ak.tool_trade_date_hist_sina()
+    calendar['trade_date'] = pd.to_datetime(calendar['trade_date'])
+    end_dt = pd.to_datetime(end_date)
+
+    # 获取所有交易日 <= end_dt，降序排序，取前 kline_days 个（最新的）
+    trading_dates_filtered = calendar[calendar['trade_date'] <= end_dt]['trade_date'].sort_values(ascending=False).head(kline_days)
+
+    if len(trading_dates_filtered) < kline_days:
+        print(f"⚠️ 警告: 仅找到 {len(trading_dates_filtered)} 个交易日，可用交易日不足 {kline_days} 天")
+
+    start_dt_kline = trading_dates_filtered.iloc[-1]  # 最早的日期在最后面，因为是降序
+    start_date = start_dt_kline.strftime('%Y%m%d')
+
+    return start_date, end_date
+
+def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json'):
     """分析股票的主函数"""
     # 1. 读取配置
     config = load_config(config_file, keys_file)
     stocks = select_stocks(config)
-    start_date = config['start_date']
-    end_date = config['end_date']
-    prompt_template = config['prompt']  # 直接使用字典类型的 prompt
+
+    # 分时数据使用daysBeforeToday计算日期范围
+    days_before = config['daysBeforeToday']
+    intraday_start_date = (date.today() - timedelta(days=days_before)).strftime('%Y%m%d')
+    intraday_end_date = date.today().strftime('%Y%m%d')
+    print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date}")
+
+    # K线数据使用kline_days计算日期范围
+    kline_days = config.get('kline_days', 60)  # 默认60天
+    kline_start_date, kline_end_date = get_kline_date_range(kline_days)
+    print(f"📅 K线数据日期范围: {kline_start_date} 到 {kline_end_date} (共{kline_days}个交易日)")
+
+    # 智能选择prompt配置
+    prompt_template = select_prompt_by_model(config)
+    print(f"🎯 使用文件处理模型专用prompt (qwen-long)")
+
     api_key = config['api_key']  # 从 keys.json 读取 API 密钥
-    kline_days = config.get('kline_days', 60)  # 默认60天，如果未指定
     email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
     email_password = config['email_password']  # 从 keys.json 读取发件人邮箱密码
     email_receivers = config['email_receivers']  # 从配置文件读取收件人邮箱地址
@@ -415,7 +471,7 @@ def analyze_stocks(config_file: str = 'retestconfig.json', keys_file: str = 'key
         file_path = None  # 初始化文件路径
         try:
             # 获取数据并保存到Excel文件
-            result = get_and_save_stock_data(stock=stock, start_date=start_date, end_date=end_date, kline_days=kline_days)
+            result = get_and_save_stock_data(stock=stock, start_date=intraday_start_date, end_date=intraday_end_date, kline_days=kline_days)
             if result is None:
                 print(f"股票 {stock} 获取数据失败，跳过")
                 continue
