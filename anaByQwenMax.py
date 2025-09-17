@@ -171,13 +171,14 @@ def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.Data
     stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
     return stock_data
 
-def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> tuple:
+def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline_days: int = 30) -> tuple:
     """
     根据股票代码获取对应的大盘指数日K线数据和指数名称。
 
     :param stock_code: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
+    :param kline_days: int, 获取的K线天数，默认30天
     :return: tuple, (pd.DataFrame, str) - 大盘指数日K线数据和指数名称
     """
     print(f"正在获取股票 {stock_code} 对应的大盘指数数据...")
@@ -201,16 +202,34 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> tu
         print(f"无法识别市场类型，默认使用上证指数 ({index_code})")
 
     try:
-        # 获取大盘指数数据
-        index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
-                                      start_date=start_date, end_date=end_date, adjust="")
+        # 特殊处理上证指数，避免与平安银行代码冲突
+        if index_code == "000001":
+            # 使用指数专用API获取上证指数数据
+            index_data = ak.stock_zh_index_daily(symbol="sh000001")
+            # 获取最近 kline_days 天的上证指数数据
+            index_data = index_data.tail(kline_days)
+            # 将英文列名转换为中文列名，与其他指数保持一致
+            index_data = index_data.rename(columns={
+                'date': '日期',
+                'open': '开盘',
+                'high': '最高',
+                'low': '最低',
+                'close': '收盘',
+                'volume': '成交量'
+            })
+            print(f"✅ 使用指数专用API获取 {index_name} 数据成功")
+        else:
+            # 其他指数使用原有的方法
+            index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
+                                          start_date=start_date, end_date=end_date, adjust="")
 
         if index_data.empty:
             print(f"❌ 获取 {index_name} 数据失败，返回空数据")
             return pd.DataFrame(), "未知指数"
 
         print(f"✅ {index_name} 数据获取成功，共 {len(index_data)} 条记录")
-        print(f"   时间范围: {index_data['日期'].min()} 到 {index_data['日期'].max()}")
+        if not index_data.empty:
+            print(f"   时间范围: {index_data['日期'].min()} 到 {index_data['日期'].max()}")
 
         return index_data, index_name
 
@@ -297,7 +316,7 @@ def get_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) 
             stock_name = f"股票{stock}"
 
         # 大盘指数数据使用K线数据的日期范围
-        df_market, market_index_name = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
+        df_market, market_index_name = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date, kline_days=kline_days)
 
         # 行业板块数据使用K线数据的日期范围
         df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
@@ -458,6 +477,8 @@ def chat_with_qwen_max(data_text: str, question: Any, api_key: str) -> str:
         messages.append({'role': 'user', 'content': user_content})
     else:
         raise ValueError("question 参数必须是字符串或字典类型")
+
+    print(messages)
 
     # 调用 qwen-max API
     completion = client.chat.completions.create(
