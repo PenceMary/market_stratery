@@ -4,7 +4,7 @@ index_code = "000001"
 start_date = "20250901"
 end_date = "20250915"
 index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
-                             start_date=start_date,end_date=end_date, adjust="None")
+                             start_date=start_date,end_date=end_date, adjust=None)
 
 if index_data.empty:
     print(f"❌ 获取 {index_code} 数据失败，返回空数据")
