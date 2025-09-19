@@ -422,13 +422,14 @@ def select_prompt_by_model(config: Dict[str, Any]) -> Dict[str, Any]:
     print("ℹ️ 未找到推理模型专用prompt，使用通用prompt")
     return config.get('prompt', {})
 
-def chat_with_qwen_max(data_text: str, question: Any, api_key: str) -> str:
+def chat_with_qwen_max(data_text: str, question: Any, api_key: str, kline_days: int = 30) -> str:
     """
     使用通义千问 qwen-max 模型进行聊天，直接发送数据文本。
 
     :param data_text: str, 格式化的股票数据文本
     :param question: Any, 用户提示或问题，可以是字符串或字典
     :param api_key: str, API 密钥
+    :param kline_days: int, K线数据的天数，默认30天
     :return: str, 聊天结果
     """
     client = OpenAI(
@@ -446,29 +447,42 @@ def chat_with_qwen_max(data_text: str, question: Any, api_key: str) -> str:
         # 如果 question 是字典，假设它包含 analysis_request
         analysis_request = question.get('analysis_request', {})
 
-        # 构造用户消息内容
+        # 构造用户消息内容 - 增强的多日数据分析描述
         user_content = (
             f"{analysis_request.get('analysis_purpose', {}).get('description', '')}\n\n"
+            f"📊 数据时间范围说明：\n"
+            f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据\n"
+            f"- 大盘指数数据：对应股票所属市场的指数，时间范围与K线数据一致\n"
+            f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致\n\n"
+            f"📈 多日K线数据分析要求：\n"
+            f"请对提供的多日K线数据进行深度趋势分析（按时间顺序由远及近），重点关注：\n"
+            f"1. 价格走势的长期趋势和短期波动\n"
+            f"2. 成交量的变化规律和异常情况\n"
+            f"3. 技术指标的演变和信号强度\n"
+            f"4. 与大盘指数和行业板块的相对强弱关系\n"
+            f"5. 支撑阻力位的形成和突破情况\n\n"
             f"=== 股票数据 ===\n{data_text}\n\n"
-            f"请基于以上数据进行专业分析：\n\n"
+            f"🔬 分析步骤（基于多日K线数据）：\n"
         )
 
-        # 添加数据描述
-        data_desc = analysis_request.get('data_description', {})
-        if 'daily_sheet' in data_desc:
-            daily = data_desc['daily_sheet']
-            user_content += f"日K线数据说明: {daily.get('description', '')}\n"
-            user_content += f"日K线数据字段: {', '.join(daily.get('fields', []))}\n\n"
-
-        # 添加分析步骤
-        user_content += "分析步骤:\n"
+        # 添加分析步骤 - 针对多日K线数据进行趋势分析
         for step in analysis_request.get('analysis_steps', []):
             user_content += f"步骤 {step.get('step', '')}: {step.get('description', '')}\n"
 
-        # 添加输出要求
-        user_content += "\n输出要求:\n"
+        # 添加增强的输出要求 - 重点强调趋势预测
+        user_content += "\n📋 输出要求（基于多日K线趋势分析）：\n"
         for req in analysis_request.get('output_requirements', []):
             user_content += f"{req.get('section', '')}. {req.get('title', '')}: {req.get('description', '')}\n"
+
+        # 添加专门的未来趋势预测要求
+        user_content += "\n🎯 未来趋势预测要求：\n"
+        user_content += "基于上述多日K线数据的深度分析，请提供未来3-5个交易日的趋势预期：\n"
+        user_content += "1. 价格走势方向和强度预测\n"
+        user_content += "2. 关键技术关口和支撑阻力位\n"
+        user_content += "3. 成交量配合预判和资金关注度\n"
+        user_content += "4. 与大盘和板块的相对强弱预期\n"
+        user_content += "5. 技术信号的持续性和可靠性\n"
+        user_content += "6. 最佳交易时机和风险控制建议\n\n"
 
         messages.append({'role': 'user', 'content': user_content})
     elif isinstance(question, str):
@@ -601,7 +615,7 @@ def analyze_stocks_max(config_file: str = 'anylizeconfig.json', keys_file: str =
 
             # 与 qwen-max 模型交互
             print(f"正在使用 qwen-max 分析股票 {stock}...")
-            response = chat_with_qwen_max(data_text=data_text, question=prompt_template, api_key=api_key)
+            response = chat_with_qwen_max(data_text=data_text, question=prompt_template, api_key=api_key, kline_days=kline_days)
             if response:
                 print(f"\n股票 {stock} 的分析结果: {response}\n")
             else:
