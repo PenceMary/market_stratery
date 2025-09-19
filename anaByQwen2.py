@@ -288,15 +288,15 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         print(f"❌ 获取行业板块数据时出错: {e}")
         return pd.DataFrame(), "未知板块"
 
-def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> str:
+def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> tuple:
     """
-    获取股票的分时成交数据、日K线数据、大盘指数数据和行业板块数据，并保存到Excel文件中。
+    获取股票的分时成交数据、日K线数据、大盘指数数据和行业板块数据，并保存到CSV文件中。
 
     :param stock: str, 股票代码，例如 '300680'
     :param start_date: str, 分时数据的起始日期，格式 'YYYYMMDD'
     :param end_date: str, 分时数据的结束日期，格式 'YYYYMMDD'
     :param kline_days: int, 日K线数据的天数，例如 60
-    :return: str, 文件路径，如果失败返回 None
+    :return: tuple, (file_paths, stock_name) 文件路径字典和股票名称，失败返回 (None, None)
     """
     try:
         # 分时数据使用传递的日期范围（来自daysBeforeToday）
@@ -314,24 +314,78 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
 
         # 生成三位随机数，避免文件名冲突
         random_suffix = str(random.randint(0, 999)).zfill(3)
-        file_name = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}.xlsx"
+        base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}"
 
-        # 保存到Excel文件
-        with pd.ExcelWriter(file_name) as writer:
-            df_intraday.to_excel(writer, sheet_name='intraday', index=False)
-            df_daily.to_excel(writer, sheet_name='daily', index=False)
+        # 保存到CSV文件 - 创建多个文件
+        file_paths = {}
+
+        # 保存分时数据
+        intraday_file = f"{base_filename}_intraday.csv"
+        df_intraday.to_csv(intraday_file, index=False, encoding='utf-8-sig')
+        file_paths['intraday'] = intraday_file
+        print(f"✅ 分时数据已保存到 {intraday_file}")
+
+        # 保存日K线数据
+        daily_file = f"{base_filename}_daily.csv"
+        df_daily.to_csv(daily_file, index=False, encoding='utf-8-sig')
+        file_paths['daily'] = daily_file
+        print(f"✅ 日K线数据已保存到 {daily_file}")
+
+        # 保存大盘指数数据
+        if not df_market.empty:
+            market_file = f"{base_filename}_market_index.csv"
+            df_market.to_csv(market_file, index=False, encoding='utf-8-sig')
+            file_paths['market_index'] = market_file
+            print(f"✅ 大盘指数数据已保存到 {market_file}")
+
+        # 保存行业板块数据
+        if not df_industry.empty:
+            industry_file = f"{base_filename}_industry_sector.csv"
+            df_industry.to_csv(industry_file, index=False, encoding='utf-8-sig')
+            file_paths['industry_sector'] = industry_file
+            print(f"✅ 行业板块数据已保存到 {industry_file}")
+
+        # 创建一个合并的CSV文件用于上传到通义千问（包含所有数据）
+        main_file = f"{base_filename}_complete.csv"
+        with open(main_file, 'w', encoding='utf-8-sig', newline='') as f:
+            # 写入标题信息
+            f.write(f"股票代码: {stock}\n")
+            f.write(f"股票名称: {stock_name}\n")
+            f.write(f"数据时间范围: {start_date} 到 {end_date}\n")
+            f.write(f"K线数据天数: {kline_days}\n\n")
+
+            # 写入分时数据
+            f.write("=== 分时成交数据 ===\n")
+            df_intraday.to_csv(f, index=False)
+            f.write("\n\n")
+
+            # 写入日K线数据
+            f.write("=== 日K线数据 ===\n")
+            df_daily.to_csv(f, index=False)
+            f.write("\n\n")
+
+            # 写入大盘指数数据
             if not df_market.empty:
-                df_market.to_excel(writer, sheet_name='market_index', index=False)
-            if not df_industry.empty:
-                df_industry.to_excel(writer, sheet_name='industry_sector', index=False)
+                f.write("=== 大盘指数数据 ===\n")
+                df_market.to_csv(f, index=False)
+                f.write("\n\n")
 
-        print(f"✅ 所有数据已保存到 {file_name}")
-        print(f"   包含工作表: intraday, daily, market_index, industry_sector")
-        return file_name, stock_name
+            # 写入行业板块数据
+            if not df_industry.empty:
+                f.write("=== 行业板块数据 ===\n")
+                df_industry.to_csv(f, index=False)
+                f.write("\n\n")
+
+        file_paths['complete'] = main_file
+        print(f"✅ 合并数据文件已保存到 {main_file} (用于上传)")
+        print(f"✅ 所有数据已保存为CSV格式，共 {len(file_paths)} 个文件")
+        print(f"   文件列表: {', '.join(file_paths.keys())}")
+
+        return file_paths, stock_name
 
     except Exception as e:
         print(f"❌ 处理股票 {stock} 时出错: {e}")
-        return None
+        return None, None
 
 def upload_file(file_path: str, api_key: str) -> str:
     """
@@ -349,13 +403,15 @@ def upload_file(file_path: str, api_key: str) -> str:
     print(f"文件上传成功，文件 ID: {file_object.id}")
     return file_object.id
 
-def chat_with_qwen(file_id: str, question: Any, api_key: str) -> str:
+def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today: int = 7, kline_days: int = 30) -> str:
     """
     使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
-    
+
     :param file_id: str, 文件 ID
     :param question: Any, 用户提示或问题，可以是字符串或字典
     :param api_key: str, API 密钥
+    :param days_before_today: int, 分时数据的天数，默认7天
+    :param kline_days: int, K线数据的天数，默认30天
     :return: str, 聊天结果
     """
     client = OpenAI(
@@ -374,24 +430,55 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str) -> str:
         # 如果 question 是字典，假设它包含 analysis_request
         analysis_request = question.get('analysis_request', {})
 
-        # 构造用户消息内容
+        # 使用传入的参数，优先使用传入的参数，其次从question中获取
+        days_before_today = days_before_today
+        kline_days = kline_days
+
+        # 构造用户消息内容 - 增强的分析描述
         user_content = (
             f"{analysis_request.get('analysis_purpose', {}).get('description', '')}\n\n"
-            f"intraday sheet: {analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('description', '')}\n"
-            f"字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('fields', []))}\n"
-            f"daily sheet: {analysis_request.get('data_description', {}).get('daily_sheet', {}).get('description', '')}\n"
-            f"字段: {', '.join(analysis_request.get('data_description', {}).get('daily_sheet', {}).get('fields', []))}\n\n"
-            f"需要对每天的分时数据按照以下步骤进行分析，并给出分析结果，分析结果需要包含分析步骤的输出要求，根据每天的分析结果推理，给出股票的下一交易日走势概率预估，分析步骤:\n"
+            f"📊 数据时间范围说明：\n"
+            f"- 分时成交数据：包含最近 {days_before_today} 个交易日的日内分时数据\n"
+            f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据\n"
+            f"- 大盘指数数据：对应股票所属市场的指数，时间范围与K线数据一致\n"
+            f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致\n\n"
+            f"🔍 数据工作表详细说明：\n"
+            f"• intraday sheet: {analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('description', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('fields', []))}\n\n"
+            f"• daily sheet: {analysis_request.get('data_description', {}).get('daily_sheet', {}).get('description', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('daily_sheet', {}).get('fields', []))}\n\n"
+            f"• industry_sector sheet: {analysis_request.get('data_description', {}).get('industry_sector_sheet', {}).get('description', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_sheet', {}).get('fields', []))}\n\n"
+            f"• market_index sheet: {analysis_request.get('data_description', {}).get('market_index_sheet', {}).get('description', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('market_index_sheet', {}).get('fields', []))}\n\n"
+            f"📈 多日数据分析要求：\n"
+            f"请对提供的多日分时数据进行逐日深度分析（按时间顺序由远及近），重点关注：\n"
+            f"1. 各交易日的资金动向变化趋势\n"
+            f"2. 价格行为的演变规律\n"
+            f"3. 与大盘指数和行业板块的相对强弱关系\n"
+            f"4. 成交量配合关系的变化\n"
+            f"5. 主力资金意图的转变\n\n"
+            f"🔬 分析步骤（应用于每一天的分时数据）：\n"
         )
 
-        # 添加分析步骤
+        # 添加分析步骤 - 针对多日数据进行逐日分析
         for step in analysis_request.get('analysis_steps', []):
             user_content += f"步骤 {step.get('step', '')}: {step.get('description', '')}\n"
 
-        # 添加输出要求
-        user_content += "\n输出要求:\n"
+        # 添加增强的输出要求 - 重点强调未来走势预测
+        user_content += "\n📋 输出要求（基于多日数据分析）：\n"
         for req in analysis_request.get('output_requirements', []):
             user_content += f"{req.get('section', '')}. {req.get('title', '')}: {req.get('description', '')}\n"
+
+        # 添加专门的未来走势预测要求
+        user_content += "\n🎯 未来走势预测要求：\n"
+        user_content += "基于上述多日数据的深度分析，请提供未来3-5个交易日的走势预期：\n"
+        user_content += "1. 短期价格目标区间预测\n"
+        user_content += "2. 关键支撑阻力位识别\n"
+        user_content += "3. 成交量变化趋势预判\n"
+        user_content += "4. 资金动向持续性分析\n"
+        user_content += "5. 风险提示和应对策略\n"
+        user_content += "6. 最佳买入/卖出时机建议\n\n"
 
         messages.append({'role': 'user', 'content': user_content})
     elif isinstance(question, str):
@@ -491,21 +578,28 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
         print(f"正在处理股票: {stock} ({index+1}/{total})")
         file_path = None  # 初始化文件路径
         try:
-            # 获取数据并保存到Excel文件
+            # 获取数据并保存到CSV文件
             result = get_and_save_stock_data(stock=stock, start_date=intraday_start_date, end_date=intraday_end_date, kline_days=kline_days)
-            if result is None:
+            if result[0] is None:
                 print(f"股票 {stock} 获取数据失败，跳过")
                 continue
-            file_path, stock_name = result
+            file_paths, stock_name = result
 
-            # 上传文件到平台
-            file_id = upload_file(file_path=file_path, api_key=api_key)
+            # 使用合并的完整文件进行上传
+            main_file_path = file_paths['complete']
+            file_id = upload_file(file_path=main_file_path, api_key=api_key)
             if file_id is None:
                 print(f"股票 {stock} 的文件上传失败，跳过")
                 continue
 
-            # 与通义千问模型交互，直接传递字典类型的 prompt_template
-            response = chat_with_qwen(file_id=file_id, question=prompt_template, api_key=api_key)
+            # 与通义千问模型交互，直接传递字典类型的 prompt_template 和配置参数
+            response = chat_with_qwen(
+                file_id=file_id,
+                question=prompt_template,
+                api_key=api_key,
+                days_before_today=config['daysBeforeToday'],
+                kline_days=config['kline_days']
+            )
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
             else:
@@ -519,7 +613,7 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 receivers=email_receivers,
                 sender=email_sender,
                 password=email_password,
-                file_path=file_path  # 传递文件路径以便删除
+                file_path=main_file_path  # 传递合并文件路径以便删除
             )
 
         except Exception as e:
