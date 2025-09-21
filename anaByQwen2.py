@@ -170,71 +170,104 @@ def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.Data
     stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
     return stock_data
 
-def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline_days: int = 30) -> tuple:
+def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline_days: int = 30) -> dict:
     """
-    根据股票代码获取对应的大盘指数日K线数据和指数名称。
+    根据股票代码获取对应的大盘指数日K线数据，支持多个指数（主板指数+板块指数）。
 
     :param stock_code: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
     :param kline_days: int, 获取的K线天数，默认30天
-    :return: tuple, (pd.DataFrame, str) - 大盘指数日K线数据和指数名称
+    :return: dict, {指数名称: (pd.DataFrame, 指数全称)} - 多个指数的数据字典
     """
     print(f"正在获取股票 {stock_code} 对应的大盘指数数据...")
 
-    # 根据股票代码确定大盘指数
-    if stock_code.startswith(('60', '688')):
-        index_code = "000001"  # 上证指数
-        index_name = "上证指数"
-        print(f"识别为上海市场股票，使用上证指数 ({index_code})")
-    elif stock_code.startswith(('00', '30')):
-        index_code = "399001"  # 深圳成指
-        index_name = "深圳成指"
-        print(f"识别为深圳市场股票，使用深圳成指 ({index_code})")
+    # 根据股票代码确定需要获取的指数列表
+    index_configs = {}
+
+    if stock_code.startswith('60'):
+        # 上海主板：上证指数
+        index_configs = {
+            "上证指数": ("000001", "上证指数")
+        }
+        print("识别为上海主板股票，使用上证指数")
+    elif stock_code.startswith('688'):
+        # 科创板：上证指数 + 科创50
+        index_configs = {
+            "上证指数": ("000001", "上证指数"),
+            "科创50": ("000688", "科创50指数")
+        }
+        print("识别为科创板股票，使用上证指数和科创50指数")
+    elif stock_code.startswith('00'):
+        # 深圳主板：深圳成指
+        index_configs = {
+            "深圳成指": ("399001", "深圳成指")
+        }
+        print("识别为深圳主板股票，使用深圳成指")
+    elif stock_code.startswith('30'):
+        # 创业板：深圳成指 + 创业板指数
+        index_configs = {
+            "深圳成指": ("399001", "深圳成指"),
+            "创业板指数": ("399006", "创业板指数")
+        }
+        print("识别为创业板股票，使用深圳成指和创业板指数")
     elif stock_code.startswith(('83', '43', '87')):
-        index_code = "899050"  # 北证50
-        index_name = "北证50"
-        print(f"识别为北京市场股票，使用北证50 ({index_code})")
+        # 北交所：北证50
+        index_configs = {
+            "北证50": ("899050", "北证50指数")
+        }
+        print("识别为北交所股票，使用北证50指数")
     else:
-        index_code = "000001"  # 默认使用上证指数
-        index_name = "上证指数(默认)"
-        print(f"无法识别市场类型，默认使用上证指数 ({index_code})")
+        # 默认使用上证指数
+        index_configs = {
+            "上证指数": ("000001", "上证指数")
+        }
+        print("无法识别市场类型，默认使用上证指数")
 
-    try:
-        # 特殊处理上证指数，避免与平安银行代码冲突
-        if index_code == "000001":
-            # 使用指数专用API获取上证指数数据
-            index_data = ak.stock_zh_index_daily(symbol="sh000001")
-            # 获取最近 kline_days 天的上证指数数据
-            index_data = index_data.tail(kline_days)
-            # 将英文列名转换为中文列名，与其他指数保持一致
-            index_data = index_data.rename(columns={
-                'date': '日期',
-                'open': '开盘',
-                'high': '最高',
-                'low': '最低',
-                'close': '收盘',
-                'volume': '成交量'
-            })
-            print(f"✅ 使用指数专用API获取 {index_name} 数据成功")
-        else:
-            # 其他指数使用原有的方法
-            index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
-                                          start_date=start_date, end_date=end_date, adjust="")
+    result_data = {}
 
-        if index_data.empty:
-            print(f"❌ 获取 {index_name} 数据失败，返回空数据")
-            return pd.DataFrame(), "未知指数"
+    for short_name, (index_code, full_name) in index_configs.items():
+        try:
+            # 特殊处理上证指数，避免与平安银行代码冲突
+            if index_code == "000001":
+                # 使用指数专用API获取上证指数数据
+                index_data = ak.stock_zh_index_daily(symbol="sh000001")
+                # 获取最近 kline_days 天的上证指数数据
+                index_data = index_data.tail(kline_days)
+                # 将英文列名转换为中文列名，与其他指数保持一致
+                index_data = index_data.rename(columns={
+                    'date': '日期',
+                    'open': '开盘',
+                    'high': '最高',
+                    'low': '最低',
+                    'close': '收盘',
+                    'volume': '成交量'
+                })
+                print(f"✅ 使用指数专用API获取 {full_name} 数据成功")
+            else:
+                # 其他指数使用原有的方法
+                index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
+                                              start_date=start_date, end_date=end_date, adjust="")
 
-        print(f"✅ {index_name} 数据获取成功，共 {len(index_data)} 条记录")
-        if not index_data.empty:
-            print(f"   时间范围: {index_data['日期'].min()} 到 {index_data['日期'].max()}")
+            if index_data.empty:
+                print(f"❌ 获取 {full_name} 数据失败，跳过")
+                continue
 
-        return index_data, index_name
+            print(f"✅ {full_name} 数据获取成功，共 {len(index_data)} 条记录")
+            if not index_data.empty:
+                print(f"   时间范围: {index_data['日期'].min()} 到 {index_data['日期'].max()}")
 
-    except Exception as e:
-        print(f"❌ 获取 {index_name} 数据时出错: {e}")
-        return pd.DataFrame(), "未知指数"
+            result_data[short_name] = (index_data, full_name)
+
+        except Exception as e:
+            print(f"❌ 获取 {full_name} 数据时出错: {e}")
+            continue
+
+    if not result_data:
+        print("❌ 未能获取任何指数数据")
+        return {"未知指数": (pd.DataFrame(), "未知指数")}
+
+    return result_data
 
 def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) -> tuple:
     """
@@ -307,7 +340,7 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
         df_daily = get_daily_kline_data(symbol=stock, end_date=kline_end_date, kline_days=kline_days)
 
         # 大盘指数数据使用K线数据的日期范围
-        df_market, market_index_name = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date, kline_days=kline_days)
+        market_index_data = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date, kline_days=kline_days)
 
         # 行业板块数据使用K线数据的日期范围
         df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
@@ -316,43 +349,22 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
         random_suffix = str(random.randint(0, 999)).zfill(3)
         base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}"
 
-        # 保存到CSV文件 - 创建多个文件
+        # 确保data_output目录存在
+        output_dir = Path('data_output')
+        output_dir.mkdir(exist_ok=True)
+
+        # 保存到CSV文件 - 仅创建合并的完整文件
         file_paths = {}
 
-        # 保存分时数据
-        intraday_file = f"{base_filename}_intraday.csv"
-        df_intraday.to_csv(intraday_file, index=False, encoding='utf-8-sig')
-        file_paths['intraday'] = intraday_file
-        print(f"✅ 分时数据已保存到 {intraday_file}")
-
-        # 保存日K线数据
-        daily_file = f"{base_filename}_daily.csv"
-        df_daily.to_csv(daily_file, index=False, encoding='utf-8-sig')
-        file_paths['daily'] = daily_file
-        print(f"✅ 日K线数据已保存到 {daily_file}")
-
-        # 保存大盘指数数据
-        if not df_market.empty:
-            market_file = f"{base_filename}_market_index.csv"
-            df_market.to_csv(market_file, index=False, encoding='utf-8-sig')
-            file_paths['market_index'] = market_file
-            print(f"✅ 大盘指数数据已保存到 {market_file}")
-
-        # 保存行业板块数据
-        if not df_industry.empty:
-            industry_file = f"{base_filename}_industry_sector.csv"
-            df_industry.to_csv(industry_file, index=False, encoding='utf-8-sig')
-            file_paths['industry_sector'] = industry_file
-            print(f"✅ 行业板块数据已保存到 {industry_file}")
-
         # 创建一个合并的CSV文件用于上传到通义千问（包含所有数据）
-        main_file = f"{base_filename}_complete.csv"
+        main_file = str(output_dir / f"{base_filename}_complete.csv")
         with open(main_file, 'w', encoding='utf-8-sig', newline='') as f:
             # 写入标题信息
             f.write(f"股票代码: {stock}\n")
             f.write(f"股票名称: {stock_name}\n")
-            f.write(f"数据时间范围: {start_date} 到 {end_date}\n")
-            f.write(f"K线数据天数: {kline_days}\n\n")
+            f.write(f"所属板块: {industry_sector_name}\n")
+            f.write(f"分时数据时间范围: {start_date} 到 {end_date}\n")
+            f.write(f"K线数据时间范围: {kline_start_date} 到 {kline_end_date}\n\n")
 
             # 写入分时数据
             f.write("=== 分时成交数据 ===\n")
@@ -365,10 +377,12 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
             f.write("\n\n")
 
             # 写入大盘指数数据
-            if not df_market.empty:
-                f.write("=== 大盘指数数据 ===\n")
-                df_market.to_csv(f, index=False)
-                f.write("\n\n")
+            if market_index_data:
+                for index_short_name, (df_market, market_index_name) in market_index_data.items():
+                    if not df_market.empty:
+                        f.write(f"=== {market_index_name}数据 ===\n")
+                        df_market.to_csv(f, index=False)
+                        f.write("\n\n")
 
             # 写入行业板块数据
             if not df_industry.empty:
@@ -378,8 +392,6 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
 
         file_paths['complete'] = main_file
         print(f"✅ 合并数据文件已保存到 {main_file} (用于上传)")
-        print(f"✅ 所有数据已保存为CSV格式，共 {len(file_paths)} 个文件")
-        print(f"   文件列表: {', '.join(file_paths.keys())}")
 
         return file_paths, stock_name
 
@@ -403,7 +415,40 @@ def upload_file(file_path: str, api_key: str) -> str:
     print(f"文件上传成功，文件 ID: {file_object.id}")
     return file_object.id
 
-def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today: int = 7, kline_days: int = 30) -> str:
+def save_data_to_file(data_text: str, stock_code: str, file_suffix: str = "") -> str:
+    """
+    将格式化的数据保存到文件中。
+
+    :param data_text: str, 格式化的数据文本
+    :param stock_code: str, 股票代码
+    :param file_suffix: str, 文件后缀，用于区分不同版本
+    :return: str, 保存的文件路径
+    """
+    import os
+    from datetime import datetime
+
+    # 创建数据目录
+    data_dir = "data_output"
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    # 生成文件名
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{data_dir}/{stock_code}_data_{timestamp}{file_suffix}.txt"
+    filepath = filename
+
+    # 保存数据到文件
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(f"=== 发送给大模型的数据 ===\n")
+        f.write(f"股票代码: {stock_code}\n")
+        f.write(f"保存时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"=" * 50 + "\n\n")
+        f.write(data_text)
+
+    print(f"📄 数据已保存到文件: {filepath}")
+    return filepath
+
+def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today: int = 7, kline_days: int = 30, stock_code: str = "") -> str:
     """
     使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
 
@@ -440,45 +485,35 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today:
             f"📊 数据时间范围说明：\n"
             f"- 分时成交数据：包含最近 {days_before_today} 个交易日的日内分时数据\n"
             f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据\n"
-            f"- 大盘指数数据：对应股票所属市场的指数，时间范围与K线数据一致\n"
+            f"- 市场指数数据：对应股票所属市场的指数（可能包含多个指数，根据板块自动匹配），时间范围与K线数据一致\n"
             f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致\n\n"
+            f"📋 数据结构说明：\n"
+            f"{analysis_request.get('data_description', {}).get('data_structure', '')}\n\n"
             f"🔍 数据工作表详细说明：\n"
-            f"• intraday sheet: {analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('description', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_sheet', {}).get('fields', []))}\n\n"
-            f"• daily sheet: {analysis_request.get('data_description', {}).get('daily_sheet', {}).get('description', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('daily_sheet', {}).get('fields', []))}\n\n"
-            f"• industry_sector sheet: {analysis_request.get('data_description', {}).get('industry_sector_sheet', {}).get('description', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_sheet', {}).get('fields', []))}\n\n"
-            f"• market_index sheet: {analysis_request.get('data_description', {}).get('market_index_sheet', {}).get('description', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('market_index_sheet', {}).get('fields', []))}\n\n"
+            f"• 分时成交数据段: {analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('description', '')}\n"
+            f"  标识符: {analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('section_marker', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('fields', []))}\n\n"
+            f"• 日K线数据段: {analysis_request.get('data_description', {}).get('daily_data_section', {}).get('description', '')}\n"
+            f"  标识符: {analysis_request.get('data_description', {}).get('daily_data_section', {}).get('section_marker', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('daily_data_section', {}).get('fields', []))}\n\n"
+            f"• 市场指数数据段: {analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('description', '')}\n"
+            f"  标识符: {analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('section_markers', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('fields', []))}\n\n"
+            f"• 行业板块数据段: {analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('description', '')}\n"
+            f"  标识符: {analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('section_marker', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('fields', []))}\n\n"
             f"📈 多日数据分析要求：\n"
-            f"请对提供的多日分时数据进行逐日深度分析（按时间顺序由远及近），重点关注：\n"
-            f"1. 各交易日的资金动向变化趋势\n"
-            f"2. 价格行为的演变规律\n"
-            f"3. 与大盘指数和行业板块的相对强弱关系\n"
-            f"4. 成交量配合关系的变化\n"
-            f"5. 主力资金意图的转变\n\n"
-            f"🔬 分析步骤（应用于每一天的分时数据）：\n"
+            f"请对提供的多日分时数据进行逐日深度分析（按时间顺序由远及近）\n"
+            f"🔬 分析步骤（应用于每一天的分时数据分析结果输出）：\n"
         )
 
         # 添加分析步骤 - 针对多日数据进行逐日分析
         for step in analysis_request.get('analysis_steps', []):
             user_content += f"步骤 {step.get('step', '')}: {step.get('description', '')}\n"
 
-        # 添加增强的输出要求 - 重点强调未来走势预测
-        user_content += "\n📋 输出要求（基于多日数据分析）：\n"
-        for req in analysis_request.get('output_requirements', []):
-            user_content += f"{req.get('section', '')}. {req.get('title', '')}: {req.get('description', '')}\n"
-
-        # 添加专门的未来走势预测要求
-        user_content += "\n🎯 未来走势预测要求：\n"
-        user_content += "基于上述多日数据的深度分析，请提供未来3-5个交易日的走势预期：\n"
-        user_content += "1. 短期价格目标区间预测\n"
-        user_content += "2. 关键支撑阻力位识别\n"
-        user_content += "3. 成交量变化趋势预判\n"
-        user_content += "4. 资金动向持续性分析\n"
-        user_content += "5. 风险提示和应对策略\n"
-        user_content += "6. 最佳买入/卖出时机建议\n\n"
+        # 使用配置化的输出要求格式化
+        output_requirements = analysis_request.get('output_requirements', [])
+        user_content += format_output_requirements(output_requirements)
 
         messages.append({'role': 'user', 'content': user_content})
     elif isinstance(question, str):
@@ -488,6 +523,19 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today:
         raise ValueError("question 参数必须是字符串或字典类型")
 
     print(messages)
+
+    # 保存完整的对话内容到本地文件
+    if stock_code:
+        # 将messages格式化为可读的文本
+        full_message_content = ""
+        for msg in messages:
+            role = msg.get('role', 'unknown')
+            content = msg.get('content', '')
+            full_message_content += f"=== {role.upper()} ===\n{content}\n\n"
+
+        # 保存到文件
+        full_message_file = save_data_to_file(full_message_content, stock_code, "_full_message")
+        print(f"📄 完整消息已保存，您可以查看: {full_message_file}")
 
     # 调用 API
     completion = client.chat.completions.create(
@@ -504,6 +552,34 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today:
             print(".", end="", flush=True)
 
     return full_content
+
+def format_output_requirements(output_requirements: List[Dict[str, Any]]) -> str:
+    """
+    根据output_requirements配置格式化输出要求。
+
+    :param output_requirements: 输出要求列表
+    :return: 格式化的输出要求字符串
+    """
+    formatted_content = "\n📋 输出要求（基于多日数据分析）：\n"
+
+    for req in output_requirements:
+        section_num = req.get('section', '')
+        title = req.get('title', '')
+        description = req.get('description', '')
+
+        # 添加section标题和描述
+        formatted_content += f"{section_num}. {title}: {description}\n"
+
+        # 处理output_format
+        output_format = req.get('output_format', {})
+        if output_format:
+            formatted_content += "\n输出格式要求：\n"
+
+            # 通用处理所有output_format中的键值对
+            for key, value in output_format.items():
+                formatted_content += f"{key}: {value}\n"
+
+    return formatted_content
 
 def select_prompt_by_model(config: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -568,9 +644,9 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
     print(f"🎯 使用文件处理模型专用prompt (qwen-long)")
 
     api_key = config['api_key']  # 从 keys.json 读取 API 密钥
-    email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
+    email_sender = config['email_sender']  # 从 keys.json 读取发件人邮箱地址
     email_password = config['email_password']  # 从 keys.json 读取发件人邮箱密码
-    email_receivers = config['email_receivers']  # 从配置文件读取收件人邮箱地址
+    email_receivers = config['email_receivers']  # 从 keys.json 读取收件人邮箱地址
 
     # 2. 循环处理每只股票
     total = len(stocks)
@@ -598,10 +674,34 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 question=prompt_template,
                 api_key=api_key,
                 days_before_today=config['daysBeforeToday'],
-                kline_days=config['kline_days']
+                kline_days=config['kline_days'],
+                stock_code=stock
             )
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
+
+                # 保存分析结果到MD文件
+                current_time = datetime.now()
+                date_str = current_time.strftime('%Y%m%d')
+                time_str = current_time.strftime('%H%M%S')
+
+                # 确保data_output文件夹存在
+                output_dir = Path('data_output')
+                output_dir.mkdir(exist_ok=True)
+
+                # 清理股票名称中的特殊字符
+                clean_stock_name = stock_name.replace('(', '').replace(')', '').replace(' ', '_')
+
+                md_filename = f"{stock}_{clean_stock_name}_{intraday_start_date}_to_{intraday_end_date}_{date_str}_{time_str}.md"
+                md_filepath = output_dir / md_filename
+
+                with open(md_filepath, 'w', encoding='utf-8') as f:
+                    f.write(f"# {stock_name}（{stock}）股票分析报告\n\n")
+                    f.write(f"**分析时间**: {current_time.strftime('%Y年%m月%d日 %H:%M:%S')}\n\n")
+                    f.write(f"---\n\n")
+                    f.write(response)
+
+                print(f"✅ 分析结果已保存到: {md_filepath}\n")
             else:
                 print(f"股票 {stock} 的聊天请求失败！\n")
 
