@@ -640,17 +640,41 @@ def get_kline_date_range(kline_days: int) -> tuple:
 
     return start_date, end_date
 
+def get_intraday_date_range(days_before_today: int) -> tuple:
+    """
+    根据days_before_today计算分时数据的日期范围，使用交易日而非自然日。
+
+    :param days_before_today: int, 分时数据往前追溯的交易日数量
+    :return: tuple, (start_date, end_date) 格式为YYYYMMDD
+    """
+    end_date = date.today().strftime('%Y%m%d')
+
+    # 计算分时数据的开始日期（往前days_before_today个交易日）
+    calendar = ak.tool_trade_date_hist_sina()
+    calendar['trade_date'] = pd.to_datetime(calendar['trade_date'])
+    end_dt = pd.to_datetime(end_date)
+
+    # 获取所有交易日 <= end_dt，降序排序，取前 days_before_today 个（最新的）
+    trading_dates_filtered = calendar[calendar['trade_date'] <= end_dt]['trade_date'].sort_values(ascending=False).head(days_before_today)
+
+    if len(trading_dates_filtered) < days_before_today:
+        print(f"⚠️ 警告: 仅找到 {len(trading_dates_filtered)} 个交易日，可用交易日不足 {days_before_today} 天")
+
+    start_dt_intraday = trading_dates_filtered.iloc[-1]  # 最早的日期在最后面，因为是降序
+    start_date = start_dt_intraday.strftime('%Y%m%d')
+
+    return start_date, end_date
+
 def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json'):
     """分析股票的主函数"""
     # 1. 读取配置
     config = load_config(config_file, keys_file)
     stocks = select_stocks(config)
 
-    # 分时数据使用daysBeforeToday计算日期范围
+    # 分时数据使用daysBeforeToday计算日期范围（基于交易日）
     days_before = config['daysBeforeToday']
-    intraday_start_date = (date.today() - timedelta(days=days_before)).strftime('%Y%m%d')
-    intraday_end_date = date.today().strftime('%Y%m%d')
-    print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date}")
+    intraday_start_date, intraday_end_date = get_intraday_date_range(days_before)
+    print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date} (共{days_before}个交易日)")
 
     # K线数据使用kline_days计算日期范围
     kline_days = config.get('kline_days', 60)  # 默认60天
