@@ -9,15 +9,33 @@ import os
 from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 import time as t
+from md_to_html import MarkdownToHTMLConverter
 
-def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, file_path: str = None) -> bool:
-    """发送邮件并返回是否成功"""
-    # 创建文本邮件
-    msg = MIMEText(body, 'plain', 'utf-8')
+def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, attachment_path: str = None) -> bool:
+    """发送邮件并返回是否成功，如果提供attachment_path则发送HTML附件"""
+    # 创建邮件对象
+    msg = MIMEMultipart()
     msg['From'] = sender  # 发件人
     msg['To'] = ', '.join(receivers)  # 将收件人列表转换为逗号分隔的字符串
     msg['Subject'] = subject
+
+    # 添加邮件正文
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+    # 如果提供了附件路径，添加HTML附件
+    if attachment_path and os.path.exists(attachment_path):
+        try:
+            with open(attachment_path, 'rb') as f:
+                attachment = MIMEApplication(f.read(), _subtype='html')
+                attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(attachment_path))
+                msg.attach(attachment)
+            print(f"已添加附件: {attachment_path}")
+        except Exception as e:
+            print(f"添加附件失败: {e}")
+            return False
 
     # SMTP服务器设置
     smtp_server = 'applesmtp.163.com'
@@ -33,10 +51,10 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
         server.sendmail(sender, receivers, msg.as_string())
         server.quit()
         print("邮件发送成功！")
-        # 如果邮件发送成功且提供了文件路径，则删除本地文件
-        if file_path and os.path.exists(file_path):
-            #os.remove(file_path)
-            print(f"本地文件 {file_path} 已删除")
+        # 如果邮件发送成功且提供了附件路径，则删除本地文件
+        if attachment_path and os.path.exists(attachment_path):
+            #os.remove(attachment_path)
+            print(f"本地文件 {attachment_path} 已删除")
         return True
     except Exception as e:
         print(f"邮件发送失败：{e}")
@@ -701,7 +719,17 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                     f.write(f"---\n\n")
                     f.write(response)
 
-                print(f"✅ 分析结果已保存到: {md_filepath}\n")
+                print(f"✅ 分析结果已保存到: {md_filepath}")
+
+                # 将MD文件转换为HTML
+                html_filename = md_filename.replace('.md', '.html')
+                html_filepath = output_dir / html_filename
+                converter = MarkdownToHTMLConverter()
+                if converter.convert_file(str(md_filepath), str(html_filepath)):
+                    print(f"✅ HTML文件已生成: {html_filepath}\n")
+                else:
+                    print(f"❌ HTML转换失败: {md_filepath}\n")
+                    continue
             else:
                 print(f"股票 {stock} 的聊天请求失败！\n")
 
@@ -709,11 +737,11 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             print(f"股票 {stock} 准备发送邮件 \n")
             send_email(
                 subject=f"股票 {stock} 分析结果",
-                body=response,
+                body=f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的HTML文件。",
                 receivers=email_receivers,
                 sender=email_sender,
                 password=email_password,
-                file_path=main_file_path  # 传递合并文件路径以便删除
+                attachment_path=str(html_filepath)  # 发送HTML文件作为附件
             )
 
         except Exception as e:
