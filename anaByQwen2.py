@@ -8,6 +8,7 @@ from openai import OpenAI
 import os
 from pathlib import Path
 import smtplib
+import sys
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -665,11 +666,23 @@ def get_intraday_date_range(days_before_today: int) -> tuple:
 
     return start_date, end_date
 
-def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json'):
-    """分析股票的主函数"""
+def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json', command_line_stocks: List[str] = None):
+    """分析股票的主函数
+
+    :param config_file: 配置文件路径
+    :param keys_file: 密钥文件路径
+    :param command_line_stocks: 命令行传入的股票代码列表，如果提供则优先使用，否则使用配置文件
+    """
     # 1. 读取配置
     config = load_config(config_file, keys_file)
-    stocks = select_stocks(config)
+
+    # 如果提供了命令行股票参数，使用命令行参数；否则使用配置文件
+    if command_line_stocks:
+        stocks = command_line_stocks
+        print(f"📋 使用命令行指定的股票: {', '.join(stocks)}")
+    else:
+        stocks = select_stocks(config)
+        print(f"📋 使用配置文件指定的股票: {', '.join(stocks)}")
 
     # 分时数据使用daysBeforeToday计算日期范围（基于交易日）
     days_before = config['daysBeforeToday']
@@ -778,4 +791,12 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
 
 # 运行程序
 if __name__ == "__main__":
-    analyze_stocks('anylizeconfig.json', 'keys.json')
+    # 检查命令行参数，如果有参数（除了脚本名），则将其作为股票代码使用
+    if len(sys.argv) > 1:
+        # sys.argv[0] 是脚本名，后面的参数都是股票代码
+        command_line_stocks = sys.argv[1:]
+        print(f"🔧 检测到命令行参数，使用指定的股票代码: {', '.join(command_line_stocks)}")
+        analyze_stocks('anylizeconfig.json', 'keys.json', command_line_stocks)
+    else:
+        print("🔧 未检测到命令行参数，使用配置文件中的股票设置")
+        analyze_stocks('anylizeconfig.json', 'keys.json')
