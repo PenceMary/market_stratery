@@ -9,7 +9,7 @@
         "300747"
     ],
     "random_stock_count": 1,
-    "daysBeforeToday": 3,
+    "daysBeforeToday": 7,
     "kline_days": 60,
     "prompt": {
         "analysis_request": {
