@@ -467,14 +467,14 @@ def save_data_to_file(data_text: str, stock_code: str, file_suffix: str = "") ->
     print(f"📄 数据已保存到文件: {filepath}")
     return filepath
 
-def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today: int = 7, kline_days: int = 30, stock_code: str = "") -> str:
+def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int = 7, kline_days: int = 30, stock_code: str = "") -> str:
     """
     使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
 
     :param file_id: str, 文件 ID
     :param question: Any, 用户提示或问题，可以是字符串或字典
     :param api_key: str, API 密钥
-    :param days_before_today: int, 分时数据的天数，默认7天
+    :param intraday_days: int, 分时数据的天数，默认7天
     :param kline_days: int, K线数据的天数，默认30天
     :return: str, 聊天结果
     """
@@ -495,14 +495,30 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, days_before_today:
         analysis_request = question.get('analysis_request', {})
 
         # 使用传入的参数，优先使用传入的参数，其次从question中获取
-        days_before_today = days_before_today
+        intraday_days = intraday_days
         kline_days = kline_days
 
+        # 获取当前系统时间并格式化
+        current_datetime = datetime.now()
+        current_date_str = current_datetime.strftime('%Y年%m月%d日')
+        current_weekday = current_datetime.strftime('%A')  # 英文星期
+        # 转换为中文星期
+        weekday_map = {
+            'Monday': '星期一', 'Tuesday': '星期二', 'Wednesday': '星期三',
+            'Thursday': '星期四', 'Friday': '星期五', 'Saturday': '星期六', 'Sunday': '星期日'
+        }
+        current_weekday_cn = weekday_map.get(current_weekday, current_weekday)
+
+        # 在提示词开头明确声明当前时间
+        time_declaration = f"""⚠️ 重要时间声明：当前系统时间为 {current_date_str} {current_weekday_cn}。请在整个分析报告中使用此时间作为基准，确保所有日期相关的内容都基于此当前时间进行计算和描述。
+
+"""
+
         # 构造用户消息内容 - 增强的分析描述
-        user_content = (
+        user_content = time_declaration + (
             f"{analysis_request.get('analysis_purpose', {}).get('description', '')}\n\n"
             f"📊 数据时间范围说明：\n"
-            f"- 分时成交数据：包含最近 {days_before_today} 个交易日的日内分时数据，用于分析短期资金流向和主力行为模式\n"
+            f"- 分时成交数据：包含最近 {intraday_days} 个交易日的日内分时数据，用于分析短期资金流向和主力行为模式\n"
             f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据，用于识别中长期趋势和关键技术位\n"
             f"- 市场指数数据：对应股票所属市场的指数（可能包含多个指数，根据板块自动匹配），时间范围与K线数据一致，用于评估系统性风险和市场beta系数\n"
             f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致，用于分析行业相对强度和轮动机会\n\n"
@@ -679,15 +695,15 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
     # 如果提供了命令行股票参数，使用命令行参数；否则使用配置文件
     if command_line_stocks:
         stocks = command_line_stocks
-        print(f"📋 使用命令行指定的股票: {', '.join(stocks)}")
+        print(f"💴 使用命令行指定的股票: {', '.join(stocks)}")
     else:
         stocks = select_stocks(config)
-        print(f"📋 使用配置文件指定的股票: {', '.join(stocks)}")
+        print(f"💴 使用配置文件指定的股票: {', '.join(stocks)}")
 
-    # 分时数据使用daysBeforeToday计算日期范围（基于交易日）
-    days_before = config['daysBeforeToday']
-    intraday_start_date, intraday_end_date = get_intraday_date_range(days_before)
-    print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date} (共{days_before}个交易日)")
+    # 分时数据使用intraday_days计算日期范围（基于交易日）
+    intraday_days = config['intraday_days']
+    intraday_start_date, intraday_end_date = get_intraday_date_range(intraday_days)
+    print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date} (共{intraday_days}个交易日)")
 
     # K线数据使用kline_days计算日期范围
     kline_days = config.get('kline_days', 60)  # 默认60天
@@ -728,7 +744,7 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 file_id=file_id,
                 question=prompt_template,
                 api_key=api_key,
-                days_before_today=config['daysBeforeToday'],
+                intraday_days=config['intraday_days'],
                 kline_days=config['kline_days'],
                 stock_code=stock
             )
