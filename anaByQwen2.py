@@ -135,8 +135,8 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                     # 如果不是最后一个交易日，等待 2 分钟
                     if date != trading_dates[-1]:
                         print("稍等一下...")
-                        for _ in range(random.randint(1, 10)):  # 等待随机秒数，每秒打印一个“.”
-                            print(".", end="", flush=True)
+                        for _ in range(random.randint(1, 20)):  # 等待随机秒数，每秒打印一个“.”
+                            print("+", end="", flush=True)
                             t.sleep(1)
                         print()  # 换行
                     break  # 成功获取数据，跳出重试循环
@@ -144,9 +144,9 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                 print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
                 if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
                     print("等待20秒后重试...")
-                    for _ in range(10):  # 等待600秒（10分钟），每2秒打印一个“.”
+                    for _ in range(20):  # 等待600秒（10分钟），每2秒打印一个“.”
                         print(".", end="", flush=True)
-                        t.sleep(2)
+                        t.sleep(1)
                     print()  # 换行
                 else:
                     print(f"股票 {minute_code} 在 {date} 的数据获取失败，跳过")
@@ -185,9 +185,78 @@ def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.Data
     start_date_kline = start_dt_kline.strftime('%Y%m%d')
     end_date_kline = end_dt_kline.strftime('%Y%m%d')
     
-    # 获取日K线数据
-    stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
-    return stock_data
+    # 获取日K线数据，带重试机制
+    max_retries = 3
+    retry_delay = 20  # 秒
+
+    for attempt in range(max_retries):
+        try:
+            print(f"正在获取股票 {symbol} 的K线数据... (尝试 {attempt + 1}/{max_retries})")
+            stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
+
+            if stock_data is not None and not stock_data.empty:
+                print(f"成功获取股票 {symbol} 的K线数据，共 {len(stock_data)} 条记录")
+                return stock_data
+            else:
+                print(f"警告：股票 {symbol} 的K线数据为空")
+                if attempt < max_retries - 1:
+                    print(f"将在 {retry_delay} 秒后重试...")
+                    t.sleep(retry_delay)
+                else:
+                    print(f"已达到最大重试次数，返回空数据")
+                    return pd.DataFrame()
+
+        except Exception as e:
+            print(f"获取股票 {symbol} 的K线数据失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"将在 {retry_delay} 秒后重试...")
+                t.sleep(retry_delay)
+            else:
+                print(f"已达到最大重试次数，放弃获取")
+                raise Exception(f"获取股票 {symbol} 的K线数据失败，已重试 {max_retries} 次: {str(e)}")
+
+    # 这行代码理论上不会到达，但为了安全起见保留
+    return pd.DataFrame()
+
+def _fetch_index_data_with_retry(api_func, *args, **kwargs):
+    """
+    带重试机制的指数数据获取函数
+
+    :param api_func: API函数
+    :param args: 位置参数
+    :param kwargs: 关键字参数
+    :return: 获取到的数据
+    """
+    max_retries = 3
+    retry_delay = 20  # 秒
+
+    for attempt in range(max_retries):
+        try:
+            print(f"正在获取指数数据... (尝试 {attempt + 1}/{max_retries})")
+            data = api_func(*args, **kwargs)
+
+            if data is not None and not data.empty:
+                print(f"成功获取指数数据，共 {len(data)} 条记录")
+                return data
+            else:
+                print(f"警告：指数数据为空")
+                if attempt < max_retries - 1:
+                    print(f"将在 {retry_delay} 秒后重试...")
+                    t.sleep(retry_delay)
+                else:
+                    print(f"已达到最大重试次数，返回空数据")
+                    return pd.DataFrame()
+
+        except Exception as e:
+            print(f"获取指数数据失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"将在 {retry_delay} 秒后重试...")
+                t.sleep(retry_delay)
+            else:
+                print(f"已达到最大重试次数，放弃获取")
+                raise Exception(f"获取指数数据失败，已重试 {max_retries} 次: {str(e)}")
+
+    return pd.DataFrame()
 
 def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline_days: int = 30) -> dict:
     """
@@ -249,8 +318,8 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline
         try:
             # 特殊处理上证指数，避免与平安银行代码冲突
             if index_code == "000001":
-                # 使用指数专用API获取上证指数数据
-                index_data = ak.stock_zh_index_daily(symbol="sh000001")
+                # 使用指数专用API获取上证指数数据（带重试机制）
+                index_data = _fetch_index_data_with_retry(ak.stock_zh_index_daily, symbol="sh000001")
                 # 获取最近 kline_days 天的上证指数数据
                 index_data = index_data.tail(kline_days)
                 # 将英文列名转换为中文列名，与其他指数保持一致
@@ -264,9 +333,15 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline
                 })
                 print(f"✅ 使用指数专用API获取 {full_name} 数据成功")
             else:
-                # 其他指数使用原有的方法
-                index_data = ak.stock_zh_a_hist(symbol=index_code, period="daily",
-                                              start_date=start_date, end_date=end_date, adjust="")
+                # 其他指数使用原有的方法（带重试机制）
+                index_data = _fetch_index_data_with_retry(
+                    ak.stock_zh_a_hist,
+                    symbol=index_code,
+                    period="daily",
+                    start_date=start_date,
+                    end_date=end_date,
+                    adjust=""
+                )
 
             if index_data.empty:
                 print(f"❌ 获取 {full_name} 数据失败，跳过")
@@ -300,8 +375,8 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
     print(f"正在获取股票 {stock_code} 所属行业板块数据...")
 
     try:
-        # 步骤1: 获取股票基本信息
-        stock_info_df = ak.stock_individual_info_em(symbol=stock_code)
+        # 步骤1: 获取股票基本信息（带重试机制）
+        stock_info_df = _fetch_index_data_with_retry(ak.stock_individual_info_em, symbol=stock_code)
 
         if stock_info_df.empty:
             print("❌ 获取股票基本信息失败")
@@ -320,11 +395,14 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
             print("❌ 无法获取行业分类信息")
             return pd.DataFrame(), "未知板块"
 
-        # 步骤2: 获取行业板块数据
+        # 步骤2: 获取行业板块数据（带重试机制）
         print(f"正在获取 '{industry_name}' 行业板块数据...")
-        industry_data = ak.stock_board_industry_hist_em(symbol=industry_name,
-                                                       start_date=start_date,
-                                                       end_date=end_date)
+        industry_data = _fetch_index_data_with_retry(
+            ak.stock_board_industry_hist_em,
+            symbol=industry_name,
+            start_date=start_date,
+            end_date=end_date
+        )
 
         if industry_data.empty:
             print(f"❌ 获取 '{industry_name}' 行业板块数据失败")
