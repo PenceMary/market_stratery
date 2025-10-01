@@ -4,7 +4,7 @@
         "688668"
     ],
     "random_stock_count": 1,
-    "intraday_days": 5,
+    "intraday_days": 7,
     "kline_days": 60,
     "prompt": {
         "analysis_request": {
