@@ -14,6 +14,39 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 import time as t
 from md_to_html import MarkdownToHTMLConverter
+import re
+
+def extract_investment_rating(md_file_path: str) -> str:
+    """
+    从MD文件中提取投资评级信息
+
+    :param md_file_path: str, MD文件路径
+    :return: str, 提取到的投资评级，如果未找到则返回空字符串
+    """
+    try:
+        with open(md_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # 使用正则表达式查找投资评级行
+        # 匹配类似：**投资评级** | ✅ **强烈推荐（Strong Buy）** |
+        pattern = r'\*\*投资评级\*\*\s*\|\s*(.+?)\s*\|'
+        match = re.search(pattern, content)
+
+        if match:
+            rating_text = match.group(1).strip()
+            # 清理markdown格式，提取实际评级内容
+            # 移除markdown的粗体标记和表情符号
+            clean_rating = re.sub(r'\*\*', '', rating_text)  # 移除粗体标记
+            clean_rating = re.sub(r'[✅❌🟢🟡🔴]', '', clean_rating)  # 移除表情符号
+            clean_rating = clean_rating.strip()
+            return clean_rating
+        else:
+            print(f"⚠️ 在文件 {md_file_path} 中未找到投资评级信息")
+            return ""
+
+    except Exception as e:
+        print(f"❌ 提取投资评级时出错: {e}")
+        return ""
 
 def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, attachment_path: str = None) -> bool:
     """发送邮件并返回是否成功，如果提供attachment_path则发送HTML附件"""
@@ -605,16 +638,20 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
             f"🔍 数据工作表详细说明：\n"
             f"• 分时成交数据段: {analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('description', '')}\n"
             f"  标识符: {analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('section_marker', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('fields', []))}\n\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('fields', []))}\n"
+            f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('intraday_data_section', {}).get('analysis_focus', []))}\n\n"
             f"• 日K线数据段: {analysis_request.get('data_description', {}).get('daily_data_section', {}).get('description', '')}\n"
             f"  标识符: {analysis_request.get('data_description', {}).get('daily_data_section', {}).get('section_marker', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('daily_data_section', {}).get('fields', []))}\n\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('daily_data_section', {}).get('fields', []))}\n"
+            f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('daily_data_section', {}).get('analysis_focus', []))}\n\n"
             f"• 市场指数数据段: {analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('description', '')}\n"
             f"  标识符: {analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('section_markers', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('fields', []))}\n\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('fields', []))}\n"
+            f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('market_index_data_sections', {}).get('analysis_focus', []))}\n\n"
             f"• 行业板块数据段: {analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('description', '')}\n"
             f"  标识符: {analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('section_marker', '')}\n"
-            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('fields', []))}\n\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('fields', []))}\n"
+            f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('analysis_focus', []))}\n\n"
             f"📈 多日数据分析要求：\n"
             f"请对提供的多日分时数据进行逐日深度分析（按时间顺序由远及近）\n"
             f"🔬 分析步骤（应用于每一天的分时数据分析结果输出）：\n"
@@ -623,6 +660,8 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
         # 添加分析步骤 - 针对多日数据进行逐日分析
         for step in analysis_request.get('analysis_steps', []):
             user_content += f"步骤 {step.get('step', '')}: {step.get('description', '')}\n"
+            if step.get('output_focus'):
+                user_content += f"  输出重点: {step.get('output_focus', '')}\n"
 
         # 使用配置化的输出要求格式化
         output_requirements = analysis_request.get('output_requirements', [])
@@ -683,14 +722,29 @@ def format_output_requirements(output_requirements: List[Dict[str, Any]]) -> str
         # 添加section标题和描述
         formatted_content += f"{section_num}. {title}: {description}\n"
 
+        # 处理quantitative_metrics（量化指标）
+        quantitative_metrics = req.get('quantitative_metrics', [])
+        if quantitative_metrics:
+            formatted_content += "\n量化指标要求：\n"
+            for i, metric in enumerate(quantitative_metrics, 1):
+                formatted_content += f"{i}. {metric}\n"
+
+        # 处理decision_framework（决策框架）
+        decision_framework = req.get('decision_framework', {})
+        if decision_framework:
+            formatted_content += "\n决策框架：\n"
+            for key, value in decision_framework.items():
+                formatted_content += f"{key}: {value}\n"
+
         # 处理output_format
         output_format = req.get('output_format', {})
         if output_format:
             formatted_content += "\n输出格式要求：\n"
-
             # 通用处理所有output_format中的键值对
             for key, value in output_format.items():
                 formatted_content += f"{key}: {value}\n"
+
+        formatted_content += "\n"
 
     return formatted_content
 
@@ -866,8 +920,18 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
 
             # 发送邮件并根据结果决定是否删除文件
             print(f"股票 {stock} 准备发送邮件 \n")
+
+            # 提取投资评级并添加到邮件主题中
+            investment_rating = extract_investment_rating(str(md_filepath))
+            if investment_rating:
+                email_subject = f"股票 {stock} 分析结果 - {investment_rating}"
+                print(f"📧 邮件主题包含投资评级: {email_subject}")
+            else:
+                email_subject = f"股票 {stock} 分析结果"
+                print("📧 未找到投资评级，使用默认邮件主题")
+
             send_email(
-                subject=f"股票 {stock} 分析结果",
+                subject=email_subject,
                 body=f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的HTML文件。",
                 receivers=email_receivers,
                 sender=email_sender,
