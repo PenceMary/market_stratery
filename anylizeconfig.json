@@ -4,6 +4,7 @@
         "002517"
     ],
     "random_stock_count": 1,
+    "specified_date": "",
     "intraday_days": 6,
     "kline_days": 60,
     "prompt": {

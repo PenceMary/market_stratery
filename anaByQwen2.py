@@ -764,14 +764,16 @@ def select_prompt_by_model(config: Dict[str, Any]) -> Dict[str, Any]:
     print("ℹ️ 未找到专用prompt，使用默认配置")
     return {}
 
-def get_kline_date_range(kline_days: int) -> tuple:
+def get_kline_date_range(kline_days: int, end_date: str = None) -> tuple:
     """
     根据kline_days计算K线数据的日期范围。
 
     :param kline_days: int, K线数据的天数
+    :param end_date: str, 结束日期，格式为YYYYMMDD，如果为None则使用今天日期
     :return: tuple, (start_date, end_date) 格式为YYYYMMDD
     """
-    end_date = date.today().strftime('%Y%m%d')
+    if end_date is None:
+        end_date = date.today().strftime('%Y%m%d')
 
     # 计算K线数据的开始日期（往前kline_days个交易日）
     calendar = ak.tool_trade_date_hist_sina()
@@ -789,14 +791,16 @@ def get_kline_date_range(kline_days: int) -> tuple:
 
     return start_date, end_date
 
-def get_intraday_date_range(days_before_today: int) -> tuple:
+def get_intraday_date_range(days_before_today: int, end_date: str = None) -> tuple:
     """
     根据days_before_today计算分时数据的日期范围，使用交易日而非自然日。
 
     :param days_before_today: int, 分时数据往前追溯的交易日数量
+    :param end_date: str, 结束日期，格式为YYYYMMDD，如果为None则使用今天日期
     :return: tuple, (start_date, end_date) 格式为YYYYMMDD
     """
-    end_date = date.today().strftime('%Y%m%d')
+    if end_date is None:
+        end_date = date.today().strftime('%Y%m%d')
 
     # 计算分时数据的开始日期（往前days_before_today个交易日）
     calendar = ak.tool_trade_date_hist_sina()
@@ -832,14 +836,22 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
         stocks = select_stocks(config)
         print(f"💴 使用配置文件指定的股票: {', '.join(stocks)}")
 
+    # 读取指定的结束日期，如果为空则使用None（表示今天）
+    specified_date = config.get('specified_date', '').strip()
+    if specified_date:
+        print(f"📅 使用指定的结束日期: {specified_date}")
+    else:
+        print("📅 使用今天的日期作为结束日期")
+        specified_date = None
+
     # 分时数据使用intraday_days计算日期范围（基于交易日）
     intraday_days = config['intraday_days']
-    intraday_start_date, intraday_end_date = get_intraday_date_range(intraday_days)
+    intraday_start_date, intraday_end_date = get_intraday_date_range(intraday_days, specified_date)
     print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date} (共{intraday_days}个交易日)")
 
     # K线数据使用kline_days计算日期范围
     kline_days = config.get('kline_days', 60)  # 默认60天
-    kline_start_date, kline_end_date = get_kline_date_range(kline_days)
+    kline_start_date, kline_end_date = get_kline_date_range(kline_days, specified_date)
     print(f"📅 K线数据日期范围: {kline_start_date} 到 {kline_end_date} (共{kline_days}个交易日)")
 
     # 智能选择prompt配置
@@ -943,7 +955,7 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             print(f"处理股票 {stock} 时出错: {e}\n")
 
         if index < total - 1:
-            for i in range(60):  # 等待 300 秒，避免请求过于频繁
+            for i in range(10):  # 等待 300 秒，避免请求过于频繁
                 print(".", end="", flush=True)
                 t.sleep(1)  # 避免请求过于频繁
 

@@ -128,3 +128,6 @@ dmypy.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Data output directory
+data_output/
