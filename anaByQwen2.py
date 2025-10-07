@@ -193,31 +193,15 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
     all_data = all_data.drop(columns=['symbol', 'name'], errors='ignore')
     return all_data, stock_name
 
-def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.DataFrame:
+def get_daily_kline_data(symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     """
-    获取指定股票最近 kline_days 个交易日的日K线数据。
-    
+    获取指定股票在指定日期范围内的日K线数据。
+
     :param symbol: str, 股票代码，例如 '300680'
+    :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
-    :param kline_days: int, 需要的交易日数量，例如 60
     :return: pd.DataFrame, 日K线数据
     """
-    calendar = ak.tool_trade_date_hist_sina()
-    calendar['trade_date'] = pd.to_datetime(calendar['trade_date'])
-    end_dt = pd.to_datetime(end_date)
-    
-    # 获取所有交易日 <= end_dt，降序排序，取前 kline_days 个（最新的）
-    trading_dates_filtered = calendar[calendar['trade_date'] <= end_dt]['trade_date'].sort_values(ascending=False).head(kline_days)
-    
-    if len(trading_dates_filtered) < kline_days:
-        print(f"Warning: Only {len(trading_dates_filtered)} trading days available up to {end_date}")
-    
-    start_dt_kline = trading_dates_filtered.iloc[-1]  # 最早的日期在最后面，因为是降序
-    end_dt_kline = trading_dates_filtered.iloc[0]  # 最晚的日期在最前面
-    
-    start_date_kline = start_dt_kline.strftime('%Y%m%d')
-    end_date_kline = end_dt_kline.strftime('%Y%m%d')
-    
     # 获取日K线数据，带重试机制
     max_retries = 3
     retry_delay = 20  # 秒
@@ -225,7 +209,7 @@ def get_daily_kline_data(symbol: str, end_date: str, kline_days: int) -> pd.Data
     for attempt in range(max_retries):
         try:
             print(f"正在获取股票 {symbol} 的K线数据... (尝试 {attempt + 1}/{max_retries})")
-            stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date_kline, end_date=end_date_kline, adjust="")
+            stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date, end_date=end_date, adjust="")
 
             if stock_data is not None and not stock_data.empty:
                 print(f"成功获取股票 {symbol} 的K线数据，共 {len(stock_data)} 条记录")
@@ -291,14 +275,13 @@ def _fetch_index_data_with_retry(api_func, *args, **kwargs):
 
     return pd.DataFrame()
 
-def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline_days: int = 30) -> dict:
+def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> dict:
     """
     根据股票代码获取对应的大盘指数日K线数据，支持多个指数（主板指数+板块指数）。
 
     :param stock_code: str, 股票代码，例如 '600000'
     :param start_date: str, 起始日期，格式 'YYYYMMDD'
     :param end_date: str, 结束日期，格式 'YYYYMMDD'
-    :param kline_days: int, 获取的K线天数，默认30天
     :return: dict, {指数名称: (pd.DataFrame, 指数全称)} - 多个指数的数据字典
     """
     print(f"正在获取股票 {stock_code} 对应的大盘指数数据...")
@@ -353,8 +336,9 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str, kline
             if index_code == "000001":
                 # 使用指数专用API获取上证指数数据（带重试机制）
                 index_data = _fetch_index_data_with_retry(ak.stock_zh_index_daily, symbol="sh000001")
-                # 获取最近 kline_days 天的上证指数数据
-                index_data = index_data.tail(kline_days)
+                # 筛选指定日期范围的数据
+                index_data['date'] = pd.to_datetime(index_data['date'])
+                index_data = index_data[(index_data['date'] >= pd.to_datetime(start_date)) & (index_data['date'] <= pd.to_datetime(end_date))]
                 # 将英文列名转换为中文列名，与其他指数保持一致
                 index_data = index_data.rename(columns={
                     'date': '日期',
@@ -465,12 +449,12 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
         # 分时数据使用传递的日期范围（来自daysBeforeToday）
         df_intraday, stock_name = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
 
-        # K线数据使用基于kline_days计算的日期范围
-        kline_start_date, kline_end_date = get_kline_date_range(kline_days)
-        df_daily = get_daily_kline_data(symbol=stock, end_date=kline_end_date, kline_days=kline_days)
+        # K线数据使用基于kline_days计算的日期范围，使用与分时数据相同的结束日期
+        kline_start_date, kline_end_date = get_kline_date_range(kline_days, end_date)
+        df_daily = get_daily_kline_data(symbol=stock, start_date=kline_start_date, end_date=kline_end_date)
 
         # 大盘指数数据使用K线数据的日期范围
-        market_index_data = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date, kline_days=kline_days)
+        market_index_data = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
 
         # 行业板块数据使用K线数据的日期范围
         df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
@@ -578,7 +562,7 @@ def save_data_to_file(data_text: str, stock_code: str, file_suffix: str = "") ->
     print(f"📄 数据已保存到文件: {filepath}")
     return filepath
 
-def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int = 7, kline_days: int = 30, stock_code: str = "") -> str:
+def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int = 7, kline_days: int = 30, stock_code: str = "", specified_date: str = None) -> str:
     """
     使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
 
@@ -587,6 +571,8 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
     :param api_key: str, API 密钥
     :param intraday_days: int, 分时数据的天数，默认7天
     :param kline_days: int, K线数据的天数，默认30天
+    :param stock_code: str, 股票代码，默认空字符串
+    :param specified_date: str, 指定的日期（YYYYMMDD格式），如果为空则使用系统时间
     :return: str, 聊天结果
     """
     client = OpenAI(
@@ -609,8 +595,13 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
         intraday_days = intraday_days
         kline_days = kline_days
 
-        # 获取当前系统时间并格式化
-        current_datetime = datetime.now()
+        # 获取当前时间：如果指定了日期则使用指定日期，否则使用系统时间
+        if specified_date:
+            # 使用指定的日期
+            current_datetime = datetime.strptime(specified_date, '%Y%m%d')
+        else:
+            # 使用系统时间
+            current_datetime = datetime.now()
         current_date_str = current_datetime.strftime('%Y年%m月%d日')
         current_weekday = current_datetime.strftime('%A')  # 英文星期
         # 转换为中文星期
@@ -890,7 +881,8 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 api_key=api_key,
                 intraday_days=config['intraday_days'],
                 kline_days=config['kline_days'],
-                stock_code=stock
+                stock_code=stock,
+                specified_date=specified_date
             )
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
