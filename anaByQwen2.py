@@ -15,6 +15,7 @@ from email.mime.application import MIMEApplication
 import time as t
 from md_to_html import MarkdownToHTMLConverter
 import re
+from hourly_volume_analysis import analyze_csv_file
 
 def extract_investment_rating(md_file_path: str) -> str:
     """
@@ -48,8 +49,8 @@ def extract_investment_rating(md_file_path: str) -> str:
         print(f"❌ 提取投资评级时出错: {e}")
         return ""
 
-def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, attachment_path: str = None) -> bool:
-    """发送邮件并返回是否成功，如果提供attachment_path则发送HTML附件"""
+def send_email(subject: str, body: str, receivers: List[str], sender: str, password: str, attachment_paths: List[str] = None) -> bool:
+    """发送邮件并返回是否成功，如果提供attachment_paths则发送多个附件"""
     # 创建邮件对象
     msg = MIMEMultipart()
     msg['From'] = sender  # 发件人
@@ -59,17 +60,29 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
     # 添加邮件正文
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-    # 如果提供了附件路径，添加HTML附件
-    if attachment_path and os.path.exists(attachment_path):
-        try:
-            with open(attachment_path, 'rb') as f:
-                attachment = MIMEApplication(f.read(), _subtype='html')
-                attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(attachment_path))
-                msg.attach(attachment)
-            print(f"已添加附件: {attachment_path}")
-        except Exception as e:
-            print(f"添加附件失败: {e}")
-            return False
+    # 如果提供了附件路径列表，添加所有附件
+    if attachment_paths:
+        for attachment_path in attachment_paths:
+            if attachment_path and os.path.exists(attachment_path):
+                try:
+                    with open(attachment_path, 'rb') as f:
+                        # 根据文件扩展名确定MIME类型
+                        file_ext = os.path.splitext(attachment_path)[1].lower()
+                        if file_ext == '.html':
+                            attachment = MIMEApplication(f.read(), _subtype='html')
+                        elif file_ext == '.md':
+                            attachment = MIMEApplication(f.read(), _subtype='text')
+                        else:
+                            attachment = MIMEApplication(f.read())
+                        
+                        attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(attachment_path))
+                        msg.attach(attachment)
+                    print(f"已添加附件: {attachment_path}")
+                except Exception as e:
+                    print(f"添加附件失败: {attachment_path}, 错误: {e}")
+                    continue  # 继续添加其他附件
+            else:
+                print(f"附件文件不存在: {attachment_path}")
 
     # SMTP服务器设置
     smtp_server = 'applesmtp.163.com'
@@ -86,9 +99,11 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
         server.quit()
         print("邮件发送成功！")
         # 如果邮件发送成功且提供了附件路径，则删除本地文件
-        if attachment_path and os.path.exists(attachment_path):
-            #os.remove(attachment_path)
-            print(f"本地文件 {attachment_path} 已删除")
+        if attachment_paths:
+            for attachment_path in attachment_paths:
+                if attachment_path and os.path.exists(attachment_path):
+                    #os.remove(attachment_path)
+                    print(f"本地文件 {attachment_path} 已删除")
         return True
     except Exception as e:
         print(f"邮件发送失败：{e}")
@@ -506,6 +521,18 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
 
         file_paths['complete'] = main_file
         print(f"✅ 合并数据文件已保存到 {main_file} (用于上传)")
+
+        # 调用小时量能分析功能
+        print(f"🔍 开始对 {stock} 进行小时量能分析...")
+        try:
+            hourly_analysis_result, hourly_md_path = analyze_csv_file(main_file)
+            if hourly_analysis_result is not None and hourly_md_path is not None:
+                print(f"✅ 小时量能分析完成，结果已保存到: {hourly_md_path}")
+                file_paths['hourly_analysis'] = hourly_md_path
+            else:
+                print(f"⚠️ 股票 {stock} 的小时量能分析失败")
+        except Exception as e:
+            print(f"❌ 股票 {stock} 的小时量能分析出错: {e}")
 
         return file_paths, stock_name
 
@@ -928,19 +955,31 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             # 提取投资评级并添加到邮件主题中
             investment_rating = extract_investment_rating(str(md_filepath))
             if investment_rating:
-                email_subject = f"股票 {stock} 分析结果 - {investment_rating}"
+                email_subject = f"股票 {stock_name}（{stock}）分析结果 - {investment_rating}"
                 print(f"📧 邮件主题包含投资评级: {email_subject}")
             else:
-                email_subject = f"股票 {stock} 分析结果"
+                email_subject = f"股票 {stock_name}（{stock}）分析结果"
                 print("📧 未找到投资评级，使用默认邮件主题")
+
+            # 准备邮件正文，包含小时量能分析信息
+            email_body = f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的文件。"
+            if 'hourly_analysis' in file_paths:
+                email_body += f"\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析报告（MD格式）"
+            else:
+                email_body += f"\n\n附件包含：\n1. 主分析报告（HTML格式）"
+
+            # 准备附件列表
+            attachment_list = [str(html_filepath)]  # HTML文件
+            if 'hourly_analysis' in file_paths:
+                attachment_list.append(file_paths['hourly_analysis'])  # MD文件
 
             send_email(
                 subject=email_subject,
-                body=f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的HTML文件。",
+                body=email_body,
                 receivers=email_receivers,
                 sender=email_sender,
                 password=email_password,
-                attachment_path=str(html_filepath)  # 发送HTML文件作为附件
+                attachment_paths=attachment_list  # 发送多个附件
             )
 
         except Exception as e:
