@@ -1,11 +1,11 @@
 {
     "stock_selection": "specified",
     "specified_stocks": [
-        "000498"
+        "002517"
     ],
     "random_stock_count": 1,
     "specified_date": "",
-    "intraday_days": 2,
+    "intraday_days": 6,
     "kline_days": 60,
     "prompt": {
         "analysis_request": {
@@ -33,7 +33,7 @@
                     "analysis_focus": [
                         "D/U/E分布分析：统计各方向成交量占比，识别主力资金动向",
                         "大单异动识别：筛选大额成交量(>10万股)的D/U分布，判断主力意图",
-                        "买卖力量对比：计算买盘(U)与卖盘(D)的成交量比值和净流入金额",
+                        "买卖力量对比：计算价格与成交量动态变化",
                         "时段分析：分时段(开盘、上午、下午)统计D/U/E变化规律",
                         "价格关联：分析D/U出现时的价格变化幅度和趋势影响"
                     ]
