@@ -9,8 +9,8 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
-import tkinter as tk
-from tkinter import filedialog
+#import tkinter as tk
+#from tkinter import filedialog
 import os
 
 # 尝试导入matplotlib，如果失败则给出提示
@@ -29,22 +29,22 @@ import os
 MATPLOTLIB_AVAILABLE = False  # 临时禁用matplotlib
 
 
-def select_file():
-    """弹出文件选择对话框"""
-    root = tk.Tk()
-    root.withdraw()  # 隐藏主窗口
+# def select_file():
+#     """弹出文件选择对话框"""
+#     root = tk.Tk()
+#     root.withdraw()  # 隐藏主窗口
     
-    file_path = filedialog.askopenfilename(
-        title="选择股票数据CSV文件",
-        filetypes=[
-            ("CSV文件", "*.csv"),
-            ("所有文件", "*.*")
-        ],
-        initialdir="data_output"  # 默认打开data_output目录
-    )
+#     file_path = filedialog.askopenfilename(
+#         title="选择股票数据CSV文件",
+#         filetypes=[
+#             ("CSV文件", "*.csv"),
+#             ("所有文件", "*.*")
+#         ],
+#         initialdir="data_output"  # 默认打开data_output目录
+#     )
     
-    root.destroy()  # 销毁窗口
-    return file_path
+#     root.destroy()  # 销毁窗口
+#     return file_path
 
 
 def load_and_parse_data(file_path):
@@ -572,16 +572,16 @@ def main():
     
     # 弹出文件选择对话框
     print("请选择要分析的股票数据CSV文件...")
-    file_path = select_file()
+    #file_path = select_file()
     
-    if not file_path:
-        print("未选择文件，程序退出")
-        return
+    # if not file_path:
+    #     print("未选择文件，程序退出")
+    #     return
     
-    print(f"已选择文件: {file_path}")
+    # print(f"已选择文件: {file_path}")
 
-    # 调用分析函数
-    analyze_csv_file(file_path)
+    # # 调用分析函数
+    # analyze_csv_file(file_path)
 
 
 if __name__ == "__main__":

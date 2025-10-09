@@ -1,11 +1,11 @@
 {
     "stock_selection": "specified",
     "specified_stocks": [
-        "002517"
+        "688668"
     ],
     "random_stock_count": 1,
     "specified_date": "",
-    "intraday_days": 6,
+    "intraday_days": 1,
     "kline_days": 60,
     "prompt": {
         "analysis_request": {
