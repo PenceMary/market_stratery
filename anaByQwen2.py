@@ -964,14 +964,15 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             # 准备邮件正文，包含小时量能分析信息
             email_body = f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的文件。"
             if 'hourly_analysis' in file_paths:
-                email_body += f"\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析报告（MD格式）"
+                # Read the MD file content and append to body
+                with open(file_paths['hourly_analysis'], 'r', encoding='utf-8') as f:
+                    hourly_content = f.read()
+                email_body += f"\n\n=== 小时量能分析报告 ===\n\n{hourly_content}"
             else:
                 email_body += f"\n\n附件包含：\n1. 主分析报告（HTML格式）"
 
-            # 准备附件列表
-            attachment_list = [str(html_filepath)]  # HTML文件
-            if 'hourly_analysis' in file_paths:
-                attachment_list.append(file_paths['hourly_analysis'])  # MD文件
+            # 准备附件列表 - 只包含HTML文件
+            attachment_list = [str(html_filepath)]  # 只发送HTML文件
 
             send_email(
                 subject=email_subject,
@@ -979,7 +980,7 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 receivers=email_receivers,
                 sender=email_sender,
                 password=email_password,
-                attachment_paths=attachment_list  # 发送多个附件
+                attachment_paths=attachment_list  # 只发送HTML附件
             )
 
         except Exception as e:
