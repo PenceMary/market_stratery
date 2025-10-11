@@ -500,6 +500,56 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
             df_intraday.to_csv(f, index=False)
             f.write("\n\n")
 
+            # 临时关闭文件以允许analyze_csv_file读取
+            f.close()
+
+            # 调用小时量能分析并插入结果
+            print(f"🔍 开始对 {stock} 进行小时量能分析...")
+            try:
+                hourly_analysis_result, hourly_md_path = analyze_csv_file(main_file)
+                if hourly_analysis_result is not None and hourly_md_path is not None:
+                    print(f"✅ 小时量能分析完成，结果已保存到: {hourly_md_path}")
+                    file_paths['hourly_analysis'] = hourly_md_path
+                    
+                    # 以追加模式重新打开文件并插入
+                    with open(main_file, 'a', encoding='utf-8-sig', newline='') as f_append:
+                        f_append.write("=== 小时量能分析数据 ===\n")
+                        f_append.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
+                        
+                        for date in sorted(hourly_analysis_result.keys()):
+                            period_stats = hourly_analysis_result[date]
+                            daily_stats = []
+                            
+                            # 写入每个时间段
+                            for period_name, stats in period_stats.items():
+                                f_append.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
+                                daily_stats.append(stats)
+                            
+                            # 计算并写入每天汇总
+                            if daily_stats:
+                                total_transactions = sum(s['transaction_count'] for s in daily_stats)
+                                total_volume = sum(s['total_volume'] for s in daily_stats)
+                                total_u_volume = sum(s['u_volume'] for s in daily_stats)
+                                total_d_volume = sum(s['d_volume'] for s in daily_stats)
+                                total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                                
+                                u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                                d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                                e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                                ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                                
+                                f_append.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
+                        
+                        f_append.write("\n\n")
+                
+                else:
+                    print(f"⚠️ 股票 {stock} 的小时量能分析失败")
+            except Exception as e:
+                print(f"❌ 股票 {stock} 的小时量能分析出错: {e}")
+
+            # 以追加模式重新打开文件继续写入后续部分
+            f = open(main_file, 'a', encoding='utf-8-sig', newline='')
+
             # 写入日K线数据
             f.write("=== 日K线数据 ===\n")
             df_daily.to_csv(f, index=False)
@@ -529,6 +579,36 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
             if hourly_analysis_result is not None and hourly_md_path is not None:
                 print(f"✅ 小时量能分析完成，结果已保存到: {hourly_md_path}")
                 file_paths['hourly_analysis'] = hourly_md_path
+                
+                # 插入小时量能分析数据到CSV
+                with open(main_file, 'a', encoding='utf-8-sig', newline='') as f:
+                    f.write("\n\n=== 小时量能分析数据 ===\n")
+                    f.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
+                    
+                    for date in sorted(hourly_analysis_result.keys()):
+                        period_stats = hourly_analysis_result[date]
+                        daily_stats = []
+                        
+                        # 写入每个时间段
+                        for period_name, stats in period_stats.items():
+                            f.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
+                            daily_stats.append(stats)
+                        
+                        # 计算并写入每天汇总
+                        if daily_stats:
+                            total_transactions = sum(s['transaction_count'] for s in daily_stats)
+                            total_volume = sum(s['total_volume'] for s in daily_stats)
+                            total_u_volume = sum(s['u_volume'] for s in daily_stats)
+                            total_d_volume = sum(s['d_volume'] for s in daily_stats)
+                            total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                            
+                            u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                            d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                            e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                            ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                            
+                            f.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
+                
             else:
                 print(f"⚠️ 股票 {stock} 的小时量能分析失败")
         except Exception as e:
@@ -670,6 +750,10 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
             f"  标识符: {analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('section_marker', '')}\n"
             f"  字段: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('fields', []))}\n"
             f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('industry_sector_data_section', {}).get('analysis_focus', []))}\n\n"
+            f"• 小时量能分析数据段: {analysis_request.get('data_description', {}).get('hourly_volume_analysis_section', {}).get('description', '')}\n"
+            f"  标识符: {analysis_request.get('data_description', {}).get('hourly_volume_analysis_section', {}).get('section_marker', '')}\n"
+            f"  字段: {', '.join(analysis_request.get('data_description', {}).get('hourly_volume_analysis_section', {}).get('fields', []))}\n"
+            f"  分析重点: {', '.join(analysis_request.get('data_description', {}).get('hourly_volume_analysis_section', {}).get('analysis_focus', []))}\n\n"
             f"📈 多日数据分析要求：\n"
             f"请对提供的多日分时数据进行逐日深度分析（按时间顺序由远及近）\n"
             f"🔬 分析步骤（应用于每一天的分时数据分析结果输出）：\n"
