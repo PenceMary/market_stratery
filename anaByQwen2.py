@@ -180,7 +180,7 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(ak.stock_intraday_sina, *args, **kwargs)
             try:
-                return future.result(timeout=10)
+                return future.result(timeout=60)
             except FutureTimeoutError:
                 raise TimeoutError("API call timed out")
 
@@ -271,7 +271,7 @@ def get_daily_kline_data(symbol: str, start_date: str, end_date: str) -> pd.Data
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(ak.stock_zh_a_hist, *args, **kwargs)
             try:
-                return future.result(timeout=10)
+                return future.result(timeout=60)
             except FutureTimeoutError:
                 raise TimeoutError("API call timed out")
 
@@ -320,7 +320,7 @@ def _fetch_index_data_with_retry(api_func, *args, **kwargs):
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(func, *f_args, **f_kwargs)
             try:
-                return future.result(timeout=10)
+                return future.result(timeout=60)
             except FutureTimeoutError:
                 raise TimeoutError("API call timed out")
 
@@ -472,7 +472,7 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(func, *args, **kwargs)
             try:
-                return future.result(timeout=10)
+                return future.result(timeout=60)
             except FutureTimeoutError:
                 raise TimeoutError("API call timed out")
 
