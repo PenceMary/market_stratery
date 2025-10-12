@@ -16,6 +16,7 @@ import time as t
 from md_to_html import MarkdownToHTMLConverter
 import re
 from hourly_volume_analysis import analyze_csv_file
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 
 def extract_investment_rating(md_file_path: str) -> str:
     """
@@ -175,6 +176,14 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
     output_dir = Path('data_output') / stock
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    def fetch_intraday_with_timeout(*args, **kwargs):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(ak.stock_intraday_sina, *args, **kwargs)
+            try:
+                return future.result(timeout=10)
+            except FutureTimeoutError:
+                raise TimeoutError("API call timed out")
+
     for date in trading_dates:
         local_path = output_dir / f"{stock}_{date}_intraday.csv"
         max_retries = 3  # 最大重试次数
@@ -193,7 +202,7 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
         if not loaded_from_local:
             for attempt in range(max_retries):
                 try:
-                    daily_data = ak.stock_intraday_sina(symbol=minute_code, date=date)
+                    daily_data = fetch_intraday_with_timeout(symbol=minute_code, date=date)
                     if not daily_data.empty:
                         daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
                         # 保存到本地
@@ -211,7 +220,7 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                     print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
                     if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
                         print("等待20秒后重试...")
-                        for _ in range(20):  # 等待600秒（10分钟），每2秒打印一个“.”
+                        for _ in range(20):  # 等待20秒，每秒打印一个“.”
                             print(".", end="", flush=True)
                             t.sleep(1)
                         print()  # 换行
@@ -258,10 +267,18 @@ def get_daily_kline_data(symbol: str, start_date: str, end_date: str) -> pd.Data
     max_retries = 3
     retry_delay = 20  # 秒
 
+    def fetch_kline_with_timeout(*args, **kwargs):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(ak.stock_zh_a_hist, *args, **kwargs)
+            try:
+                return future.result(timeout=10)
+            except FutureTimeoutError:
+                raise TimeoutError("API call timed out")
+
     for attempt in range(max_retries):
         try:
             print(f"正在获取股票 {symbol} 的K线数据... (尝试 {attempt + 1}/{max_retries})")
-            stock_data = ak.stock_zh_a_hist(symbol=symbol, period="daily", start_date=start_date, end_date=end_date, adjust="")
+            stock_data = fetch_kline_with_timeout(symbol=symbol, period="daily", start_date=start_date, end_date=end_date, adjust="")
 
             if stock_data is not None and not stock_data.empty:
                 print(f"成功获取股票 {symbol} 的K线数据，共 {len(stock_data)} 条记录")
@@ -299,10 +316,18 @@ def _fetch_index_data_with_retry(api_func, *args, **kwargs):
     max_retries = 3
     retry_delay = 20  # 秒
 
+    def fetch_with_timeout(func, *f_args, **f_kwargs):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(func, *f_args, **f_kwargs)
+            try:
+                return future.result(timeout=10)
+            except FutureTimeoutError:
+                raise TimeoutError("API call timed out")
+
     for attempt in range(max_retries):
         try:
             print(f"正在获取指数数据... (尝试 {attempt + 1}/{max_retries})")
-            data = api_func(*args, **kwargs)
+            data = fetch_with_timeout(api_func, *args, **kwargs)
 
             if data is not None and not data.empty:
                 print(f"成功获取指数数据，共 {len(data)} 条记录")
@@ -443,9 +468,17 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
     """
     print(f"正在获取股票 {stock_code} 所属行业板块数据...")
 
+    def fetch_with_timeout(func, *args, **kwargs):
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(func, *args, **kwargs)
+            try:
+                return future.result(timeout=10)
+            except FutureTimeoutError:
+                raise TimeoutError("API call timed out")
+
     try:
         # 步骤1: 获取股票基本信息（带重试机制）
-        stock_info_df = _fetch_index_data_with_retry(ak.stock_individual_info_em, symbol=stock_code)
+        stock_info_df = _fetch_index_data_with_retry(fetch_with_timeout, ak.stock_individual_info_em, symbol=stock_code)
 
         if stock_info_df.empty:
             print("❌ 获取股票基本信息失败")
@@ -467,6 +500,7 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         # 步骤2: 获取行业板块数据（带重试机制）
         print(f"正在获取 '{industry_name}' 行业板块数据...")
         industry_data = _fetch_index_data_with_retry(
+            fetch_with_timeout,
             ak.stock_board_industry_hist_em,
             symbol=industry_name,
             start_date=start_date,
