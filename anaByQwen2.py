@@ -18,6 +18,68 @@ import re
 from hourly_volume_analysis import analyze_csv_file
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 
+# ===== 配置常量 =====
+MAX_RETRIES = 3
+RETRY_DELAY = 20  # 秒
+API_TIMEOUT = 180  # 秒
+OUTPUT_BASE_DIR = 'data_output'
+SMTP_SERVER = 'applesmtp.163.com'
+SMTP_PORT = 465
+RANDOM_WAIT_MIN = 1
+RANDOM_WAIT_MAX = 20
+
+# ===== 配置管理函数 =====
+def get_stock_output_dir(stock: str) -> Path:
+    """获取股票专属输出目录"""
+    return Path(OUTPUT_BASE_DIR) / stock
+
+def get_intraday_cache_path(stock: str, date: str) -> Path:
+    """获取分时数据缓存文件路径"""
+    return get_stock_output_dir(stock) / f"{stock}_{date}_intraday.csv"
+
+# ===== 通用API调用包装器 =====
+def fetch_with_timeout(api_func, *args, **kwargs):
+    """
+    通用的API调用包装器，带超时和重试机制
+    
+    :param api_func: API函数
+    :param args: 位置参数
+    :param kwargs: 关键字参数
+    :return: 获取到的数据
+    """
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(api_func, *args, **kwargs)
+        try:
+            return future.result(timeout=API_TIMEOUT)
+        except FutureTimeoutError:
+            raise TimeoutError("API call timed out")
+
+def fetch_with_retry(api_func, *args, **kwargs):
+    """
+    带重试机制的API调用包装器
+    
+    :param api_func: API函数
+    :param args: 位置参数
+    :param kwargs: 关键字参数
+    :return: 获取到的数据
+    """
+    max_retries = MAX_RETRIES
+    retry_delay = RETRY_DELAY
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"正在调用API... (尝试 {attempt + 1}/{max_retries})")
+            result = fetch_with_timeout(api_func, *args, **kwargs)
+            print("API调用成功")
+            return result
+        except Exception as e:
+            print(f"API调用失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"将在 {retry_delay} 秒后重试...")
+                t.sleep(retry_delay)
+            else:
+                raise Exception(f"API调用失败，已重试 {max_retries} 次: {str(e)}")
+
 def extract_investment_rating(md_file_path: str) -> str:
     """
     从MD文件中提取投资评级信息
@@ -86,8 +148,8 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
                 print(f"附件文件不存在: {attachment_path}")
 
     # SMTP服务器设置
-    smtp_server = 'applesmtp.163.com'
-    smtp_port = 465
+    smtp_server = SMTP_SERVER
+    smtp_port = SMTP_PORT
 
     # 登录凭证（使用授权码）
     username = sender
@@ -173,20 +235,13 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
     trading_dates = get_trading_dates(start_date, end_date)
     stock_data_list = []
     stock_name = None
-    output_dir = Path('data_output') / stock
+    output_dir = get_stock_output_dir(stock)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    def fetch_intraday_with_timeout(*args, **kwargs):
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(ak.stock_intraday_sina, *args, **kwargs)
-            try:
-                return future.result(timeout=60)
-            except FutureTimeoutError:
-                raise TimeoutError("API call timed out")
 
     for date in trading_dates:
-        local_path = output_dir / f"{stock}_{date}_intraday.csv"
-        max_retries = 3  # 最大重试次数
+        local_path = get_intraday_cache_path(stock, date)
+        max_retries = MAX_RETRIES  # 最大重试次数
         loaded_from_local = False
 
         if local_path.exists():
@@ -200,33 +255,22 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
                 print(f"加载本地文件 {local_path} 失败: {e}，将从接口重新获取")
 
         if not loaded_from_local:
-            for attempt in range(max_retries):
-                try:
-                    daily_data = fetch_intraday_with_timeout(symbol=minute_code, date=date)
-                    if not daily_data.empty:
-                        daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
-                        # 保存到本地
-                        daily_data.to_csv(local_path, index=False, encoding='utf-8-sig')
-                        print(f"成功获取并保存 {minute_code} 在 {date} 的数据到 {local_path}")
-                        # 如果不是最后一个交易日，等待 2 分钟
-                        if date != trading_dates[-1]:
-                            print("稍等一下...")
-                            for _ in range(random.randint(1, 20)):  # 等待随机秒数，每秒打印一个“.”
-                                print("+", end="", flush=True)
-                                t.sleep(1)
-                            print()  # 换行
-                        break  # 成功获取数据，跳出重试循环
-                except Exception as e:
-                    print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
-                    if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
-                        print("等待20秒后重试...")
-                        for _ in range(20):  # 等待20秒，每秒打印一个“.”
-                            print(".", end="", flush=True)
+            try:
+                daily_data = fetch_with_retry(ak.stock_intraday_sina, symbol=minute_code, date=date)
+                if not daily_data.empty:
+                    daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
+                    daily_data.to_csv(local_path, index=False, encoding='utf-8-sig')
+                    print(f"成功获取并保存 {minute_code} 在 {date} 的数据到 {local_path}")
+                    # 如果不是最后一个交易日，等待随机时间
+                    if date != trading_dates[-1]:
+                        print("稍等一下...")
+                        for _ in range(random.randint(RANDOM_WAIT_MIN, RANDOM_WAIT_MAX)):
+                            print("+", end="", flush=True)
                             t.sleep(1)
                         print()  # 换行
-                    else:
-                        print(f"股票 {minute_code} 在 {date} 的数据获取失败，跳过")
-                        break  # 达到最大重试次数，跳出循环
+            except Exception as e:
+                print(f"获取股票 {minute_code} 在 {date} 的数据失败: {e}")
+                continue
 
         if 'daily_data' in locals() and not daily_data.empty:
             # 获取 stock_name，如果尚未设置
@@ -264,45 +308,16 @@ def get_daily_kline_data(symbol: str, start_date: str, end_date: str) -> pd.Data
     :return: pd.DataFrame, 日K线数据
     """
     # 获取日K线数据，带重试机制
-    max_retries = 3
-    retry_delay = 20  # 秒
-
-    def fetch_kline_with_timeout(*args, **kwargs):
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(ak.stock_zh_a_hist, *args, **kwargs)
-            try:
-                return future.result(timeout=60)
-            except FutureTimeoutError:
-                raise TimeoutError("API call timed out")
-
-    for attempt in range(max_retries):
-        try:
-            print(f"正在获取股票 {symbol} 的K线数据... (尝试 {attempt + 1}/{max_retries})")
-            stock_data = fetch_kline_with_timeout(symbol=symbol, period="daily", start_date=start_date, end_date=end_date, adjust="")
-
-            if stock_data is not None and not stock_data.empty:
-                print(f"成功获取股票 {symbol} 的K线数据，共 {len(stock_data)} 条记录")
-                return stock_data
-            else:
-                print(f"警告：股票 {symbol} 的K线数据为空")
-                if attempt < max_retries - 1:
-                    print(f"将在 {retry_delay} 秒后重试...")
-                    t.sleep(retry_delay)
-                else:
-                    print(f"已达到最大重试次数，返回空数据")
-                    return pd.DataFrame()
-
-        except Exception as e:
-            print(f"获取股票 {symbol} 的K线数据失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
-            if attempt < max_retries - 1:
-                print(f"将在 {retry_delay} 秒后重试...")
-                t.sleep(retry_delay)
-            else:
-                print(f"已达到最大重试次数，放弃获取")
-                raise Exception(f"获取股票 {symbol} 的K线数据失败，已重试 {max_retries} 次: {str(e)}")
-
-    # 这行代码理论上不会到达，但为了安全起见保留
-    return pd.DataFrame()
+    try:
+        stock_data = fetch_with_retry(ak.stock_zh_a_hist, symbol=symbol, period="daily", start_date=start_date, end_date=end_date, adjust="")
+        if stock_data is not None and not stock_data.empty:
+            print(f"成功获取股票 {symbol} 的K线数据，共 {len(stock_data)} 条记录")
+            return stock_data
+        else:
+            print(f"警告：股票 {symbol} 的K线数据为空")
+            return pd.DataFrame()
+    except Exception as e:
+        raise Exception(f"获取股票 {symbol} 的K线数据失败: {str(e)}")
 
 def _fetch_index_data_with_retry(api_func, *args, **kwargs):
     """
@@ -313,44 +328,7 @@ def _fetch_index_data_with_retry(api_func, *args, **kwargs):
     :param kwargs: 关键字参数
     :return: 获取到的数据
     """
-    max_retries = 3
-    retry_delay = 20  # 秒
-
-    def fetch_with_timeout(func, *f_args, **f_kwargs):
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(func, *f_args, **f_kwargs)
-            try:
-                return future.result(timeout=60)
-            except FutureTimeoutError:
-                raise TimeoutError("API call timed out")
-
-    for attempt in range(max_retries):
-        try:
-            print(f"正在获取指数数据... (尝试 {attempt + 1}/{max_retries})")
-            data = fetch_with_timeout(api_func, *args, **kwargs)
-
-            if data is not None and not data.empty:
-                print(f"成功获取指数数据，共 {len(data)} 条记录")
-                return data
-            else:
-                print(f"警告：指数数据为空")
-                if attempt < max_retries - 1:
-                    print(f"将在 {retry_delay} 秒后重试...")
-                    t.sleep(retry_delay)
-                else:
-                    print(f"已达到最大重试次数，返回空数据")
-                    return pd.DataFrame()
-
-        except Exception as e:
-            print(f"获取指数数据失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
-            if attempt < max_retries - 1:
-                print(f"将在 {retry_delay} 秒后重试...")
-                t.sleep(retry_delay)
-            else:
-                print(f"已达到最大重试次数，放弃获取")
-                raise Exception(f"获取指数数据失败，已重试 {max_retries} 次: {str(e)}")
-
-    return pd.DataFrame()
+    return fetch_with_retry(api_func, *args, **kwargs)
 
 def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> dict:
     """
@@ -472,7 +450,7 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(func, *args, **kwargs)
             try:
-                return future.result(timeout=60)
+                return future.result(timeout=API_TIMEOUT)
             except FutureTimeoutError:
                 raise TimeoutError("API call timed out")
 
@@ -521,7 +499,100 @@ def get_industry_sector_data(stock_code: str, start_date: str, end_date: str) ->
         print(f"❌ 获取行业板块数据时出错: {e}")
         return pd.DataFrame(), "未知板块"
 
-def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> tuple:
+# ===== 数据获取模块 =====
+def fetch_all_stock_data(stock: str, start_date: str, end_date: str, kline_days: int) -> tuple:
+    """
+    获取股票的所有相关数据
+    
+    :param stock: str, 股票代码
+    :param start_date: str, 分时数据的起始日期
+    :param end_date: str, 分时数据的结束日期
+    :param kline_days: int, 日K线数据的天数
+    :return: tuple, (df_intraday, stock_name, df_daily, market_index_data, df_industry, industry_sector_name)
+    """
+    # 分时数据使用传递的日期范围
+    df_intraday, stock_name = get_intraday_data(stock=stock, start_date=start_date, end_date=end_date)
+
+    # K线数据使用基于kline_days计算的日期范围
+    kline_start_date, kline_end_date = get_kline_date_range(kline_days, end_date)
+    df_daily = get_daily_kline_data(symbol=stock, start_date=kline_start_date, end_date=kline_end_date)
+
+    # 大盘指数数据使用K线数据的日期范围
+    market_index_data = get_market_index_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
+
+    # 行业板块数据使用K线数据的日期范围
+    df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
+    
+    return df_intraday, stock_name, df_daily, market_index_data, df_industry, industry_sector_name
+
+def create_complete_csv_file(stock: str, stock_name: str, start_date: str, end_date: str, 
+                           kline_start_date: str, kline_end_date: str, industry_sector_name: str,
+                           df_intraday: pd.DataFrame, df_daily: pd.DataFrame, 
+                           market_index_data: dict, df_industry: pd.DataFrame, 
+                           hourly_start_date: str = None, hourly_end_date: str = None) -> str:
+    """
+    创建包含所有数据的完整CSV文件
+    
+    :param stock: str, 股票代码
+    :param stock_name: str, 股票名称
+    :param start_date: str, 分时数据起始日期
+    :param end_date: str, 分时数据结束日期
+    :param kline_start_date: str, K线数据起始日期
+    :param kline_end_date: str, K线数据结束日期
+    :param industry_sector_name: str, 行业板块名称
+    :param df_intraday: pd.DataFrame, 分时数据
+    :param df_daily: pd.DataFrame, 日K线数据
+    :param market_index_data: dict, 大盘指数数据
+    :param df_industry: pd.DataFrame, 行业板块数据
+    :return: str, 文件路径
+    """
+    # 生成三位随机数，避免文件名冲突
+    random_suffix = str(random.randint(0, 999)).zfill(3)
+    base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}"
+    
+    # 确保输出目录存在
+    output_dir = get_stock_output_dir(stock)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 创建完整CSV文件
+    main_file = str(output_dir / f"{base_filename}_complete.csv")
+    with open(main_file, 'w', encoding='utf-8-sig', newline='') as f:
+        # 写入标题信息
+        f.write(f"股票代码: {stock}\n")
+        f.write(f"股票名称: {stock_name}\n")
+        f.write(f"所属板块: {industry_sector_name}\n")
+        f.write(f"分时数据时间范围: {start_date} 到 {end_date}\n")
+        f.write(f"K线数据时间范围: {kline_start_date} 到 {kline_end_date}\n")
+        # 使用小时量能专用时间范围，如果没有提供则使用分时数据时间范围
+        hourly_range_start = hourly_start_date if hourly_start_date else start_date
+        hourly_range_end = hourly_end_date if hourly_end_date else end_date
+        f.write(f"小时量能数据时间范围: {hourly_range_start} 到 {hourly_range_end}\n\n")
+
+        # 写入分时数据
+        f.write("=== 分时成交数据 ===\n")
+        df_intraday.to_csv(f, index=False)
+        f.write("\n\n")
+
+        # 写入日K线数据
+        f.write("=== 日K线数据 ===\n")
+        df_daily.to_csv(f, index=False)
+        f.write("\n\n")
+
+        # 写入大盘指数数据
+        f.write("=== 大盘指数数据 ===\n")
+        for index_name, (index_df, index_full_name) in market_index_data.items():
+            f.write(f"--- {index_full_name} ---\n")
+            index_df.to_csv(f, index=False)
+            f.write("\n")
+
+        # 写入行业板块数据
+        f.write("=== 行业板块数据 ===\n")
+        df_industry.to_csv(f, index=False)
+        f.write("\n\n")
+
+    return main_file
+
+def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_days: int, hourly_start_date: str = None, hourly_end_date: str = None) -> tuple:
     """
     获取股票的分时成交数据、日K线数据、大盘指数数据和行业板块数据，并保存到CSV文件中。
 
@@ -529,6 +600,8 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
     :param start_date: str, 分时数据的起始日期，格式 'YYYYMMDD'
     :param end_date: str, 分时数据的结束日期，格式 'YYYYMMDD'
     :param kline_days: int, 日K线数据的天数，例如 60
+    :param hourly_start_date: str, 小时量能分析的起始日期，格式 'YYYYMMDD'，可选
+    :param hourly_end_date: str, 小时量能分析的结束日期，格式 'YYYYMMDD'，可选
     :return: tuple, (file_paths, stock_name) 文件路径字典和股票名称，失败返回 (None, None)
     """
     try:
@@ -545,116 +618,55 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
         # 行业板块数据使用K线数据的日期范围
         df_industry, industry_sector_name = get_industry_sector_data(stock_code=stock, start_date=kline_start_date, end_date=kline_end_date)
 
-        # 生成三位随机数，避免文件名冲突
-        random_suffix = str(random.randint(0, 999)).zfill(3)
-        base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}"
+        # 创建完整CSV文件
+        main_file = create_complete_csv_file(
+            stock, stock_name, start_date, end_date, kline_start_date, kline_end_date,
+            industry_sector_name, df_intraday, df_daily, market_index_data, df_industry,
+            hourly_start_date, hourly_end_date
+        )
+        
+        file_paths = {'complete': main_file}
+        print(f"✅ 数据已保存到: {main_file}")
 
-        # 确保data_output目录存在，并为当前股票创建子文件夹
-        output_dir = Path('data_output') / stock
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        # 保存到CSV文件 - 仅创建合并的完整文件
-        file_paths = {}
-
-        # 创建一个合并的CSV文件用于上传到通义千问（包含所有数据）
-        main_file = str(output_dir / f"{base_filename}_complete.csv")
-        with open(main_file, 'w', encoding='utf-8-sig', newline='') as f:
-            # 写入标题信息
-            f.write(f"股票代码: {stock}\n")
-            f.write(f"股票名称: {stock_name}\n")
-            f.write(f"所属板块: {industry_sector_name}\n")
-            f.write(f"分时数据时间范围: {start_date} 到 {end_date}\n")
-            f.write(f"K线数据时间范围: {kline_start_date} 到 {kline_end_date}\n\n")
-
-            # 写入分时数据
-            f.write("=== 分时成交数据 ===\n")
-            df_intraday.to_csv(f, index=False)
-            f.write("\n\n")
-
-            # 临时关闭文件以允许analyze_csv_file读取
-            f.close()
-
-            # 调用小时量能分析并插入结果
-            print(f"🔍 开始对 {stock} 进行小时量能分析...")
-            try:
-                hourly_analysis_result, hourly_md_path = analyze_csv_file(main_file)
-                if hourly_analysis_result is not None and hourly_md_path is not None:
-                    print(f"✅ 小时量能分析完成，结果已保存到: {hourly_md_path}")
-                    file_paths['hourly_analysis'] = hourly_md_path
-                    
-                    # 以追加模式重新打开文件并插入
-                    with open(main_file, 'a', encoding='utf-8-sig', newline='') as f_append:
-                        f_append.write("=== 小时量能分析数据 ===\n")
-                        f_append.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
-                        
-                        for date in sorted(hourly_analysis_result.keys()):
-                            period_stats = hourly_analysis_result[date]
-                            daily_stats = []
-                            
-                            # 写入每个时间段
-                            for period_name, stats in period_stats.items():
-                                f_append.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
-                                daily_stats.append(stats)
-                            
-                            # 计算并写入每天汇总
-                            if daily_stats:
-                                total_transactions = sum(s['transaction_count'] for s in daily_stats)
-                                total_volume = sum(s['total_volume'] for s in daily_stats)
-                                total_u_volume = sum(s['u_volume'] for s in daily_stats)
-                                total_d_volume = sum(s['d_volume'] for s in daily_stats)
-                                total_e_volume = sum(s['e_volume'] for s in daily_stats)
-                                
-                                u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-                                d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-                                e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-                                ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-                                
-                                f_append.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
-                        
-                        f_append.write("\n\n")
-                
-                else:
-                    print(f"⚠️ 股票 {stock} 的小时量能分析失败")
-            except Exception as e:
-                print(f"❌ 股票 {stock} 的小时量能分析出错: {e}")
-
-            # 以追加模式重新打开文件继续写入后续部分
-            f = open(main_file, 'a', encoding='utf-8-sig', newline='')
-
-            # 写入日K线数据
-            f.write("=== 日K线数据 ===\n")
-            df_daily.to_csv(f, index=False)
-            f.write("\n\n")
-
-            # 写入大盘指数数据
-            if market_index_data:
-                for index_short_name, (df_market, market_index_name) in market_index_data.items():
-                    if not df_market.empty:
-                        f.write(f"=== {market_index_name}数据 ===\n")
-                        df_market.to_csv(f, index=False)
-                        f.write("\n\n")
-
-            # 写入行业板块数据
-            if not df_industry.empty:
-                f.write("=== 行业板块数据 ===\n")
-                df_industry.to_csv(f, index=False)
-                f.write("\n\n")
-
-        file_paths['complete'] = main_file
-        print(f"✅ 合并数据文件已保存到 {main_file} (用于上传)")
-
-        # 调用小时量能分析功能
+        # 调用小时量能分析并插入结果
         print(f"🔍 开始对 {stock} 进行小时量能分析...")
         try:
-            hourly_analysis_result, hourly_md_path = analyze_csv_file(main_file)
+            # 如果提供了小时量能专用日期范围，则使用专用范围进行分析
+            if hourly_start_date and hourly_end_date:
+                print(f"📊 使用小时量能专用日期范围: {hourly_start_date} 到 {hourly_end_date}")
+                # 获取小时量能专用的分时数据
+                df_hourly_intraday, _ = get_intraday_data(stock=stock, start_date=hourly_start_date, end_date=hourly_end_date)
+                # 创建临时CSV文件用于小时量能分析
+                output_dir = get_stock_output_dir(stock)
+                base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{str(random.randint(0, 999)).zfill(3)}"
+                temp_hourly_file = str(output_dir / f"{base_filename}_hourly_temp.csv")
+                with open(temp_hourly_file, 'w', encoding='utf-8-sig', newline='') as f_temp:
+                    f_temp.write(f"股票代码: {stock}\n")
+                    f_temp.write(f"股票名称: {stock_name}\n")
+                    f_temp.write(f"小时量能数据时间范围: {hourly_start_date} 到 {hourly_end_date}\n\n")
+                    f_temp.write("=== 分时成交数据 ===\n")
+                    df_hourly_intraday.to_csv(f_temp, index=False)
+                    f_temp.write("\n\n")
+                    f_temp.write("=== 日K线数据 ===\n")  # 添加结束标记
+                hourly_analysis_result, hourly_md_path = analyze_csv_file(temp_hourly_file)
+                # 删除临时文件
+                os.remove(temp_hourly_file)
+            else:
+                # 使用原有的完整文件进行分析（向后兼容）
+                hourly_analysis_result, hourly_md_path = analyze_csv_file(main_file)
             if hourly_analysis_result is not None and hourly_md_path is not None:
-                print(f"✅ 小时量能分析完成，结果已保存到: {hourly_md_path}")
-                file_paths['hourly_analysis'] = hourly_md_path
+                print(f"✅ 小时量能分析完成")
+                # 删除MD文件，因为数据已包含在CSV中
+                try:
+                    os.remove(hourly_md_path)
+                    print(f"🗑️ 已删除临时MD文件: {hourly_md_path}")
+                except Exception as e:
+                    print(f"⚠️ 删除MD文件失败: {e}")
                 
-                # 插入小时量能分析数据到CSV
-                with open(main_file, 'a', encoding='utf-8-sig', newline='') as f:
-                    f.write("\n\n=== 小时量能分析数据 ===\n")
-                    f.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
+                # 将小时量能分析数据追加到主CSV文件
+                with open(main_file, 'a', encoding='utf-8-sig', newline='') as f_append:
+                    f_append.write("=== 小时量能分析数据 ===\n")
+                    f_append.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
                     
                     for date in sorted(hourly_analysis_result.keys()):
                         period_stats = hourly_analysis_result[date]
@@ -662,7 +674,7 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
                         
                         # 写入每个时间段
                         for period_name, stats in period_stats.items():
-                            f.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
+                            f_append.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
                             daily_stats.append(stats)
                         
                         # 计算并写入每天汇总
@@ -678,8 +690,9 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
                             e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
                             ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
                             
-                            f.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
-                
+                            f_append.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
+                    
+                    f_append.write("\n\n")
             else:
                 print(f"⚠️ 股票 {stock} 的小时量能分析失败")
         except Exception as e:
@@ -740,7 +753,7 @@ def save_data_to_file(data_text: str, stock_code: str, file_suffix: str = "") ->
     print(f"📄 数据已保存到文件: {filepath}")
     return filepath
 
-def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int = 7, kline_days: int = 30, stock_code: str = "", specified_date: str = None) -> str:
+def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int = 7, kline_days: int = 30, stock_code: str = "", specified_date: str = None, hourly_volume_days: int = None) -> str:
     """
     使用通义千问的 API 进行聊天，支持字典或字符串类型的 question。
 
@@ -751,12 +764,17 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
     :param kline_days: int, K线数据的天数，默认30天
     :param stock_code: str, 股票代码，默认空字符串
     :param specified_date: str, 指定的日期（YYYYMMDD格式），如果为空则使用系统时间
+    :param hourly_volume_days: int, 小时量能数据的天数，如果为None则使用intraday_days
     :return: str, 聊天结果
     """
     client = OpenAI(
         api_key=api_key,
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
     )
+
+    # 处理hourly_volume_days参数，如果没有提供则使用intraday_days
+    if hourly_volume_days is None:
+        hourly_volume_days = intraday_days
 
     # 初始化 messages 列表
     messages = [
@@ -797,11 +815,12 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
         # 构造用户消息内容 - 增强的分析描述
         user_content = time_declaration + (
             f"{analysis_request.get('analysis_purpose', {}).get('description', '')}\n\n"
-            f"📊 数据时间范围说明：\n"
+            f"📊 csv文件中的数据和时间范围说明：\n"
             f"- 分时成交数据：包含最近 {intraday_days} 个交易日的日内分时数据，用于分析短期资金流向和主力行为模式\n"
             f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据，用于识别中长期趋势和关键技术位\n"
             f"- 市场指数数据：对应股票所属市场的指数（可能包含多个指数，根据板块自动匹配），时间范围与K线数据一致，用于评估系统性风险和市场beta系数\n"
-            f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致，用于分析行业相对强度和轮动机会\n\n"
+            f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致，用于分析行业相对强度和轮动机会\n"
+            f"- 小时量能数据：包含最近 {hourly_volume_days} 个交易日的日内分时数据，用于分析短期资金流向和主力行为模式\n\n"
             f"📋 数据结构说明：\n"
             f"{analysis_request.get('data_description', {}).get('data_structure', '')}\n\n"
             f"🔍 数据工作表详细说明：\n"
@@ -1022,6 +1041,11 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
     intraday_start_date, intraday_end_date = get_intraday_date_range(intraday_days, specified_date)
     print(f"📅 分时数据日期范围: {intraday_start_date} 到 {intraday_end_date} (共{intraday_days}个交易日)")
 
+    # 小时量能数据使用hourly_volume_days计算日期范围（基于交易日）
+    hourly_volume_days = config.get('hourly_volume_days', intraday_days)  # 默认使用intraday_days
+    hourly_start_date, hourly_end_date = get_intraday_date_range(hourly_volume_days, specified_date)
+    print(f"📅 小时量能数据日期范围: {hourly_start_date} 到 {hourly_end_date} (共{hourly_volume_days}个交易日)")
+
     # K线数据使用kline_days计算日期范围
     kline_days = config.get('kline_days', 60)  # 默认60天
     kline_start_date, kline_end_date = get_kline_date_range(kline_days, specified_date)
@@ -1043,7 +1067,14 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
         file_path = None  # 初始化文件路径
         try:
             # 获取数据并保存到CSV文件
-            result = get_and_save_stock_data(stock=stock, start_date=intraday_start_date, end_date=intraday_end_date, kline_days=kline_days)
+            result = get_and_save_stock_data(
+                stock=stock, 
+                start_date=intraday_start_date, 
+                end_date=intraday_end_date, 
+                kline_days=kline_days,
+                hourly_start_date=hourly_start_date,
+                hourly_end_date=hourly_end_date
+            )
             if result[0] is None:
                 print(f"股票 {stock} 获取数据失败，跳过")
                 continue
@@ -1064,7 +1095,8 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 intraday_days=config['intraday_days'],
                 kline_days=config['kline_days'],
                 stock_code=stock,
-                specified_date=specified_date
+                specified_date=specified_date,
+                hourly_volume_days=config.get('hourly_volume_days', config['intraday_days'])
             )
             if response:
                 print(f"股票 {stock} 的分析结果: {response}\n")
@@ -1075,7 +1107,7 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 time_str = current_time.strftime('%H%M%S')
 
                 # 确保data_output文件夹存在
-                output_dir = Path('data_output') / stock
+                output_dir = get_stock_output_dir(stock)
                 output_dir.mkdir(parents=True, exist_ok=True)
 
                 # 清理股票名称中的特殊字符
@@ -1116,15 +1148,8 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 email_subject = f"股票 {stock_name}（{stock}）分析结果"
                 print("📧 未找到投资评级，使用默认邮件主题")
 
-            # 准备邮件正文，包含小时量能分析信息
-            email_body = f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的文件。"
-            if 'hourly_analysis' in file_paths:
-                # Read the MD file content and append to body
-                with open(file_paths['hourly_analysis'], 'r', encoding='utf-8') as f:
-                    hourly_content = f.read()
-                email_body += f"\n\n=== 小时量能分析报告 ===\n\n{hourly_content}"
-            else:
-                email_body += f"\n\n附件包含：\n1. 主分析报告（HTML格式）"
+            # 准备邮件正文
+            email_body = f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的文件。\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析数据已包含在CSV文件中"
 
             # 准备附件列表 - 只包含HTML文件
             attachment_list = [str(html_filepath)]  # 只发送HTML文件
