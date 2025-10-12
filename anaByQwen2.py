@@ -666,31 +666,50 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
                 # 将小时量能分析数据追加到主CSV文件
                 with open(main_file, 'a', encoding='utf-8-sig', newline='') as f_append:
                     f_append.write("=== 小时量能分析数据 ===\n")
-                    f_append.write("日期,时间段,总笔数,总量能,U占比,D占比,E占比,U/D\n")
+                    f_append.write("日期,时间段,总笔数,成交量,总量能,U占比,D占比,E占比,U/D,成交量占比\n")
                     
                     for date in sorted(hourly_analysis_result.keys()):
                         period_stats = hourly_analysis_result[date]
                         daily_stats = []
                         
+                        # 计算当天的成交量总和（包含所有时间段，包括09:25）
+                        daily_total_volume_count = 0
+                        for period_name, stats in period_stats.items():
+                            daily_total_volume_count += stats['total_volume_count']
+                        
                         # 写入每个时间段
                         for period_name, stats in period_stats.items():
-                            f_append.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{stats['ud_ratio']:.2f}\n")
+                            ud_display = stats['ud_ratio'] if stats['ud_ratio'] != 'NA' else 'NA'
+                            # 计算成交量占比
+                            if daily_total_volume_count > 0:
+                                volume_ratio = stats['total_volume_count'] / daily_total_volume_count
+                            else:
+                                volume_ratio = 0
+                            f_append.write(f"{date},{stats['period_name']},{stats['transaction_count']},{stats['total_volume_count']:.0f},{stats['total_volume']:.0f},{stats['u_ratio']:.4f},{stats['d_ratio']:.4f},{stats['e_ratio']:.4f},{ud_display},{volume_ratio:.4f}\n")
                             daily_stats.append(stats)
                         
                         # 计算并写入每天汇总
                         if daily_stats:
-                            total_transactions = sum(s['transaction_count'] for s in daily_stats)
-                            total_volume = sum(s['total_volume'] for s in daily_stats)
-                            total_u_volume = sum(s['u_volume'] for s in daily_stats)
-                            total_d_volume = sum(s['d_volume'] for s in daily_stats)
-                            total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                            # 排除09:25时间段，只计算09:30-15:00的汇总数据
+                            filtered_stats = [s for s in daily_stats if s.get('period_name') != '09:25']
                             
-                            u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-                            d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-                            e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-                            ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-                            
-                            f_append.write(f"{date},09:20-15:00,{total_transactions},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f}\n")
+                            if filtered_stats:
+                                total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+                                total_volume = sum(s['total_volume'] for s in filtered_stats)
+                                total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                                total_u_volume = sum(s['u_volume'] for s in filtered_stats)
+                                total_d_volume = sum(s['d_volume'] for s in filtered_stats)
+                                total_e_volume = sum(s['e_volume'] for s in filtered_stats)
+                                
+                                u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                                d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                                e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                                ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                                
+                                # 计算09:30-15:00的成交量占比（排除09:25）
+                                filtered_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                                filtered_volume_ratio = filtered_volume_count / daily_total_volume_count if daily_total_volume_count > 0 else 0
+                                f_append.write(f"{date},09:30-15:00,{total_transactions},{total_volume_count:.0f},{total_volume:.0f},{u_ratio:.4f},{d_ratio:.4f},{e_ratio:.4f},{ud_ratio:.2f},{filtered_volume_ratio:.4f}\n")
                     
                     f_append.write("\n\n")
             else:

@@ -130,7 +130,8 @@ def analyze_hourly_volume(df):
 
     # 定义交易时间段
     trading_periods = [
-        {'name': '09:20-10:30', 'start_hour': 9, 'start_minute': 20, 'end_hour': 10, 'end_minute': 30},
+        {'name': '09:25', 'start_hour': 9, 'start_minute': 25, 'end_hour': 9, 'end_minute': 25, 'is_single_time': True},
+        {'name': '09:30-10:30', 'start_hour': 9, 'start_minute': 30, 'end_hour': 10, 'end_minute': 30},
         {'name': '10:30-11:30', 'start_hour': 10, 'start_minute': 30, 'end_hour': 11, 'end_minute': 30},
         {'name': '13:00-14:00', 'start_hour': 13, 'start_minute': 0, 'end_hour': 14, 'end_minute': 0},
         {'name': '14:00-15:00', 'start_hour': 14, 'start_minute': 0, 'end_hour': 15, 'end_minute': 0}
@@ -147,17 +148,25 @@ def analyze_hourly_volume(df):
             period_name = period['name']
             
             # 筛选该时间段内的数据
-            period_data = date_data[
-                ((date_data['hour'] > period['start_hour']) | 
-                 ((date_data['hour'] == period['start_hour']) & (date_data['datetime'].dt.minute >= period['start_minute']))) &
-                ((date_data['hour'] < period['end_hour']) | 
-                 ((date_data['hour'] == period['end_hour']) & (date_data['datetime'].dt.minute < period['end_minute'])))
-            ]
+            if period.get('is_single_time', False):
+                # 特殊处理单个时间点（如09:25）
+                period_data = date_data[
+                    (date_data['hour'] == period['start_hour']) & 
+                    (date_data['datetime'].dt.minute == period['start_minute'])
+                ]
+            else:
+                # 处理时间段
+                period_data = date_data[
+                    ((date_data['hour'] > period['start_hour']) | 
+                     ((date_data['hour'] == period['start_hour']) & (date_data['datetime'].dt.minute >= period['start_minute']))) &
+                    ((date_data['hour'] < period['end_hour']) | 
+                     ((date_data['hour'] == period['end_hour']) & (date_data['datetime'].dt.minute < period['end_minute'])))
+                ]
 
             if len(period_data) == 0:
                 continue
 
-            # 分别统计U、D、E的量能
+            # 分别统计U、D、E的量能和成交量
             u_data = period_data[period_data['kind'] == 'U']
             d_data = period_data[period_data['kind'] == 'D']
             e_data = period_data[period_data['kind'] == 'E']
@@ -165,6 +174,12 @@ def analyze_hourly_volume(df):
             u_volume = u_data['volume_energy'].sum() if len(u_data) > 0 else 0
             d_volume = d_data['volume_energy'].sum() if len(d_data) > 0 else 0
             e_volume = e_data['volume_energy'].sum() if len(e_data) > 0 else 0
+
+            # 计算成交量（股数）
+            u_volume_count = u_data['volume'].sum() if len(u_data) > 0 else 0
+            d_volume_count = d_data['volume'].sum() if len(d_data) > 0 else 0
+            e_volume_count = e_data['volume'].sum() if len(e_data) > 0 else 0
+            total_volume_count = u_volume_count + d_volume_count + e_volume_count
 
             total_volume = u_volume + d_volume + e_volume
 
@@ -174,13 +189,22 @@ def analyze_hourly_volume(df):
             e_ratio = e_volume / total_volume if total_volume > 0 else 0
 
             # 计算U/D比例
-            ud_ratio = u_volume / d_volume if d_volume > 0 else (u_volume if u_volume > 0 else 0)
+            if period.get('is_single_time', False):
+                # 单个时间点（如09:25集合竞价）不计算U/D比例
+                ud_ratio = 'NA'
+            else:
+                # 时间段计算U/D比例
+                ud_ratio = u_volume / d_volume if d_volume > 0 else (u_volume if u_volume > 0 else 0)
 
             date_period_stats[date][period_name] = {
                 'total_volume': total_volume,
+                'total_volume_count': total_volume_count,
                 'u_volume': u_volume,
                 'd_volume': d_volume,
                 'e_volume': e_volume,
+                'u_volume_count': u_volume_count,
+                'd_volume_count': d_volume_count,
+                'e_volume_count': e_volume_count,
                 'u_ratio': u_ratio,
                 'd_ratio': d_ratio,
                 'e_ratio': e_ratio,
@@ -380,19 +404,25 @@ def print_hourly_analysis(date_period_stats):
         if current_date is not None and date != current_date:
             # 打印前一天的汇总数据
             if daily_stats:
-                total_transactions = sum(s['transaction_count'] for s in daily_stats)
-                total_volume = sum(s['total_volume'] for s in daily_stats)
-                total_u_volume = sum(s['u_volume'] for s in daily_stats)
-                total_d_volume = sum(s['d_volume'] for s in daily_stats)
-                total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                # 排除09:25时间段，只计算09:30-15:00的汇总数据
+                filtered_stats = [s for s in daily_stats if s.get('period_name') != '09:25']
                 
-                u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-                d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-                e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-                ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-                
-                print(f"日期：{current_date}，时间段：09:20-15:00，总笔数：{total_transactions}，总量能：{total_volume:,.0f}，U占比：{u_ratio:.2%}，D占比：{d_ratio:.2%}，E占比：{e_ratio:.2%}，U/D：{ud_ratio:.2f}")
-                print()  # 空行分隔不同日期
+                if filtered_stats:
+                    total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+                    total_volume = sum(s['total_volume'] for s in filtered_stats)
+                    total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                    total_u_volume = sum(s['u_volume'] for s in filtered_stats)
+                    total_d_volume = sum(s['d_volume'] for s in filtered_stats)
+                    total_e_volume = sum(s['e_volume'] for s in filtered_stats)
+                    
+                    u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                    d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                    e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                    ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                    
+                    total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                    print(f"日期：{current_date}，时间段：09:30-15:00，总笔数：{total_transactions}，成交量：{total_volume_count:,.0f}，总量能：{total_volume:,.0f}，U占比：{u_ratio:.2%}，D占比：{d_ratio:.2%}，E占比：{e_ratio:.2%}，U/D：{ud_ratio:.2f}")
+                    print()  # 空行分隔不同日期
             
             daily_stats = []
         
@@ -400,22 +430,28 @@ def print_hourly_analysis(date_period_stats):
         daily_stats.append(stats)
         
         # 打印当前时间段数据
-        print(f"日期：{date}，时间段：{period_name}，总笔数：{stats['transaction_count']}，总量能：{total_vol:,.0f}，U占比：{stats['u_ratio']:.2%}，D占比：{stats['d_ratio']:.2%}，E占比：{stats['e_ratio']:.2%}，U/D：{stats['ud_ratio']:.2f}")
+        ud_display = stats['ud_ratio'] if stats['ud_ratio'] != 'NA' else 'NA'
+        print(f"日期：{date}，时间段：{period_name}，总笔数：{stats['transaction_count']}，成交量：{stats['total_volume_count']:,.0f}，总量能：{total_vol:,.0f}，U占比：{stats['u_ratio']:.2%}，D占比：{stats['d_ratio']:.2%}，E占比：{stats['e_ratio']:.2%}，U/D：{ud_display}")
     
     # 打印最后一天的汇总数据
     if daily_stats:
-        total_transactions = sum(s['transaction_count'] for s in daily_stats)
-        total_volume = sum(s['total_volume'] for s in daily_stats)
-        total_u_volume = sum(s['u_volume'] for s in daily_stats)
-        total_d_volume = sum(s['d_volume'] for s in daily_stats)
-        total_e_volume = sum(s['e_volume'] for s in daily_stats)
+        # 排除09:25时间段，只计算09:30-15:00的汇总数据
+        filtered_stats = [s for s in daily_stats if s.get('period_name') != '09:25']
         
-        u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-        d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-        e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-        ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-        
-        print(f"日期：{current_date}，时间段：09:20-15:00，总笔数：{total_transactions}，总量能：{total_volume:,.0f}，U占比：{u_ratio:.2%}，D占比：{d_ratio:.2%}，E占比：{e_ratio:.2%}，U/D：{ud_ratio:.2f}")
+        if filtered_stats:
+            total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+            total_volume = sum(s['total_volume'] for s in filtered_stats)
+            total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+            total_u_volume = sum(s['u_volume'] for s in filtered_stats)
+            total_d_volume = sum(s['d_volume'] for s in filtered_stats)
+            total_e_volume = sum(s['e_volume'] for s in filtered_stats)
+            
+            u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+            d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+            e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+            ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+            
+            print(f"日期：{current_date}，时间段：09:30-15:00，总笔数：{total_transactions}，成交量：{total_volume_count:,.0f}，总量能：{total_volume:,.0f}，U占比：{u_ratio:.2%}，D占比：{d_ratio:.2%}，E占比：{e_ratio:.2%}，U/D：{ud_ratio:.2f}")
 
     print("=" * 80)
 
@@ -458,18 +494,23 @@ def save_hourly_analysis_to_md(date_period_stats, output_path):
                 if current_date is not None and date != current_date:
                     # 写入前一天的汇总数据
                     if daily_stats:
-                        total_transactions = sum(s['transaction_count'] for s in daily_stats)
-                        total_volume = sum(s['total_volume'] for s in daily_stats)
-                        total_u_volume = sum(s['u_volume'] for s in daily_stats)
-                        total_d_volume = sum(s['d_volume'] for s in daily_stats)
-                        total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                        # 排除09:25时间段，只计算09:30-15:00的汇总数据
+                        filtered_stats = [s for s in daily_stats if s.get('period_name') != '09:25']
                         
-                        u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-                        d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-                        e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-                        ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-                        
-                        f.write(f"**日期**: {current_date}，**时间段**: 09:20-15:00，**总笔数**: {total_transactions}，**总量能**: {total_volume:,.0f}，**U占比**: {u_ratio:.2%}，**D占比**: {d_ratio:.2%}，**E占比**: {e_ratio:.2%}，**U/D**: {ud_ratio:.2f}\n\n")
+                        if filtered_stats:
+                            total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+                            total_volume = sum(s['total_volume'] for s in filtered_stats)
+                            total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                            total_u_volume = sum(s['u_volume'] for s in filtered_stats)
+                            total_d_volume = sum(s['d_volume'] for s in filtered_stats)
+                            total_e_volume = sum(s['e_volume'] for s in filtered_stats)
+                            
+                            u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                            d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                            e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                            ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                            
+                            f.write(f"**日期**: {current_date}，**时间段**: 09:30-15:00，**总笔数**: {total_transactions}，**成交量**: {total_volume_count:,.0f}，**总量能**: {total_volume:,.0f}，**U占比**: {u_ratio:.2%}，**D占比**: {d_ratio:.2%}，**E占比**: {e_ratio:.2%}，**U/D**: {ud_ratio:.2f}\n\n")
                     
                     daily_stats = []
                 
@@ -477,22 +518,28 @@ def save_hourly_analysis_to_md(date_period_stats, output_path):
                 daily_stats.append(stats)
                 
                 # 写入当前时间段数据
-                f.write(f"**日期**: {date}，**时间段**: {period_name}，**总笔数**: {stats['transaction_count']}，**总量能**: {total_vol:,.0f}，**U占比**: {stats['u_ratio']:.2%}，**D占比**: {stats['d_ratio']:.2%}，**E占比**: {stats['e_ratio']:.2%}，**U/D**: {stats['ud_ratio']:.2f}\n\n")
+                ud_display = stats['ud_ratio'] if stats['ud_ratio'] != 'NA' else 'NA'
+                f.write(f"**日期**: {date}，**时间段**: {period_name}，**总笔数**: {stats['transaction_count']}，**成交量**: {stats['total_volume_count']:,.0f}，**总量能**: {total_vol:,.0f}，**U占比**: {stats['u_ratio']:.2%}，**D占比**: {stats['d_ratio']:.2%}，**E占比**: {stats['e_ratio']:.2%}，**U/D**: {ud_display}\n\n")
             
             # 写入最后一天的汇总数据
             if daily_stats:
-                total_transactions = sum(s['transaction_count'] for s in daily_stats)
-                total_volume = sum(s['total_volume'] for s in daily_stats)
-                total_u_volume = sum(s['u_volume'] for s in daily_stats)
-                total_d_volume = sum(s['d_volume'] for s in daily_stats)
-                total_e_volume = sum(s['e_volume'] for s in daily_stats)
+                # 排除09:25时间段，只计算09:30-15:00的汇总数据
+                filtered_stats = [s for s in daily_stats if s.get('period_name') != '09:25']
                 
-                u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
-                d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
-                e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
-                ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
-                
-                f.write(f"**日期**: {current_date}，**时间段**: 09:20-15:00，**总笔数**: {total_transactions}，**总量能**: {total_volume:,.0f}，**U占比**: {u_ratio:.2%}，**D占比**: {d_ratio:.2%}，**E占比**: {e_ratio:.2%}，**U/D**: {ud_ratio:.2f}\n\n")
+                if filtered_stats:
+                    total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+                    total_volume = sum(s['total_volume'] for s in filtered_stats)
+                    total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                    total_u_volume = sum(s['u_volume'] for s in filtered_stats)
+                    total_d_volume = sum(s['d_volume'] for s in filtered_stats)
+                    total_e_volume = sum(s['e_volume'] for s in filtered_stats)
+                    
+                    u_ratio = total_u_volume / total_volume if total_volume > 0 else 0
+                    d_ratio = total_d_volume / total_volume if total_volume > 0 else 0
+                    e_ratio = total_e_volume / total_volume if total_volume > 0 else 0
+                    ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else (total_u_volume if total_u_volume > 0 else 0)
+                    
+                    f.write(f"**日期**: {current_date}，**时间段**: 09:30-15:00，**总笔数**: {total_transactions}，**成交量**: {total_volume_count:,.0f}，**总量能**: {total_volume:,.0f}，**U占比**: {u_ratio:.2%}，**D占比**: {d_ratio:.2%}，**E占比**: {e_ratio:.2%}，**U/D**: {ud_ratio:.2f}\n\n")
             
             # 写入统计信息
             f.write("---\n\n")
@@ -508,7 +555,7 @@ def save_hourly_analysis_to_md(date_period_stats, output_path):
             f.write("- **E**: 平盘交易\n")
             f.write("- **U/D**: 上涨量能与下跌量能的比例\n")
             f.write("- **量能**: 价格 × 成交量\n")
-            f.write("- **时间段**: 09:20-10:30, 10:30-11:30, 13:00-14:00, 14:00-15:00\n")
+            f.write("- **时间段**: 09:25（集合竞价）, 09:30-10:30, 10:30-11:30, 13:00-14:00, 14:00-15:00\n")
         
         print(f"分析结果已保存到: {output_path}")
         
