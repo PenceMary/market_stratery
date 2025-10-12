@@ -103,7 +103,7 @@ def send_email(subject: str, body: str, receivers: List[str], sender: str, passw
             for attachment_path in attachment_paths:
                 if attachment_path and os.path.exists(attachment_path):
                     #os.remove(attachment_path)
-                    print(f"本地文件 {attachment_path} 已删除")
+                    print(f"本地文件 {attachment_path} 已删除（为方便调试，目前需手动删除）")
         return True
     except Exception as e:
         print(f"邮件发送失败：{e}")
@@ -171,38 +171,75 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
 
     trading_dates = get_trading_dates(start_date, end_date)
     stock_data_list = []
+    stock_name = None
+    output_dir = Path('data_output') / stock
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     for date in trading_dates:
+        local_path = output_dir / f"{stock}_{date}_intraday.csv"
         max_retries = 3  # 最大重试次数
-        for attempt in range(max_retries):
+        loaded_from_local = False
+
+        if local_path.exists():
             try:
-                daily_data = ak.stock_intraday_sina(symbol=minute_code, date=date)
-                if not daily_data.empty:
-                    daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
-                    stock_data_list.append(daily_data)
-                    print(f"成功获取 {minute_code} 在 {date} 的数据")
-                    # 如果不是最后一个交易日，等待 2 分钟
-                    if date != trading_dates[-1]:
-                        print("稍等一下...")
-                        for _ in range(random.randint(1, 20)):  # 等待随机秒数，每秒打印一个“.”
-                            print("+", end="", flush=True)
+                daily_data = pd.read_csv(local_path, encoding='utf-8-sig')
+                # Handle potential timezone in ticktime
+                daily_data['ticktime'] = pd.to_datetime(daily_data['ticktime'], utc=True).dt.tz_localize(None)
+                print(f"从本地加载 {minute_code} 在 {date} 的数据")
+                loaded_from_local = True
+            except Exception as e:
+                print(f"加载本地文件 {local_path} 失败: {e}，将从接口重新获取")
+
+        if not loaded_from_local:
+            for attempt in range(max_retries):
+                try:
+                    daily_data = ak.stock_intraday_sina(symbol=minute_code, date=date)
+                    if not daily_data.empty:
+                        daily_data['ticktime'] = pd.to_datetime(date + ' ' + daily_data['ticktime'])
+                        # 保存到本地
+                        daily_data.to_csv(local_path, index=False, encoding='utf-8-sig')
+                        print(f"成功获取并保存 {minute_code} 在 {date} 的数据到 {local_path}")
+                        # 如果不是最后一个交易日，等待 2 分钟
+                        if date != trading_dates[-1]:
+                            print("稍等一下...")
+                            for _ in range(random.randint(1, 20)):  # 等待随机秒数，每秒打印一个“.”
+                                print("+", end="", flush=True)
+                                t.sleep(1)
+                            print()  # 换行
+                        break  # 成功获取数据，跳出重试循环
+                except Exception as e:
+                    print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
+                    if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
+                        print("等待20秒后重试...")
+                        for _ in range(20):  # 等待600秒（10分钟），每2秒打印一个“.”
+                            print(".", end="", flush=True)
                             t.sleep(1)
                         print()  # 换行
-                    break  # 成功获取数据，跳出重试循环
-            except Exception as e:
-                print(f"获取股票 {minute_code} 在 {date} 的数据时出错: {e}")
-                if attempt < max_retries - 1:  # 如果不是最后一次尝试，则等待重试
-                    print("等待20秒后重试...")
-                    for _ in range(20):  # 等待600秒（10分钟），每2秒打印一个“.”
-                        print(".", end="", flush=True)
-                        t.sleep(1)
-                    print()  # 换行
-                else:
-                    print(f"股票 {minute_code} 在 {date} 的数据获取失败，跳过")
-                    break  # 达到最大重试次数，跳出循环
+                    else:
+                        print(f"股票 {minute_code} 在 {date} 的数据获取失败，跳过")
+                        break  # 达到最大重试次数，跳出循环
+
+        if 'daily_data' in locals() and not daily_data.empty:
+            # 获取 stock_name，如果尚未设置
+            if stock_name is None and 'name' in daily_data.columns:
+                stock_name = daily_data['name'][0]
+            stock_data_list.append(daily_data)
 
     if not stock_data_list:
         raise ValueError(f"无法获取 {minute_code} 的逐笔成交数据")
-    stock_name = daily_data['name'][0]
+
+    # 如果 stock_name 仍为 None（所有数据从本地加载，且本地无 name 列），则从接口获取一个日期的 name
+    if stock_name is None:
+        try:
+            # 使用最后一个交易日获取 name
+            sample_data = ak.stock_intraday_sina(symbol=minute_code, date=trading_dates[-1])
+            if not sample_data.empty:
+                stock_name = sample_data['name'][0]
+                print(f"从接口获取股票名称: {stock_name}")
+        except Exception as e:
+            print(f"无法获取股票名称: {e}")
+            stock_name = "未知"  # 默认值
+
     all_data = pd.concat(stock_data_list)
     all_data = all_data.sort_values('ticktime').reset_index(drop=True)
     all_data = all_data.drop(columns=['symbol', 'name'], errors='ignore')
@@ -478,9 +515,9 @@ def get_and_save_stock_data(stock: str, start_date: str, end_date: str, kline_da
         random_suffix = str(random.randint(0, 999)).zfill(3)
         base_filename = f"{stock}_{stock_name}_{start_date}_to_{end_date}_{random_suffix}"
 
-        # 确保data_output目录存在
-        output_dir = Path('data_output')
-        output_dir.mkdir(exist_ok=True)
+        # 确保data_output目录存在，并为当前股票创建子文件夹
+        output_dir = Path('data_output') / stock
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         # 保存到CSV文件 - 仅创建合并的完整文件
         file_paths = {}
@@ -649,7 +686,7 @@ def save_data_to_file(data_text: str, stock_code: str, file_suffix: str = "") ->
     from datetime import datetime
 
     # 创建数据目录
-    data_dir = "data_output"
+    data_dir = f"data_output/{stock_code}"
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
@@ -1004,8 +1041,8 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 time_str = current_time.strftime('%H%M%S')
 
                 # 确保data_output文件夹存在
-                output_dir = Path('data_output')
-                output_dir.mkdir(exist_ok=True)
+                output_dir = Path('data_output') / stock
+                output_dir.mkdir(parents=True, exist_ok=True)
 
                 # 清理股票名称中的特殊字符
                 clean_stock_name = stock_name.replace('(', '').replace(')', '').replace(' ', '_')
