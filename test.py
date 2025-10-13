@@ -1,4 +1,4 @@
 import akshare as ak
-stockdata = ak.stock_intraday_sina(symbol="sz000001", date="20250210")
-print(stockdata)
-#可获取过去15个交易日的成交记录
+
+stock_intraday_em_df = ak.stock_intraday_em(symbol="000001")
+print(stock_intraday_em_df)
