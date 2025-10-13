@@ -210,6 +210,59 @@ def get_trading_dates(start_date: str, end_date: str) -> List[str]:
                              (calendar['trade_date'] <= end_date_dt)]['trade_date']
     return trading_dates.dt.strftime('%Y%m%d').tolist()
 
+def check_intraday_data_completeness(csv_file_path: str, target_date: str) -> bool:
+    """
+    检查分时数据文件的完整性
+    
+    :param csv_file_path: CSV文件路径
+    :param target_date: 目标日期 (YYYYMMDD格式)
+    :return: bool, True表示数据完整，False表示数据不完整
+    """
+    try:
+        # 尝试多种编码方式读取CSV文件
+        df = None
+        encodings = ['utf-8-sig', 'utf-8', 'gbk', 'gb2312', 'cp936']
+        
+        for encoding in encodings:
+            try:
+                df = pd.read_csv(csv_file_path, encoding=encoding)
+                print(f"使用 {encoding} 编码成功读取文件 {csv_file_path}")
+                break
+            except UnicodeDecodeError:
+                continue
+        
+        if df is None:
+            print(f"无法读取文件 {csv_file_path}，尝试了所有编码方式")
+            return False
+        
+        if df.empty or 'ticktime' not in df.columns:
+            print(f"文件 {csv_file_path} 为空或缺少ticktime列")
+            return False
+        
+        # 转换ticktime为datetime格式
+        df['ticktime'] = pd.to_datetime(df['ticktime'])
+        
+        # 提取小时信息并去重
+        hours = df['ticktime'].dt.hour.unique()
+        
+        # 检查是否包含完整的交易时间段：9、10、11、13、14、15点
+        required_hours = {9, 10, 11, 13, 14, 15}
+        actual_hours = set(hours)
+        
+        missing_hours = required_hours - actual_hours
+        
+        if missing_hours:
+            print(f"文件 {csv_file_path} 缺少以下小时的数据: {sorted(missing_hours)}")
+            print(f"实际包含的小时: {sorted(actual_hours)}")
+            return False
+        
+        print(f"文件 {csv_file_path} 数据完整，包含所有必需的小时数据")
+        return True
+        
+    except Exception as e:
+        print(f"检查文件 {csv_file_path} 完整性时出错: {e}")
+        return False
+
 def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFrame:
     """
     获取指定股票在指定日期范围内的分时成交数据。
@@ -246,13 +299,20 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
 
         if local_path.exists():
             try:
-                daily_data = pd.read_csv(local_path, encoding='utf-8-sig')
-                # Handle potential timezone in ticktime
-                daily_data['ticktime'] = pd.to_datetime(daily_data['ticktime'], utc=True).dt.tz_localize(None)
-                print(f"从本地加载 {minute_code} 在 {date} 的数据")
-                loaded_from_local = True
+                # 检查数据完整性
+                if not check_intraday_data_completeness(local_path, date):
+                    print(f"检测到 {date} 的数据不完整，删除文件并重新获取")
+                    os.remove(local_path)
+                    loaded_from_local = False
+                else:
+                    daily_data = pd.read_csv(local_path, encoding='utf-8-sig')
+                    # Handle potential timezone in ticktime
+                    daily_data['ticktime'] = pd.to_datetime(daily_data['ticktime'], utc=True).dt.tz_localize(None)
+                    print(f"从本地加载 {minute_code} 在 {date} 的数据")
+                    loaded_from_local = True
             except Exception as e:
-                print(f"加载本地文件 {local_path} 失败: {e}，将从接口重新获取")
+                print(f"检查本地文件 {local_path} 完整性失败: {e}，将从接口重新获取")
+                loaded_from_local = False
 
         if not loaded_from_local:
             try:
