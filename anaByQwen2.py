@@ -21,7 +21,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 # ===== 配置常量 =====
 MAX_RETRIES = 3
 RETRY_DELAY = 20  # 秒
-API_TIMEOUT = 180  # 秒
+API_TIMEOUT = 300  # 秒
 OUTPUT_BASE_DIR = 'data_output'
 SMTP_SERVER = 'applesmtp.163.com'
 SMTP_PORT = 465
