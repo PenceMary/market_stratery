@@ -275,7 +275,7 @@ def get_intraday_data(stock: str, start_date: str, end_date: str) -> pd.DataFram
     # 根据股票代码前缀调整分钟线代码
     if stock.startswith('688'):
         minute_code = f"sh{stock}"
-    elif stock.startswith(('83', '43', '87')):
+    elif stock.startswith(('83', '43', '87','920')):
         minute_code = f"bj{stock}"
     elif stock.startswith('60'):
         minute_code = f"sh{stock}"
@@ -430,7 +430,7 @@ def get_market_index_data(stock_code: str, start_date: str, end_date: str) -> di
             "创业板指数": ("399006", "创业板指数")
         }
         print("识别为创业板股票，使用深圳成指和创业板指数")
-    elif stock_code.startswith(('83', '43', '87')):
+    elif stock_code.startswith(('83', '43', '87','920')):
         # 北交所：北证50
         index_configs = {
             "北证50": ("899050", "北证50指数")
