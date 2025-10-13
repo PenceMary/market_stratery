@@ -839,7 +839,7 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
             f"- 日K线数据：包含最近 {kline_days} 个交易日的K线数据，用于识别中长期趋势和关键技术位\n"
             f"- 市场指数数据：对应股票所属市场的指数（可能包含多个指数，根据板块自动匹配），时间范围与K线数据一致，用于评估系统性风险和市场beta系数\n"
             f"- 行业板块数据：股票所属行业的板块指数，时间范围与K线数据一致，用于分析行业相对强度和轮动机会\n"
-            f"- 小时量能数据：包含最近 {hourly_volume_days} 个交易日的日内分时数据，用于分析短期资金流向和主力行为模式\n\n"
+            f"- 小时量能数据：基于最近 {hourly_volume_days} 个交易日的日内分时数据进行按小时级别统计（避免数据量过大），用于分析中期资金流向和主力行为模式\n\n"
             f"📋 数据结构说明：\n"
             f"{analysis_request.get('data_description', {}).get('data_structure', '')}\n\n"
             f"🔍 数据工作表详细说明：\n"
