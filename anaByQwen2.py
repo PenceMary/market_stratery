@@ -1029,13 +1029,23 @@ def get_intraday_date_range(days_before_today: int, end_date: str = None) -> tup
 
     return start_date, end_date
 
-def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json', command_line_stocks: List[str] = None):
+def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'keys.json', command_line_stocks: List[str] = None, mode: int = 1):
     """分析股票的主函数
 
     :param config_file: 配置文件路径
     :param keys_file: 密钥文件路径
     :param command_line_stocks: 命令行传入的股票代码列表，如果提供则优先使用，否则使用配置文件
+    :param mode: int, 处理模式：0=仅获取数据不进行大模型分析，1=完整处理流程，其他值=中止执行
     """
+    # 检查处理模式
+    if mode == 0:
+        print("📊 模式0：仅获取数据，不进行大模型分析")
+    elif mode == 1:
+        print("🤖 模式1：完整处理流程（包含大模型分析）")
+    else:
+        print(f"❌ 无效的处理模式: {mode}，仅支持0（仅获取数据）或1（完整流程）")
+        return
+
     # 1. 读取配置
     config = load_config(config_file, keys_file)
 
@@ -1098,6 +1108,11 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                 print(f"股票 {stock} 获取数据失败，跳过")
                 continue
             file_paths, stock_name = result
+
+            # 如果模式为0，仅获取数据，跳过文件上传和大模型对话
+            if mode == 0:
+                print(f"✅ 股票 {stock} 数据获取完成，跳过文件上传和大模型分析")
+                continue
 
             # 使用合并的完整文件进行上传
             main_file_path = file_paths['complete']
@@ -1192,12 +1207,36 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
 
 # 运行程序
 if __name__ == "__main__":
-    # 检查命令行参数，如果有参数（除了脚本名），则将其作为股票代码使用
+    # 检查命令行参数
     if len(sys.argv) > 1:
-        # sys.argv[0] 是脚本名，后面的参数都是股票代码
-        command_line_stocks = sys.argv[1:]
-        print(f"🔧 检测到命令行参数，使用指定的股票代码: {', '.join(command_line_stocks)}")
-        analyze_stocks('anylizeconfig.json', 'keys.json', command_line_stocks)
+        # sys.argv[0] 是脚本名
+        # sys.argv[1] 是处理模式（0或1）
+        # sys.argv[2:] 是股票代码列表
+        
+        try:
+            mode = int(sys.argv[1])
+            if mode not in [0, 1]:
+                print(f"❌ 无效的处理模式: {mode}")
+                print("💡 使用方法: python anaByQwen2.py <mode> [股票代码1] [股票代码2] ...")
+                print("   mode: 0=仅获取数据，1=完整流程")
+                print("   示例: python anaByQwen2.py 0 600000 000001")
+                sys.exit(1)
+            
+            command_line_stocks = sys.argv[2:] if len(sys.argv) > 2 else None
+            
+            if command_line_stocks:
+                print(f"🔧 检测到命令行参数，模式: {mode}, 股票代码: {', '.join(command_line_stocks)}")
+            else:
+                print(f"🔧 检测到命令行参数，模式: {mode}, 使用配置文件中的股票设置")
+            
+            analyze_stocks('anylizeconfig.json', 'keys.json', command_line_stocks, mode)
+            
+        except ValueError:
+            print(f"❌ 处理模式必须是数字: {sys.argv[1]}")
+            print("💡 使用方法: python anaByQwen2.py <mode> [股票代码1] [股票代码2] ...")
+            print("   mode: 0=仅获取数据，1=完整流程")
+            print("   示例: python anaByQwen2.py 0 600000 000001")
+            sys.exit(1)
     else:
-        print("🔧 未检测到命令行参数，使用配置文件中的股票设置")
-        analyze_stocks('anylizeconfig.json', 'keys.json')
+        print("🔧 未检测到命令行参数，使用默认模式1和配置文件中的股票设置")
+        analyze_stocks('anylizeconfig.json', 'keys.json', None, 1)
