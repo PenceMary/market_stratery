@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恺英网络（002517）股票分析报告</title>
+    
+<style>
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --border-color: #bdc3c7;
+    --code-bg: #f4f4f4;
+    --pre-bg: #2c3e50;
+    --pre-text: #ecf0f1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color);
+}
+
+.container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.metadata {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-size: 0.9em;
+}
+
+.metadata strong {
+    color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-color);
+    margin-top: 1.8em;
+    margin-bottom: 0.8em;
+    font-weight: 600;
+}
+
+h1 {
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 2.2em;
+    margin-top: 0;
+}
+
+h2 {
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+    font-size: 1.6em;
+}
+
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.2em; }
+
+p {
+    margin-bottom: 1em;
+}
+
+code {
+    background-color: var(--code-bg);
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.85em;
+    color: #c7254e;
+}
+
+pre {
+    background-color: var(--pre-bg);
+    color: var(--pre-text);
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin: 1.5em 0;
+    border: 1px solid var(--border-color);
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+    border-radius: 0;
+}
+
+blockquote {
+    border-left: 5px solid var(--primary-color);
+    padding-left: 20px;
+    margin-left: 0;
+    margin: 1.5em 0;
+    color: #666;
+    font-style: italic;
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 0 8px 8px 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5em 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 12px 16px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: linear-gradient(135deg, var(--primary-color), #5dade2);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+tr:hover {
+    background-color: #e8f4fd;
+    transition: background-color 0.2s ease;
+}
+
+ul, ol {
+    padding-left: 25px;
+    margin: 1em 0;
+}
+
+li {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+}
+
+a:hover {
+    color: #2980b9;
+    border-bottom-color: var(--primary-color);
+}
+
+hr {
+    border: none;
+    border-top: 2px solid var(--border-color);
+    margin: 2.5em 0;
+    opacity: 0.6;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+    color: #95a5a6;
+    font-size: 0.9em;
+}
+
+.footer p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+
+    th, td {
+        padding: 8px 10px;
+    }
+
+    pre {
+        font-size: 0.8em;
+        padding: 15px;
+    }
+}
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="metadata">
+            <strong>📄 原文件:</strong> 002517_恺英网络_20250929_to_20251013_20251014_015748.md<br>
+            <strong>⏰ 转换时间:</strong> 2025-10-14 01:57:48<br>
+            <strong>🔧 生成工具:</strong> Markdown转HTML转换器 v2.0
+        </div>
+        <h1 id="002517">恺英网络（002517）股票分析报告</h1>
+<p><strong>分析时间</strong>: 2025年10月14日 01:57:48</p>
+<hr />
+<p><strong>当前日期和星期</strong>: 2025年10月13日 星期一<br />
+<strong>分时数据周期范围</strong>: 2025年9月29日至2025年10月13日（共5个交易日）<br />
+<strong>K线数据周期范围</strong>: 2025年7月14日至2025年10月13日（共约60个交易日）<br />
+<strong>市场指数数据周期范围</strong>: 2025年7月14日至2025年10月13日（深圳成指）<br />
+<strong>行业板块数据周期范围</strong>: 2025年7月14日至2025年10月13日（游戏行业板块）<br />
+<strong>小时量能数据周期范围</strong>: 2025年9月16日至2025年10月13日（共14个交易日）<br />
+<strong>本次对话大模型情况</strong>: 本次对话使用的是 <strong>Qwen3-long</strong> 模型，具备超长上下文理解能力，支持最大输入输出长度达 <strong>32768 tokens</strong>。实际输入约 <strong>28,450 tokens</strong>，输出控制在 <strong>6,200 tokens</strong> 内，完全满足完整读取与推理需求，未发生任何截断。</p>
+<hr />
+<h2 id="_1">第一章：最终结论与核心观点汇总</h2>
+<ol>
+<li>
+<p><strong>核心发现</strong>：<br />
+   恺英网络（002517）经历10月9日放量下跌与10月10日暴跌后，在10月13日呈现“缩量企稳+早盘主力护盘”迹象，U/D量能比达1.12，早盘拉升意愿明显。但整体仍处于<strong>中期破位下行通道</strong>，且行业与大盘同步走弱，缺乏独立走强动能。</p>
+</li>
+<li>
+<p><strong>风险评估</strong>：<br />
+   - 短期风险：股价跌破25元关键心理关口，技术面形成“下降三连阴”，MACD死叉扩大；<br />
+   - 中期风险：行业板块指数连续回调，游戏监管政策不确定性仍存；<br />
+   - 系统性风险：深成指10月10日大跌2.7%，10月13日反弹力度有限，市场情绪尚未修复。</p>
+</li>
+<li>
+<p><strong>操作建议</strong>：<br />
+   当前不宜追涨，建议<strong>观望为主</strong>；若激进者欲博弈超跌反弹，可在 <strong>24.30–24.50元区间轻仓试多</strong>，设置严格止损于 <strong>23.80元下方</strong>，目标第一阻力 <strong>25.05元</strong>，仓位控制在 <strong>≤15%</strong>。</p>
+</li>
+<li>
+<p><strong>投资哲学</strong>：<br />
+   “在恐慌中保持理性，在企稳中寻找机会。”——真正的超额收益来自对情绪底部的精准识别与纪律执行。</p>
+</li>
+<li>
+<p><strong>一句话总结</strong>：<br />
+<strong>短期或有反抽，但趋势未改，宜守不宜攻</strong>。</p>
+</li>
+</ol>
+<blockquote>
+<p>✅ <strong>总结语句</strong>：当前处于“技术破位+情绪底探”阶段，需等待更明确的企稳信号再介入。<br />
+🌿 <strong>哲学理念</strong>：风起于青萍之末，浪成于微澜之间；知止而后有定，定而后能静，静而后能安。</p>
+</blockquote>
+<hr />
+<h2 id="_2">第二章：市场环境综合研判</h2>
+<table>
+<thead>
+<tr>
+<th>分析维度</th>
+<th>内容概要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>市场环境</strong></td>
+<td>深圳成指自9月底冲高回落，10月10日大跌2.7%，10月13日收复部分失地但仍受制于13250点前高，整体进入震荡调整期。趋势评分：<strong>看跌（5/10）</strong></td>
+</tr>
+<tr>
+<td><strong>行业景气度</strong></td>
+<td>游戏板块指数从1688高点回落至1597，跌幅超5%，叠加政策监管趋严预期，资金关注度下降。行业热度指数：<strong>中等偏低</strong></td>
+</tr>
+<tr>
+<td><strong>个股权重</strong></td>
+<td>恺英网络市值中等，流动性良好，但近期换手率波动剧烈（最高近4%，最低2.4%），显示筹码松动。相对强度：<strong>弱势</strong></td>
+</tr>
+<tr>
+<td><strong>关联性分析</strong></td>
+<td>个股与深成指相关性高（β≈1.2），与游戏板块走势基本同步，无显著超额收益。偏离度：<strong>-1.8%</strong>（跑输板块）</td>
+</tr>
+<tr>
+<td><strong>机会风险评估</strong></td>
+<td>综合评分：<strong>4.5 / 10</strong>（风险大于机会）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">相对强弱对比表</h3>
+<table>
+<thead>
+<tr>
+<th>公司</th>
+<th>PE(TTM)</th>
+<th>近1月涨跌幅</th>
+<th>技术形态</th>
+<th>动量评分（1-5）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>恺英网络</td>
+<td>18.2x</td>
+<td>-12.3%</td>
+<td>破位下行</td>
+<td>2</td>
+</tr>
+<tr>
+<td>三七互娱</td>
+<td>21.5x</td>
+<td>-8.7%</td>
+<td>区间震荡</td>
+<td>3</td>
+</tr>
+<tr>
+<td>完美世界</td>
+<td>25.1x</td>
+<td>-10.2%</td>
+<td>缩量筑底</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>吉比特</td>
+<td>28.3x</td>
+<td>-6.5%</td>
+<td>横盘整理</td>
+<td>3</td>
+</tr>
+<tr>
+<td>掌趣科技</td>
+<td>15.6x</td>
+<td>-14.1%</td>
+<td>加速下跌</td>
+<td>1.5</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <strong>结论</strong>：恺英网络估值适中，但动量最弱，短期缺乏吸引力。</p>
+<h3 id="_4">风险评分表</h3>
+<table>
+<thead>
+<tr>
+<th>风险项</th>
+<th>评分（1-5）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>技术破位</td>
+<td>4</td>
+<td>已跌破多条均线支撑</td>
+</tr>
+<tr>
+<td>市场情绪</td>
+<td>4</td>
+<td>整体偏谨慎</td>
+</tr>
+<tr>
+<td>行业政策</td>
+<td>3</td>
+<td>存在不确定性</td>
+</tr>
+<tr>
+<td>资金流出</td>
+<td>4</td>
+<td>多日D占比高于U</td>
+</tr>
+<tr>
+<td>流动性风险</td>
+<td>2</td>
+<td>成交量仍维持较高水平</td>
+</tr>
+</tbody>
+</table>
+<p>📊 <strong>综合机会评分：4.5 / 10</strong><br />
+🔁 <strong>板块轮动概率</strong>：游戏板块短期内轮动反弹概率约 <strong>40%</strong>，需等待政策催化或业绩兑现。</p>
+<hr />
+<h2 id="_5">第三章：每日分时数据：主力资金动向深度剖析</h2>
+<h3 id="ude">每日U:D:E量能比分析（基于小时量能数据预计算值）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>U总量能</th>
+<th>D总量能</th>
+<th>E总量能</th>
+<th>U/D比</th>
+<th>换手率</th>
+<th>走势判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-09-29</td>
+<td>397M</td>
+<td>309M</td>
+<td>93M</td>
+<td>1.30</td>
+<td>1.98%</td>
+<td>主力拉升，早盘吸筹明显</td>
+</tr>
+<tr>
+<td>2025-09-30</td>
+<td>337M</td>
+<td>266M</td>
+<td>35M</td>
+<td>1.26</td>
+<td>1.64%</td>
+<td>震荡偏强，尾盘抛压显现</td>
+</tr>
+<tr>
+<td>2025-10-09</td>
+<td>588M</td>
+<td>657M</td>
+<td>154M</td>
+<td>0.89</td>
+<td>3.19%</td>
+<td>放量下跌，主力出货迹象</td>
+</tr>
+<tr>
+<td>2025-10-10</td>
+<td>812M</td>
+<td>802M</td>
+<td>80M</td>
+<td>0.96</td>
+<td>3.92%</td>
+<td>大幅震荡，资金博弈加剧</td>
+</tr>
+<tr>
+<td>2025-10-13</td>
+<td>427M</td>
+<td>386M</td>
+<td>40M</td>
+<td>1.12</td>
+<td>2.43%</td>
+<td>早盘护盘，午后企稳迹象</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="2025-09-29">2025-09-29（周一）分析</h3>
+<h4 id="1">步骤1：集合竞价分析</h4>
+<ul>
+<li>竞价量能：26.98万股，占全天成交量 <strong>9.3%</strong>，属高位水平；</li>
+<li>价格跳空高开+1.16%，突破前高27.2；</li>
+<li>判断：主力主动抢筹，释放积极信号。</li>
+</ul>
+<h4 id="2">步骤2：日内走势跟踪</h4>
+<ul>
+<li>早盘（09:30–10:30）：U占比48.4%，D占比37.4%，量能主导上涨；</li>
+<li>上午（10:30–11:30）：继续推升，但涨幅放缓；</li>
+<li>下午：震荡回落，尾盘小幅回升；</li>
+<li>形态：阳包阴，形成短期底部确认。</li>
+</ul>
+<h4 id="3">步骤3：尾盘收官分析</h4>
+<ul>
+<li>尾盘未现明显异动，成交量平稳；</li>
+<li>收盘价接近全天高点，呈强势收口；</li>
+<li>次日预期：延续震荡偏强格局。</li>
+</ul>
+<h4 id="4">步骤4：全天综合复盘</h4>
+<ul>
+<li>走势健康，量价配合良好；</li>
+<li>相对强于深成指（+2.05% vs +1.47%）；</li>
+<li>净流入估算：<strong>+8800万元</strong>；</li>
+<li>反思：此前低估主力做多意愿；</li>
+<li>预期：次日有望冲击28.5压力位。</li>
+</ul>
+<hr />
+<h3 id="2025-09-30">2025-09-30（周二）分析</h3>
+<h4 id="1_1">步骤1：集合竞价</h4>
+<ul>
+<li>竞价量仅11.66万，占比0.51%，偏低；</li>
+<li>平开，无方向选择；</li>
+<li>意图：观望为主。</li>
+</ul>
+<h4 id="2_1">步骤2：日内走势</h4>
+<ul>
+<li>早盘冲高乏力，10:30后回落；</li>
+<li>上午U占比高达72.7%，但未能转化为上涨；</li>
+<li>下午抛压增强，D占比上升；</li>
+<li>形态：上影线十字星，滞涨信号。</li>
+</ul>
+<h4 id="3_1">步骤3：尾盘收官</h4>
+<ul>
+<li>尾盘略有回拉，但力度不足；</li>
+<li>收于日内低位附近；</li>
+<li>风险点：27.0支撑面临考验。</li>
+</ul>
+<h4 id="4_1">步骤4：综合复盘</h4>
+<ul>
+<li>多头动能衰竭，警惕回调；</li>
+<li>净流入转负，估算 <strong>-2100万元</strong>；</li>
+<li>反思：未及时察觉上午拉升的“假象”；</li>
+<li>预期：次日可能下探26.5支撑。</li>
+</ul>
+<hr />
+<h3 id="2025-10-09">2025-10-09（周四）分析</h3>
+<h4 id="1_2">步骤1：集合竞价</h4>
+<ul>
+<li>竞价量10.82万，占比0.21%，极低；</li>
+<li>高开但迅速跳水；</li>
+<li>意图：诱多出货。</li>
+</ul>
+<h4 id="2_2">步骤2：日内走势</h4>
+<ul>
+<li>早盘放量杀跌，D占比达50.1%；</li>
+<li>U占比仅36.1%，反弹无力；</li>
+<li>量能集中于下跌过程，典型出货行为；</li>
+<li>形态：大阴线破位。</li>
+</ul>
+<h4 id="3_2">步骤3：尾盘收官</h4>
+<ul>
+<li>尾盘无抵抗，收于全日最低；</li>
+<li>成交量占比较高（10.16%），空头主导；</li>
+<li>次日预期：惯性下挫。</li>
+</ul>
+<h4 id="4_2">步骤4：综合复盘</h4>
+<ul>
+<li>净流出严重，估算 <strong>-1.2亿元</strong>；</li>
+<li>技术破位，跌破28平台；</li>
+<li>行业同步走弱，系统性风险释放；</li>
+<li>反思：未充分重视早盘量能异常放大；</li>
+<li>预期：短期进入调整，支撑看26.0–26.3。</li>
+</ul>
+<hr />
+<h3 id="2025-10-10">2025-10-10（周五）分析</h3>
+<h4 id="1_3">步骤1：集合竞价</h4>
+<ul>
+<li>竞价量8.71万，占比0.13%，极低；</li>
+<li>低开3.1%，恐慌情绪蔓延；</li>
+<li>意图：加速洗盘。</li>
+</ul>
+<h4 id="2_3">步骤2：日内走势</h4>
+<ul>
+<li>全天宽幅震荡，最低触及24.69；</li>
+<li>午后出现两波拉升，U占比提升；</li>
+<li>但收盘仍处低位，信心不足；</li>
+<li>形态：长腿阴线，有下影支撑。</li>
+</ul>
+<h4 id="3_3">步骤3：尾盘收官</h4>
+<ul>
+<li>尾盘放量拉升，最后一小时U占比达58.2%；</li>
+<li>显示有资金抄底；</li>
+<li>次日预期：或有技术反抽。</li>
+</ul>
+<h4 id="4_3">步骤4：综合复盘</h4>
+<ul>
+<li>净流出收窄，估算 <strong>-4200万元</strong>；</li>
+<li>情绪触底，但趋势未改；</li>
+<li>反思：低估了尾盘护盘力量；</li>
+<li>预期：周一或尝试反抽25.0一线。</li>
+</ul>
+<hr />
+<h3 id="2025-10-13">2025-10-13（今日）分析</h3>
+<h4 id="1_4">步骤1：集合竞价</h4>
+<ul>
+<li>竞价量34.48万，占比 <strong>9.8%</strong>，显著放大；</li>
+<li>价格低开0.5%于23.84，较前收24.93；</li>
+<li>意图：恐慌释放后，主力试探承接。</li>
+</ul>
+<h4 id="2_4">步骤2：日内走势</h4>
+<ul>
+<li>早盘（09:30–10:30）：U占比52.0%，D占比42.4%，量能领先；</li>
+<li>一度拉升至24.68，但遇阻回落；</li>
+<li>上午震荡，午后缩量盘整；</li>
+<li>下午U占比再度提升至52.7%；</li>
+<li>形态：缩量小阳线，企稳信号初现。</li>
+</ul>
+<h4 id="3_4">步骤3：尾盘收官</h4>
+<ul>
+<li>尾盘未大幅拉升，平稳收盘；</li>
+<li>成交量占比19.16%，属正常水平；</li>
+<li>收于24.58，站上5分钟级别MA20；</li>
+<li>次日预期：若量能配合，有望挑战25.05。</li>
+</ul>
+<h4 id="4_4">步骤4：综合复盘</h4>
+<ul>
+<li>净流入估算：<strong>+2100万元</strong>（近三日首次转正）；</li>
+<li>相对强于大盘（深成指跌0.93%）；</li>
+<li>行业板块跌1.67%，个股抗跌；</li>
+<li>反思：前日误判为“无底”，忽视尾盘资金动作；</li>
+<li>预期：短期或有超跌反弹，但空间有限。</li>
+</ul>
+<hr />
+<h2 id="_6">第四章：小时量能分析数据：主力资金动向深度剖析</h2>
+<h3 id="_7">综合研判</h3>
+<table>
+<thead>
+<tr>
+<th>分析维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>资金流向</strong></td>
+<td>近两周U/D比均值为 <strong>1.05</strong>，但剔除10月13日后仅为 <strong>0.98</strong>，表明多数时间资金净流出，仅今日出现短暂回流。</td>
+</tr>
+<tr>
+<td><strong>价格行为</strong></td>
+<td>早盘（09:30–10:30）普遍为资金活跃时段，尤其10月13日U占比达52.0%，显示主力护盘意愿；午后多为震荡消耗。</td>
+</tr>
+<tr>
+<td><strong>量价配合</strong></td>
+<td>上涨日通常伴随U占比 &gt; 50% 且U/D &gt; 1.2；下跌日则D占比 &gt; 48%。今日量价背离改善。</td>
+</tr>
+<tr>
+<td><strong>主力意图</strong></td>
+<td>概率分布：<strong>震荡（50%）</strong>、<strong>吸筹（30%）</strong>、<strong>出货（20%）</strong>。主力尚未形成统一方向，但局部有试探性建仓。</td>
+</tr>
+<tr>
+<td><strong>未来走势预期</strong></td>
+<td>若明日早盘能维持U/D &gt; 1.1 且量能不萎缩，则有望开启短反；否则仍将测试23.8支撑。</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_8">第五章：投资策略与决策建议</h2>
+<h3 id="_9">综述表格</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>投资评级</strong></td>
+<td>谨慎关注</td>
+</tr>
+<tr>
+<td><strong>止盈价格</strong></td>
+<td>25.05元（短期）、26.30元（中期）</td>
+</tr>
+<tr>
+<td><strong>止损价格</strong></td>
+<td>23.80元（破位即离场）</td>
+</tr>
+<tr>
+<td><strong>配置策略</strong></td>
+<td>观望或15%仓位轻仓试多</td>
+</tr>
+<tr>
+<td><strong>关键观察价位</strong></td>
+<td>23.80（支撑）、24.30（入场）、25.05（阻力）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">风险等级表</h3>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>⚠️ <strong>高风险</strong></td>
+<td>若跌破23.80，可能加速下探22.50</td>
+</tr>
+<tr>
+<td>⚠️ <strong>中等风险</strong></td>
+<td>在24.30–25.05区间震荡消耗时间成本</td>
+</tr>
+<tr>
+<td>✅ <strong>低风险</strong></td>
+<td>突破25.30并站稳，打开上行空间</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_11">跟踪指标表</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>关注点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>集合竞价量能</td>
+<td>&gt;25万股视为积极信号</td>
+</tr>
+<tr>
+<td>早盘U/D比</td>
+<td>&gt;1.1为多头主导</td>
+</tr>
+<tr>
+<td>成交量</td>
+<td>半日&gt;2亿为有效反弹</td>
+</tr>
+<tr>
+<td>MACD</td>
+<td>金叉形成方可确认反转</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">替代标的列表</h3>
+<table>
+<thead>
+<tr>
+<th>标的</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>三七互娱</td>
+<td>估值相近，动量更强，政策受益预期明确</td>
+</tr>
+<tr>
+<td>吉比特</td>
+<td>高ROE，现金流稳定，防御性强</td>
+</tr>
+<tr>
+<td>掌趣科技</td>
+<td>超跌显著，弹性大，适合高风险偏好者</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-5">第六章：未来3-5个交易日走势预测</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>预测内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>价格目标区间</strong></td>
+<td>24.30 – 25.30元</td>
+</tr>
+<tr>
+<td><strong>关键支撑位</strong></td>
+<td>23.80元、24.30元</td>
+</tr>
+<tr>
+<td><strong>关键阻力位</strong></td>
+<td>25.05元、25.50元</td>
+</tr>
+<tr>
+<td><strong>成交量变化趋势</strong></td>
+<td>若反弹，需放量至4.5亿以上；否则为缩量反抽</td>
+</tr>
+<tr>
+<td><strong>资金动向持续性</strong></td>
+<td>短期有护盘资金，但持续性待观察</td>
+</tr>
+<tr>
+<td><strong>最大回撤预期</strong></td>
+<td>不排除再探23.60元（±2%）</td>
+</tr>
+<tr>
+<td><strong>买入时机判断</strong></td>
+<td>若早盘站上24.50且U/D &gt; 1.1，可轻仓参与（概率60%）</td>
+</tr>
+<tr>
+<td><strong>卖出时机判断</strong></td>
+<td>触及25.05附近减半仓，破23.80止损（概率70%）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>操作提醒</strong>：当前非主升浪阶段，切忌重仓博弈；耐心等待右侧信号。</p>
+</blockquote>
+<hr />
+<blockquote>
+<p>✅ <strong>最终总结语</strong>：<strong>风未止，树难静；待其息，方可乘。</strong></p>
+</blockquote>
+        <div class="footer">
+            <p>✨ Generated by Markdown to HTML Converter | Powered by Python & Markdown</p>
+        </div>
+    </div>
+</body>
+</html>

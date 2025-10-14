@@ -130,4 +130,4 @@ ehthumbs.db
 Thumbs.db
 
 # Data output directory
-data_output/
+#data_output/
