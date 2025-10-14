@@ -591,7 +591,7 @@ def analyze_csv_file(file_path):
         print(f"分析完成，共 {len(date_period_stats)} 个交易日，{total_combinations} 个日期-时间段组合")
 
         # 打印分析结果
-        print_hourly_analysis(date_period_stats)
+        # print_hourly_analysis(date_period_stats)
 
         # 保存分析结果到MD文件
         print("正在保存分析结果到MD文件...")

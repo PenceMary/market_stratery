@@ -80,6 +80,46 @@ def fetch_with_retry(api_func, *args, **kwargs):
             else:
                 raise Exception(f"API调用失败，已重试 {max_retries} 次: {str(e)}")
 
+def cleanup_stock_data(stock: str) -> None:
+    """
+    清理股票数据目录，只保留intraday.csv文件，删除其他文件
+
+    :param stock: str, 股票代码
+    """
+    try:
+        output_dir = get_stock_output_dir(stock)
+
+        if not output_dir.exists():
+            print(f"⚠️ 股票 {stock} 的数据目录不存在，跳过清理")
+            return
+
+        deleted_count = 0
+        kept_count = 0
+
+        # 遍历目录中的所有文件
+        for file_path in output_dir.iterdir():
+            if file_path.is_file():
+                filename = file_path.name
+
+                # 检查是否为intraday.csv文件（格式：{stock}_{date}_intraday.csv）
+                if filename.startswith(f"{stock}_") and filename.endswith("_intraday.csv") and "_intraday.csv" in filename:
+                    # 这是intraday文件，保留
+                    kept_count += 1
+                    print(f"📁 保留文件: {filename}")
+                else:
+                    # 删除其他文件
+                    try:
+                        file_path.unlink()
+                        deleted_count += 1
+                        print(f"🗑️ 删除文件: {filename}")
+                    except Exception as e:
+                        print(f"❌ 删除文件失败 {filename}: {e}")
+
+        print(f"✅ 股票 {stock} 数据清理完成：保留 {kept_count} 个intraday.csv文件，删除 {deleted_count} 个其他文件")
+
+    except Exception as e:
+        print(f"❌ 清理股票 {stock} 数据时出错: {e}")
+
 def extract_investment_rating(md_file_path: str) -> str:
     """
     从MD文件中提取投资评级信息
@@ -180,6 +220,19 @@ def load_config(config_file: str, keys_file: str) -> Dict[str, Any]:
         with open(keys_file, 'r', encoding='utf-8') as f:
             keys = json.load(f)
         config.update(keys)  # 合并 keys.json 中的配置
+        
+        # 如果配置中指定了使用 specified_stocks.txt 文件，则从文件中读取股票列表
+        if config.get('stock_selection') == 'specified' and 'specified_stocks_file' in config:
+            stocks_file = config['specified_stocks_file']
+            try:
+                with open(stocks_file, 'r', encoding='utf-8') as f:
+                    stocks = [line.strip() for line in f.readlines() if line.strip()]
+                config['specified_stocks'] = stocks
+                print(f"✅ 从 {stocks_file} 读取到 {len(stocks)} 只股票")
+            except Exception as e:
+                print(f"⚠️ 读取股票文件 {stocks_file} 失败: {e}")
+                print("将使用配置文件中的 specified_stocks 字段")
+        
         return config
     except Exception as e:
         raise Exception(f"读取配置文件失败: {e}")
@@ -1166,12 +1219,18 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             )
             if result[0] is None:
                 print(f"股票 {stock} 获取数据失败，跳过")
+                # 数据获取失败时也进行清理（虽然可能没有新文件，但确保目录整洁）
+                print(f"🧹 开始清理股票 {stock} 的数据目录...")
+                cleanup_stock_data(stock)
                 continue
             file_paths, stock_name = result
 
             # 如果模式为0，仅获取数据，跳过文件上传和大模型对话
             if mode == 0:
                 print(f"✅ 股票 {stock} 数据获取完成，跳过文件上传和大模型分析")
+                # 模式0也需要进行数据清理
+                print(f"🧹 开始清理股票 {stock} 的数据目录...")
+                cleanup_stock_data(stock)
                 continue
 
             # 使用合并的完整文件进行上传
@@ -1179,6 +1238,9 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             file_id = upload_file(file_path=main_file_path, api_key=api_key)
             if file_id is None:
                 print(f"股票 {stock} 的文件上传失败，跳过")
+                # 文件上传失败时也进行清理
+                print(f"🧹 开始清理股票 {stock} 的数据目录...")
+                cleanup_stock_data(stock)
                 continue
 
             # 与通义千问模型交互，直接传递字典类型的 prompt_template 和配置参数
@@ -1226,6 +1288,9 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
                     print(f"✅ HTML文件已生成: {html_filepath}\n")
                 else:
                     print(f"❌ HTML转换失败: {md_filepath}\n")
+                    # HTML转换失败时也进行清理
+                    print(f"🧹 开始清理股票 {stock} 的数据目录...")
+                    cleanup_stock_data(stock)
                     continue
             else:
                 print(f"股票 {stock} 的聊天请求失败！\n")
@@ -1259,6 +1324,10 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
 
         except Exception as e:
             print(f"处理股票 {stock} 时出错: {e}\n")
+
+        # 无论处理成功还是失败，都进行数据清理
+        print(f"🧹 开始清理股票 {stock} 的数据目录...")
+        cleanup_stock_data(stock)
 
         if index < total - 1:
             for i in range(10):  # 等待 300 秒，避免请求过于频繁
