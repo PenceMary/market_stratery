@@ -75,8 +75,9 @@ def fetch_with_retry(api_func, *args, **kwargs):
         except Exception as e:
             print(f"API调用失败 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
             if attempt < max_retries - 1:
-                print(f"将在 {retry_delay} 秒后重试...")
-                t.sleep(retry_delay)
+                random_delay = random.uniform(1, retry_delay)
+                print(f"将在 {random_delay:.1f} 秒后重试...")
+                t.sleep(random_delay)
             else:
                 raise Exception(f"API调用失败，已重试 {max_retries} 次: {str(e)}")
 
