@@ -1311,8 +1311,8 @@ def analyze_stocks(config_file: str = 'anylizeconfig.json', keys_file: str = 'ke
             # 准备邮件正文
             email_body = f"股票 {stock_name}（{stock}）的分析报告已生成，请查看附件中的文件。\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析数据已包含在CSV文件中"
 
-            # 准备附件列表 - 只包含HTML文件
-            attachment_list = [str(html_filepath)]  # 只发送HTML文件
+            # 准备附件列表 - 可包含HTML或MD文件
+            attachment_list = [str(html_filepath),str(md_filepath)]  # 发送HTML+MD文件
 
             send_email(
                 subject=email_subject,
