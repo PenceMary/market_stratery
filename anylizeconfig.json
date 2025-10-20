@@ -2,9 +2,9 @@
     "stock_selection": "specified",
     "specified_stocks_file": "specified_stocks.txt",
     "random_stock_count": 1,
-    "specified_date": "20251016",
-    "intraday_days": 3,
-    "hourly_volume_days": 10,
+    "specified_date": "20251017",
+    "intraday_days": 6,
+    "hourly_volume_days": 15,
     "kline_days": 30,
     "prompt": {
         "analysis_request": {
