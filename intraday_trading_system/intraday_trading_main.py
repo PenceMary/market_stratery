@@ -27,7 +27,18 @@ class IntradayTradingAnalyzer:
         :param keys_file: API密钥文件路径
         """
         self.config = self._load_config(config_file, keys_file)
-        self.data_fetcher = IntradayDataFetcher()
+        
+        # 从配置中读取超时和重试参数
+        data_config = self.config.get('data_config', {})
+        max_retries = data_config.get('max_retries', 3)
+        retry_delay = data_config.get('retry_delay', 2)
+        api_timeout = data_config.get('api_timeout', 30)
+        
+        self.data_fetcher = IntradayDataFetcher(
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+            timeout=api_timeout
+        )
         self.indicator_calculator = TechnicalIndicators()
         self.prompt_builder = PromptBuilder()
         

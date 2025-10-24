@@ -8,74 +8,136 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Any, Tuple
 import time
+from functools import wraps
+
+
+def retry_on_failure(max_retries=3, delay=2, timeout=30):
+    """
+    重试装饰器，用于处理网络请求失败
+    
+    :param max_retries: 最大重试次数
+    :param delay: 重试间隔（秒）
+    :param timeout: 超时时间（秒）
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_retries):
+                try:
+                    return func(*args, **kwargs)
+                except (ConnectionError, TimeoutError, Exception) as e:
+                    error_msg = str(e)
+                    
+                    # 判断是否为超时或网络错误
+                    is_network_error = any(keyword in error_msg.lower() for keyword in 
+                                          ['timeout', 'connection', 'proxy', 'max retries'])
+                    
+                    if attempt < max_retries - 1 and is_network_error:
+                        wait_time = delay * (attempt + 1)  # 指数退避
+                        print(f"  ⚠️ 第{attempt + 1}次尝试失败: {error_msg[:100]}...")
+                        print(f"  ⏳ {wait_time}秒后重试...")
+                        time.sleep(wait_time)
+                    else:
+                        if attempt == max_retries - 1:
+                            print(f"  ❌ 已重试{max_retries}次仍失败")
+                        raise e
+            return None
+        return wrapper
+    return decorator
 
 
 class IntradayDataFetcher:
     """日内数据获取器"""
     
-    def __init__(self):
+    def __init__(self, max_retries=3, retry_delay=2, timeout=30):
+        """
+        初始化数据获取器
+        
+        :param max_retries: 最大重试次数
+        :param retry_delay: 重试延迟（秒）
+        :param timeout: 超时时间（秒）
+        """
         self.cache = {}
+        self.max_retries = max_retries
+        self.retry_delay = retry_delay
+        self.timeout = timeout
     
     def get_realtime_quote(self, stock_code: str) -> Dict[str, Any]:
         """
-        获取股票实时行情
+        获取股票实时行情（带重试机制）
         
         :param stock_code: 股票代码
         :return: 实时行情数据字典
         """
-        try:
-            print(f"📊 获取 {stock_code} 实时行情...")
-            
-            # 获取实时行情
-            df = ak.stock_zh_a_spot_em()
-            stock_data = df[df['代码'] == stock_code]
-            
-            if stock_data.empty:
-                print(f"❌ 未找到股票 {stock_code} 的实时行情")
-                return None
-            
-            row = stock_data.iloc[0]
-            
-            quote = {
-                'stock_code': stock_code,
-                'stock_name': row['名称'],
-                'current_price': row['最新价'],
-                'open_price': row['今开'],
-                'high_price': row['最高'],
-                'low_price': row['最低'],
-                'pre_close': row['昨收'],
-                'price_change': row['涨跌幅'],
-                'price_change_amount': row['涨跌额'],
-                'volume': row['成交量'],
-                'amount': row['成交额'],
-                'amplitude': row['振幅'],
-                'turnover_rate': row['换手率'],
-                'volume_ratio': row['量比'],
-                'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-            
-            # 计算涨跌停价
-            limit_up_price = round(row['昨收'] * 1.10, 2)
-            limit_down_price = round(row['昨收'] * 0.90, 2)
-            
-            # 科创板和创业板是20%
-            if stock_code.startswith('688') or stock_code.startswith('300'):
-                limit_up_price = round(row['昨收'] * 1.20, 2)
-                limit_down_price = round(row['昨收'] * 0.80, 2)
-            # 北交所是30%
-            elif stock_code.startswith(('83', '43', '87', '920')):
-                limit_up_price = round(row['昨收'] * 1.30, 2)
-                limit_down_price = round(row['昨收'] * 0.70, 2)
-            
-            quote['limit_up_price'] = limit_up_price
-            quote['limit_down_price'] = limit_down_price
-            
-            print(f"✅ 实时行情获取成功: {quote['stock_name']} 当前价 {quote['current_price']}")
-            return quote
-            
-        except Exception as e:
-            print(f"❌ 获取实时行情失败: {e}")
-            return None
+        print(f"📊 获取 {stock_code} 实时行情...")
+        
+        # 使用重试机制
+        for attempt in range(self.max_retries):
+            try:
+                # 获取实时行情
+                df = ak.stock_zh_a_spot_em()
+                stock_data = df[df['代码'] == stock_code]
+                
+                if stock_data.empty:
+                    print(f"❌ 未找到股票 {stock_code} 的实时行情")
+                    return None
+                
+                row = stock_data.iloc[0]
+                
+                quote = {
+                    'stock_code': stock_code,
+                    'stock_name': row['名称'],
+                    'current_price': row['最新价'],
+                    'open_price': row['今开'],
+                    'high_price': row['最高'],
+                    'low_price': row['最低'],
+                    'pre_close': row['昨收'],
+                    'price_change': row['涨跌幅'],
+                    'price_change_amount': row['涨跌额'],
+                    'volume': row['成交量'],
+                    'amount': row['成交额'],
+                    'amplitude': row['振幅'],
+                    'turnover_rate': row['换手率'],
+                    'volume_ratio': row['量比'],
+                    'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                
+                # 计算涨跌停价
+                limit_up_price = round(row['昨收'] * 1.10, 2)
+                limit_down_price = round(row['昨收'] * 0.90, 2)
+                
+                # 科创板和创业板是20%
+                if stock_code.startswith('688') or stock_code.startswith('300'):
+                    limit_up_price = round(row['昨收'] * 1.20, 2)
+                    limit_down_price = round(row['昨收'] * 0.80, 2)
+                # 北交所是30%
+                elif stock_code.startswith(('83', '43', '87', '920')):
+                    limit_up_price = round(row['昨收'] * 1.30, 2)
+                    limit_down_price = round(row['昨收'] * 0.70, 2)
+                
+                quote['limit_up_price'] = limit_up_price
+                quote['limit_down_price'] = limit_down_price
+                
+                print(f"✅ 实时行情获取成功: {quote['stock_name']} 当前价 {quote['current_price']}")
+                return quote
+                
+            except Exception as e:
+                error_msg = str(e)
+                is_network_error = any(keyword in error_msg.lower() for keyword in 
+                                      ['timeout', 'connection', 'proxy', 'max retries', 'read timed out'])
+                
+                if attempt < self.max_retries - 1 and is_network_error:
+                    wait_time = self.retry_delay * (attempt + 1)
+                    print(f"  ⚠️ 第{attempt + 1}次尝试失败: {error_msg[:80]}...")
+                    print(f"  ⏳ {wait_time}秒后重试...")
+                    time.sleep(wait_time)
+                else:
+                    if attempt == self.max_retries - 1:
+                        print(f"  ❌ 已重试{self.max_retries}次仍失败")
+                    print(f"❌ 获取实时行情失败: {e}")
+                    return None
+        
+        return None
     
     def get_today_intraday_data(self, stock_code: str) -> pd.DataFrame:
         """

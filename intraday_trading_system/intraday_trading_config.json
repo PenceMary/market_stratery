@@ -16,7 +16,10 @@
     "intraday_minutes": 5,
     "history_days": 3,
     "kline_days": 20,
-    "cache_enabled": true
+    "cache_enabled": true,
+    "api_timeout": 30,
+    "max_retries": 3,
+    "retry_delay": 2
   },
   "trading_time": {
     "morning_start": "09:30",
