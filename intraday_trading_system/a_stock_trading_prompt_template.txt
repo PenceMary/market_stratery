@@ -1,0 +1,214 @@
+======== A股日内交易分析提示词模板 ======== 
+
+距离开盘已过去 {elapsed_minutes} 分钟。当前时间为 {current_time}，这是您第 {invoke_count} 次分析调用。
+
+以下为您提供全面的市场数据、技术指标和量价信号，帮助您发现A股日内交易机会。
+下方包含您的账户信息、持仓状况、当日盈亏等详细数据。
+
+**重要说明**：
+- 所有价格和信号数据按时间顺序排列：最旧 → 最新
+- 日内数据默认以 {interval_minutes} 分钟为间隔（除非特别说明）
+- 交易时间：上午 09:30-11:30，下午 13:00-15:00
+- 当前交易制度：T+1（今日买入需明日才能卖出）
+
+---
+
+=== 大盘整体状态 ===
+
+【上证指数】
+当前点位 = {sh_index_price}
+涨跌幅 = {sh_index_change}%
+当前成交量 = {sh_volume} 亿元
+量比 = {sh_volume_ratio}
+
+【深证成指】
+当前点位 = {sz_index_price}
+涨跌幅 = {sz_index_change}%
+
+【创业板指】
+当前点位 = {cy_index_price}
+涨跌幅 = {cy_index_change}%
+
+【市场情绪指标】
+涨停家数 = {limit_up_count}
+跌停家数 = {limit_down_count}
+涨跌比 = {up_down_ratio}
+两市成交额 = {total_volume} 亿元
+
+---
+
+=== 标的股票详细数据：{stock_code} {stock_name} ===
+
+【基本信息】
+当前价格 = {current_price} 元
+今日开盘 = {open_price} 元
+最高价 = {high_price} 元
+最低价 = {low_price} 元
+涨跌幅 = {price_change}%
+涨停价 = {limit_up_price} 元
+跌停价 = {limit_down_price} 元
+当前振幅 = {amplitude}%
+
+【成交情况】
+当前成交量 = {current_volume} 手
+当前成交额 = {current_amount} 万元
+量比 = {volume_ratio}
+换手率 = {turnover_rate}%
+内外盘比 = {inner_outer_ratio}
+
+【技术指标 - 当前值】
+EMA5 = {ema5}
+EMA10 = {ema10}
+EMA20 = {ema20}
+EMA60 = {ema60}
+MACD (DIF) = {macd_dif}
+MACD (DEA) = {macd_dea}
+MACD (柱) = {macd_bar}
+RSI(6) = {rsi6}
+RSI(12) = {rsi12}
+RSI(24) = {rsi24}
+KDJ(K) = {kdj_k}
+KDJ(D) = {kdj_d}
+KDJ(J) = {kdj_j}
+BOLL上轨 = {boll_upper}
+BOLL中轨 = {boll_mid}
+BOLL下轨 = {boll_lower}
+
+【分时数据序列（{interval_minutes}分钟级，最旧 → 最新）】
+
+价格序列：
+[{price_1}, {price_2}, {price_3}, {price_4}, {price_5}, {price_6}, {price_7}, {price_8}, {price_9}, {price_10}]
+
+成交量序列（手）：
+[{vol_1}, {vol_2}, {vol_3}, {vol_4}, {vol_5}, {vol_6}, {vol_7}, {vol_8}, {vol_9}, {vol_10}]
+
+均价序列：
+[{avg_1}, {avg_2}, {avg_3}, {avg_4}, {avg_5}, {avg_6}, {avg_7}, {avg_8}, {avg_9}, {avg_10}]
+
+EMA20 序列：
+[{ema20_1}, {ema20_2}, {ema20_3}, {ema20_4}, {ema20_5}, {ema20_6}, {ema20_7}, {ema20_8}, {ema20_9}, {ema20_10}]
+
+MACD 序列：
+[{macd_1}, {macd_2}, {macd_3}, {macd_4}, {macd_5}, {macd_6}, {macd_7}, {macd_8}, {macd_9}, {macd_10}]
+
+RSI(6) 序列：
+[{rsi6_1}, {rsi6_2}, {rsi6_3}, {rsi6_4}, {rsi6_5}, {rsi6_6}, {rsi6_7}, {rsi6_8}, {rsi6_9}, {rsi6_10}]
+
+RSI(12) 序列：
+[{rsi12_1}, {rsi12_2}, {rsi12_3}, {rsi12_4}, {rsi12_5}, {rsi12_6}, {rsi12_7}, {rsi12_8}, {rsi12_9}, {rsi12_10}]
+
+【盘口数据】
+买一：{bid1_price} 元 × {bid1_volume} 手
+买二：{bid2_price} 元 × {bid2_volume} 手
+买三：{bid3_price} 元 × {bid3_volume} 手
+买四：{bid4_price} 元 × {bid4_volume} 手
+买五：{bid5_price} 元 × {bid5_volume} 手
+
+卖一：{ask1_price} 元 × {ask1_volume} 手
+卖二：{ask2_price} 元 × {ask2_volume} 手
+卖三：{ask3_price} 元 × {ask3_volume} 手
+卖四：{ask4_price} 元 × {ask4_volume} 手
+卖五：{ask5_price} 元 × {ask5_volume} 手
+
+买卖力道比 = {bid_ask_strength}
+大单净流入 = {big_order_net} 万元
+
+【日线级别背景（更长时间维度）】
+5日均线 = {ma5_daily}
+10日均线 = {ma10_daily}
+20日均线 = {ma20_daily}
+60日均线 = {ma60_daily}
+
+5日均量 = {vol_ma5_daily}
+10日均量 = {vol_ma10_daily}
+
+日线MACD：
+[{macd_daily_1}, {macd_daily_2}, {macd_daily_3}, {macd_daily_4}, {macd_daily_5}, {macd_daily_6}, {macd_daily_7}, {macd_daily_8}, {macd_daily_9}, {macd_daily_10}]
+
+日线RSI(14)：
+[{rsi14_daily_1}, {rsi14_daily_2}, {rsi14_daily_3}, {rsi14_daily_4}, {rsi14_daily_5}, {rsi14_daily_6}, {rsi14_daily_7}, {rsi14_daily_8}, {rsi14_daily_9}, {rsi14_daily_10}]
+
+日线ATR(14) = {atr14_daily}
+当前波动率 = {volatility}%
+
+【板块联动】
+所属板块：{sector_name}
+板块涨跌幅 = {sector_change}%
+板块领涨股：{sector_leader} ({sector_leader_change}%)
+板块内排名 = {rank_in_sector}
+
+概念板块：{concept_sectors}
+概念热度 = {concept_heat}
+
+---
+
+=== 您的账户状态 ===
+
+【资金情况】
+总资产 = {total_assets} 元
+可用资金 = {available_cash} 元
+持仓市值 = {position_value} 元
+冻结资金 = {frozen_cash} 元
+
+【今日绩效】
+今日盈亏 = {today_pnl} 元 ({today_pnl_pct}%)
+今日交易次数 = {today_trades}
+今日成功率 = {today_win_rate}%
+最大回撤 = {max_drawdown}%
+
+【当前持仓】
+{positions_detail}
+- 股票代码：{position_code}
+- 股票名称：{position_name}
+- 持仓数量：{position_shares} 股
+- 可卖数量：{sellable_shares} 股（T+1限制）
+- 成本价：{cost_price} 元
+- 当前价：{position_current_price} 元
+- 盈亏：{position_pnl} 元 ({position_pnl_pct}%)
+- 持仓占比：{position_weight}%
+
+【风险控制】
+单票最大持仓：{max_position_pct}%
+止损线：{stop_loss_pct}%
+止盈线：{take_profit_pct}%
+今日剩余可交易次数：{remaining_trades}
+
+---
+
+=== 分析任务 ===
+
+请基于以上数据，从以下维度进行分析：
+
+1. **技术面分析**
+   - 价格趋势判断（上升/下降/震荡）
+   - 关键支撑位和压力位
+   - 技术指标背离情况
+   - 成交量与价格配合关系
+
+2. **量能分析**
+   - 量比和换手率是否异常
+   - 大单资金流向
+   - 内外盘强弱对比
+   - 分时量能堆积情况
+
+3. **盘口分析**
+   - 买卖盘力量对比
+   - 挂单分布特征
+   - 是否存在大单压盘或托盘
+
+4. **市场环境**
+   - 大盘走势对个股影响
+   - 板块联动效应
+   - 市场情绪是否支持操作
+
+5. **交易建议**
+   - 操作方向：买入/卖出/观望
+   - 建议仓位：轻仓/半仓/重仓
+   - 入场时机和价位
+   - 止损位和止盈位设置
+   - 风险提示
+
+请给出明确的交易决策和理由，注意控制风险。
+
+---
+

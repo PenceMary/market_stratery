@@ -1,0 +1,39 @@
+{
+  "api_provider": "qwen",
+  "api_config": {
+    "qwen": {
+      "model": "qwen-long",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "timeout": 300
+    },
+    "deepseek": {
+      "model": "deepseek-chat",
+      "base_url": "https://api.deepseek.com/v1",
+      "timeout": 300
+    }
+  },
+  "data_config": {
+    "intraday_minutes": 5,
+    "history_days": 3,
+    "kline_days": 20,
+    "cache_enabled": true
+  },
+  "trading_time": {
+    "morning_start": "09:30",
+    "morning_end": "11:30",
+    "afternoon_start": "13:00",
+    "afternoon_end": "15:00"
+  },
+  "risk_control": {
+    "max_position_pct": 30,
+    "stop_loss_pct": -3,
+    "take_profit_pct": 8
+  },
+  "output_config": {
+    "save_to_file": true,
+    "output_dir": "intraday_output",
+    "show_realtime": true
+  },
+  "comment": "请在keys.json中配置api_key"
+}
+
