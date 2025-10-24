@@ -234,7 +234,8 @@ def analyze_stocks(config_file: str = 'config.json'):
     start_date = config['start_date']
     end_date = config['end_date']
     prompt_template = config['prompt']
-    api_key = config['api_key']  # 从配置文件读取 API 密钥
+    # 从配置文件读取 API 密钥（优先使用 qwen_api_key，兼容旧的 api_key）
+    api_key = config.get('qwen_api_key', config.get('api_key', ''))
     kline_days = config.get('kline_days', 60)  # 默认60天，如果未指定
     email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
     email_password = config['email_password']  # 从配置文件读取发件人邮箱密码

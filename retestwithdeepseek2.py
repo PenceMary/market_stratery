@@ -104,7 +104,8 @@ def analyze_stocks(config_file: str = 'retestconfig.json'):
     start_date = config['start_date']
     end_date = config['end_date']
     prompt_template = config['prompt']
-    api_key = config.get('api_key', 'YOUR_API_KEY')
+    # 从配置文件读取 API 密钥（优先使用 deepseek_api_key，兼容旧的 api_key）
+    api_key = config.get('deepseek_api_key', config.get('api_key', 'YOUR_API_KEY'))
 
     chunk_size = 14000  # 设定数据块大小
 

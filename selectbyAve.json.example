@@ -1,0 +1,15 @@
+{
+    "是否全量股票": false,
+    "股票数量": 1000,
+    "成交量上涨比例x": 30,
+    "成交量基准天数": 60,
+    "TOR":[5,20],
+    "上涨天数": 3,
+    "email_sender": "your_email@example.com",
+    "email_receivers": [
+        "receiver1@example.com",
+        "receiver2@example.com"
+    ],
+    "email_password": "your_email_password_or_auth_code"
+}
+

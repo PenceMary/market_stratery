@@ -1,6 +1,7 @@
 {
   "comment": "这是API密钥配置文件示例，请复制为keys.json并填入真实密钥",
-  "api_key": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "qwen_api_key": "sk-your-qwen-api-key-here",
+  "deepseek_api_key": "sk-your-deepseek-api-key-here",
   "email_sender": "your_email@163.com",
   "email_password": "your_email_password_or_auth_code",
   "email_receivers": [
@@ -10,7 +11,8 @@
   "usage_notes": {
     "qwen_api": "访问 https://dashscope.aliyuncs.com/ 获取阿里云百炼API密钥",
     "deepseek_api": "访问 https://platform.deepseek.com/ 获取DeepSeek API密钥",
-    "email_password": "对于163邮箱，需要使用授权码而非登录密码"
+    "email_password": "对于163邮箱，需要使用授权码而非登录密码",
+    "api_key_config": "根据intraday_trading_config.json中的api_provider自动选择qwen_api_key或deepseek_api_key"
   }
 }
 

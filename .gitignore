@@ -1,5 +1,12 @@
-# Keys and secrets
+# Keys and secrets - DO NOT COMMIT THESE FILES
 keys.json
+selectbyAve.json
+retestconfig.json
+**/keys.json
+*.key
+*.pem
+*.p12
+*.pfx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

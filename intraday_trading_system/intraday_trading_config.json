@@ -1,5 +1,5 @@
 {
-  "api_provider": "qwen",
+  "api_provider": "deepseek",
   "api_config": {
     "qwen": {
       "model": "qwen-long",

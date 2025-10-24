@@ -66,8 +66,28 @@ class IntradayTradingAnalyzer:
             with open(keys_path, 'r', encoding='utf-8') as f:
                 keys = json.load(f)
             
-            config['api_key'] = keys.get('api_key', '')
+            # 根据 api_provider 选择对应的 API Key
+            api_provider = config.get('api_provider', 'qwen')
+            
+            # 新版配置：qwen_api_key 和 deepseek_api_key
+            if api_provider == 'qwen':
+                api_key = keys.get('qwen_api_key', keys.get('api_key', ''))  # 兼容旧配置
+                key_name = 'qwen_api_key'
+            elif api_provider == 'deepseek':
+                api_key = keys.get('deepseek_api_key', '')
+                key_name = 'deepseek_api_key'
+            else:
+                api_key = keys.get('api_key', '')
+                key_name = 'api_key'
+            
+            if not api_key or api_key.startswith('sk-请填入'):
+                print(f"❌ 未配置 {api_provider} 的 API Key")
+                print(f"💡 请在 {keys_path} 中配置 {key_name}")
+                sys.exit(1)
+            
+            config['api_key'] = api_key
             print(f"✅ 配置文件加载成功 (keys.json: {keys_path})")
+            print(f"✅ 使用 {api_provider} API Key")
             
             return config
         except Exception as e:
@@ -151,11 +171,17 @@ class IntradayTradingAnalyzer:
                 intraday_indicators = self.indicator_calculator.analyze_intraday_data(today_intraday)
                 data['intraday_indicators'] = intraday_indicators
             
-            # 3. 历史分时数据（可选，用于更全面的分析）
+            # 3. 历史分时数据和量能分析
             history_days = self.config['data_config']['history_days']
             if history_days > 0:
                 print(f"  - 获取最近{history_days}天分时数据...")
-                # 这里可以扩展获取历史分时数据
+                historical_intraday = self.data_fetcher.get_historical_intraday_with_cache(stock_code, history_days)
+                if not historical_intraday.empty:
+                    # 计算量能分布
+                    hourly_volume_stats = self.data_fetcher.calculate_hourly_volume(historical_intraday)
+                    data['hourly_volume_stats'] = hourly_volume_stats
+                else:
+                    data['hourly_volume_stats'] = {}
             
             # 4. K线数据
             kline_days = self.config['data_config']['kline_days']

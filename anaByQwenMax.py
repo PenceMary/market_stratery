@@ -550,7 +550,8 @@ def analyze_stocks_max(config_file: str = 'anylizeconfig.json', keys_file: str =
     prompt_template = select_prompt_by_model(config)
     print(f"🎯 使用推理模型专用prompt (qwen-max)")
 
-    api_key = config['api_key']  # 从 keys.json 读取 API 密钥
+    # 从 keys.json 读取 API 密钥（优先使用 qwen_api_key，兼容旧的 api_key）
+    api_key = config.get('qwen_api_key', config.get('api_key', ''))
     email_sender = config['email_sender']  # 从配置文件读取发件人邮箱地址
     email_password = config['email_password']  # 从 keys.json 读取发件人邮箱密码
     email_receivers = config['email_receivers']  # 从配置文件读取收件人邮箱地址
