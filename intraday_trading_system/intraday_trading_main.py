@@ -1,18 +1,129 @@
 """
 A股日内交易分析主程序
-实时获取股票数据，通过大模型分析，给出交易建议
+实时获取股票数据，通过大模型分析,给出交易建议
 """
 
 import sys
 import json
+import re
+import smtplib
 from datetime import datetime
 from pathlib import Path
 from openai import OpenAI
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 import os
 
 from intraday_data_fetcher import IntradayDataFetcher
 from intraday_indicators import TechnicalIndicators
 from intraday_prompt_builder import PromptBuilder
+
+# 导入父目录的md_to_html模块
+parent_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(parent_dir))
+from md_to_html import MarkdownToHTMLConverter
+
+
+# ===== 辅助函数 =====
+def extract_investment_rating(md_file_path: str) -> str:
+    """
+    从MD文件中提取投资评级信息
+    
+    :param md_file_path: str, MD文件路径
+    :return: str, 提取到的投资评级，如果未找到则返回空字符串
+    """
+    try:
+        with open(md_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 使用正则表达式查找投资评级行
+        # 匹配类似：**投资评级** | ✅ **强烈推荐（Strong Buy）** |
+        pattern = r'\*\*投资评级\*\*\s*\|\s*(.+?)\s*\|'
+        match = re.search(pattern, content)
+        
+        if match:
+            rating_text = match.group(1).strip()
+            # 清理markdown格式，提取实际评级内容
+            # 移除markdown的粗体标记和表情符号
+            clean_rating = re.sub(r'\*\*', '', rating_text)  # 移除粗体标记
+            clean_rating = re.sub(r'[✅❌🟢🟡🔴]', '', clean_rating)  # 移除表情符号
+            clean_rating = clean_rating.strip()
+            return clean_rating
+        else:
+            print(f"⚠️ 在文件 {md_file_path} 中未找到投资评级信息")
+            return ""
+    
+    except Exception as e:
+        print(f"❌ 提取投资评级时出错: {e}")
+        return ""
+
+
+def send_email(subject: str, body: str, receivers: list, sender: str, password: str, 
+               attachment_paths: list = None) -> bool:
+    """
+    发送邮件并返回是否成功，如果提供attachment_paths则发送多个附件
+    
+    :param subject: 邮件主题
+    :param body: 邮件正文
+    :param receivers: 收件人列表
+    :param sender: 发件人邮箱
+    :param password: 发件人邮箱密码
+    :param attachment_paths: 附件路径列表
+    :return: bool, 是否发送成功
+    """
+    # 创建邮件对象
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = ', '.join(receivers)
+    msg['Subject'] = subject
+    
+    # 添加邮件正文
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+    
+    # 如果提供了附件路径列表，添加所有附件
+    if attachment_paths:
+        for attachment_path in attachment_paths:
+            if attachment_path and os.path.exists(attachment_path):
+                try:
+                    with open(attachment_path, 'rb') as f:
+                        # 根据文件扩展名确定MIME类型
+                        file_ext = os.path.splitext(attachment_path)[1].lower()
+                        if file_ext == '.html':
+                            attachment = MIMEApplication(f.read(), _subtype='html')
+                        elif file_ext == '.md':
+                            attachment = MIMEApplication(f.read(), _subtype='text')
+                        else:
+                            attachment = MIMEApplication(f.read())
+                        
+                        attachment.add_header('Content-Disposition', 'attachment', 
+                                            filename=os.path.basename(attachment_path))
+                        msg.attach(attachment)
+                    print(f"  ✅ 已添加附件: {os.path.basename(attachment_path)}")
+                except Exception as e:
+                    print(f"  ⚠️ 添加附件失败: {attachment_path}, 错误: {e}")
+                    continue
+            else:
+                print(f"  ⚠️ 附件文件不存在: {attachment_path}")
+    
+    # SMTP服务器设置
+    smtp_server = 'applesmtp.163.com'
+    smtp_port = 465
+    
+    # 登录凭证
+    username = sender
+    
+    # 发送邮件
+    try:
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(username, password)
+        server.sendmail(sender, receivers, msg.as_string())
+        server.quit()
+        print("  ✅ 邮件发送成功！")
+        return True
+    except Exception as e:
+        print(f"  ❌ 邮件发送失败：{e}")
+        return False
 
 
 class IntradayTradingAnalyzer:
@@ -86,8 +197,20 @@ class IntradayTradingAnalyzer:
                 sys.exit(1)
             
             config['api_key'] = api_key
+            
+            # 加载邮件配置
+            config['email_sender'] = keys.get('email_sender', '')
+            config['email_password'] = keys.get('email_password', '')
+            config['email_receivers'] = keys.get('email_receivers', [])
+            
             print(f"✅ 配置文件加载成功 (keys.json: {keys_path})")
             print(f"✅ 使用 {api_provider} API Key")
+            
+            # 检查邮件配置
+            if config['email_sender'] and config['email_password'] and config['email_receivers']:
+                print(f"✅ 邮件配置已加载")
+            else:
+                print(f"⚠️ 邮件配置不完整，邮件发送功能将被禁用")
             
             return config
         except Exception as e:
@@ -285,7 +408,7 @@ class IntradayTradingAnalyzer:
             print(f"  ⚠️ 保存提示词失败: {e}")
     
     def _save_result(self, stock_code: str, result: dict):
-        """保存分析结果到文件"""
+        """保存分析结果到文件，并转换为HTML和发送邮件"""
         try:
             output_dir = Path(self.config['output_config']['output_dir'])
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -314,8 +437,66 @@ class IntradayTradingAnalyzer:
             
             print(f"  ✅ 分析报告(Markdown)已保存: {md_filepath}")
             
+            # 转换为HTML格式
+            html_filename = f"{stock_code}_{result['stock_name']}_analysis_{timestamp}.html"
+            html_filepath = output_dir / html_filename
+            
+            converter = MarkdownToHTMLConverter()
+            if converter.convert_file(str(md_filepath), str(html_filepath)):
+                print(f"  ✅ HTML报告已生成: {html_filepath}")
+            else:
+                print(f"  ⚠️ HTML转换失败")
+                html_filepath = None
+            
+            # 发送邮件
+            email_sender = self.config.get('email_sender', '')
+            email_password = self.config.get('email_password', '')
+            email_receivers = self.config.get('email_receivers', [])
+            
+            if email_sender and email_password and email_receivers:
+                print(f"\n📧 准备发送邮件...")
+                
+                # 提取投资评级并添加到邮件主题中
+                investment_rating = extract_investment_rating(str(md_filepath))
+                if investment_rating:
+                    email_subject = f"股票 {result['stock_name']}({stock_code}) 日内分析 - {investment_rating}"
+                else:
+                    email_subject = f"股票 {result['stock_name']}({stock_code}) 日内分析报告"
+                
+                # 准备邮件正文
+                email_body = (
+                    f"股票 {result['stock_name']}({stock_code}) 的日内交易分析报告已生成。\n\n"
+                    f"分析时间: {result['analysis_time']}\n"
+                    f"当前价格: {result['current_price']:.2f} 元\n"
+                    f"涨跌幅: {result['price_change']:.2f}%\n\n"
+                    f"请查看附件中的详细分析报告（HTML和Markdown格式）。\n"
+                )
+                
+                # 准备附件列表
+                attachment_list = []
+                if html_filepath and html_filepath.exists():
+                    attachment_list.append(str(html_filepath))
+                attachment_list.append(str(md_filepath))
+                
+                # 发送邮件
+                send_result = send_email(
+                    subject=email_subject,
+                    body=email_body,
+                    receivers=email_receivers,
+                    sender=email_sender,
+                    password=email_password,
+                    attachment_paths=attachment_list
+                )
+                
+                if not send_result:
+                    print(f"  ⚠️ 邮件发送失败，但文件已保存到本地")
+            else:
+                print(f"  ⚠️ 邮件配置不完整，跳过邮件发送")
+            
         except Exception as e:
             print(f"  ⚠️ 保存分析结果失败: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _display_result(self, result: dict):
         """显示分析结果摘要"""
@@ -382,11 +563,7 @@ def main():
         print("⚠️ 警告: 当前不在交易时间内")
         print(f"当前时间: {current_time.strftime('%H:%M:%S')}")
         print("交易时间: 09:30-11:30, 13:00-15:00")
-        
-        response = input("\n是否继续分析？(y/n): ")
-        if response.lower() != 'y':
-            print("已取消分析")
-            sys.exit(0)
+        print("💡 自动继续分析(将使用历史数据)...\n")
     
     # 创建分析器
     analyzer = IntradayTradingAnalyzer()

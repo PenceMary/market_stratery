@@ -1,8 +1,8 @@
 {
-  "api_provider": "deepseek",
+  "api_provider": "qwen",
   "api_config": {
     "qwen": {
-      "model": "qwen-long",
+      "model": "qwen3-max",
       "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
       "timeout": 300
     },
@@ -17,9 +17,9 @@
     "history_days": 3,
     "kline_days": 20,
     "cache_enabled": true,
-    "api_timeout": 30,
-    "max_retries": 3,
-    "retry_delay": 2
+    "api_timeout": 60,
+    "max_retries": 5,
+    "retry_delay": 3
   },
   "trading_time": {
     "morning_start": "09:30",

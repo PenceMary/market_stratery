@@ -136,5 +136,7 @@ dmypy.json
 ehthumbs.db
 Thumbs.db
 
-# Data output directory
+# Data output directories
 #data_output/
+intraday_output/
+**/intraday_output/
