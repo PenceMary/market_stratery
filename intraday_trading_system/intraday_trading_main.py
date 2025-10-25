@@ -74,8 +74,10 @@ def extract_trading_action(md_file_path: str) -> str:
         patterns = [
             r'\*\*操作方向：(.+?)\*\*',  # 格式1: **操作方向：买入（轻仓博弈反弹）**
             r'\*\*操作方向\*\*\s*\|\s*(.+?)\s*\|',  # 格式2: | **操作方向** | ✅ 买入（轻仓做反弹） |
-            r'操作方向[：:]\s*(.+?)[\n\r]',  # 格式3: 操作方向：买入
-            r'\*\*交易建议\*\*[：:]\s*(.+?)[\n\r]',  # 格式4: **交易建议：买入**
+            r'\*\*操作方向\*\*[：:]\s*\*\*(.+?)\*\*',  # 格式3: **操作方向**：**观望**
+            r'\*\*[^\*]*?操作方向\*\*[：:]\s*\*\*(.+?)\*\*',  # 格式4: **📊 操作方向**：**买入**（带表情符号）
+            r'操作方向[：:]\s*(.+?)[\n\r]',  # 格式5: 操作方向：买入
+            r'\*\*交易建议\*\*[：:]\s*(.+?)[\n\r]',  # 格式6: **交易建议：买入**
         ]
         
         for pattern in patterns:
@@ -179,6 +181,14 @@ class IntradayTradingAnalyzer:
         """
         self.config = self._load_config(config_file, keys_file)
         
+        # 获取要使用的模型提供商列表
+        self.api_providers = self.config.get('api_providers', [])
+        if not self.api_providers:
+            # 如果没有配置api_providers，使用单个api_provider
+            self.api_providers = [self.config.get('api_provider', 'qwen')]
+        
+        print(f"✅ 将使用以下模型进行分析: {', '.join(self.api_providers)}")
+        
         # 从配置中读取超时和重试参数
         data_config = self.config.get('data_config', {})
         max_retries = data_config.get('max_retries', 3)
@@ -217,26 +227,38 @@ class IntradayTradingAnalyzer:
             with open(keys_path, 'r', encoding='utf-8') as f:
                 keys = json.load(f)
             
-            # 根据 api_provider 选择对应的 API Key
-            api_provider = config.get('api_provider', 'qwen')
+            # 获取要使用的模型提供商列表
+            api_providers = config.get('api_providers', [])
+            if not api_providers:
+                api_providers = [config.get('api_provider', 'qwen')]
             
-            # 新版配置：qwen_api_key 和 deepseek_api_key
-            if api_provider == 'qwen':
-                api_key = keys.get('qwen_api_key', keys.get('api_key', ''))  # 兼容旧配置
-                key_name = 'qwen_api_key'
-            elif api_provider == 'deepseek':
-                api_key = keys.get('deepseek_api_key', '')
-                key_name = 'deepseek_api_key'
-            else:
-                api_key = keys.get('api_key', '')
-                key_name = 'api_key'
+            # 为每个提供商加载API密钥
+            config['api_keys'] = {}
+            missing_keys = []
             
-            if not api_key or api_key.startswith('sk-请填入'):
-                print(f"❌ 未配置 {api_provider} 的 API Key")
-                print(f"💡 请在 {keys_path} 中配置 {key_name}")
+            for provider in api_providers:
+                if provider == 'qwen':
+                    api_key = keys.get('qwen_api_key', keys.get('api_key', ''))
+                    key_name = 'qwen_api_key'
+                elif provider == 'deepseek':
+                    api_key = keys.get('deepseek_api_key', '')
+                    key_name = 'deepseek_api_key'
+                else:
+                    api_key = keys.get('api_key', '')
+                    key_name = 'api_key'
+                
+                if not api_key or api_key.startswith('sk-请填入'):
+                    missing_keys.append(f"{provider} ({key_name})")
+                else:
+                    config['api_keys'][provider] = api_key
+            
+            if missing_keys:
+                print(f"❌ 未配置以下模型的 API Key: {', '.join(missing_keys)}")
+                print(f"💡 请在 {keys_path} 中配置相应的API密钥")
                 sys.exit(1)
             
-            config['api_key'] = api_key
+            # 保留单个api_key用于向后兼容
+            config['api_key'] = config['api_keys'].get(config.get('api_provider', 'qwen'), '')
             
             # 加载邮件配置
             config['email_sender'] = keys.get('email_sender', '')
@@ -244,7 +266,7 @@ class IntradayTradingAnalyzer:
             config['email_receivers'] = keys.get('email_receivers', [])
             
             print(f"✅ 配置文件加载成功 (keys.json: {keys_path})")
-            print(f"✅ 使用 {api_provider} API Key")
+            print(f"✅ 已加载 {len(config['api_keys'])} 个模型的API密钥: {', '.join(config['api_keys'].keys())}")
             
             # 检查邮件配置
             if config['email_sender'] and config['email_password'] and config['email_receivers']:
@@ -257,27 +279,28 @@ class IntradayTradingAnalyzer:
             print(f"❌ 加载配置文件失败: {e}")
             sys.exit(1)
     
-    def analyze_stock(self, stock_code: str) -> dict:
+    def analyze_stock(self, stock_code: str) -> list:
         """
-        分析单只股票
+        分析单只股票，使用所有配置的模型
         
         :param stock_code: 股票代码
-        :return: 分析结果字典
+        :return: 分析结果字典列表（每个模型一个结果）
         """
         print(f"\n{'='*60}")
         print(f"开始分析股票: {stock_code}")
         print(f"分析时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"使用模型: {', '.join(self.api_providers)}")
         print(f"{'='*60}\n")
         
-        # 1. 获取所有数据
+        # 1. 获取所有数据（只需要获取一次）
         print("📊 步骤1: 获取股票数据...")
         all_data = self._fetch_all_data(stock_code)
         
         if not all_data or not all_data.get('quote'):
             print(f"❌ 获取股票 {stock_code} 数据失败")
-            return None
+            return []
         
-        # 2. 构建提示词
+        # 2. 构建提示词（只需要构建一次）
         print("\n📝 步骤2: 构建分析提示词...")
         prompt = self.prompt_builder.build_prompt(all_data)
         
@@ -285,34 +308,47 @@ class IntradayTradingAnalyzer:
         if self.config['output_config']['save_to_file']:
             self._save_prompt(stock_code, prompt, all_data.get('quote', {}).get('stock_name', ''))
         
-        # 3. 调用大模型分析
-        print("\n🤖 步骤3: 调用大模型进行分析...")
-        analysis_result = self._call_llm(prompt)
+        results = []
         
-        if not analysis_result:
-            print(f"❌ 大模型分析失败")
-            return None
+        # 3. 为每个模型进行分析
+        for provider in self.api_providers:
+            print(f"\n🤖 步骤3-{provider.upper()}: 调用{provider.upper()}模型进行分析...")
+            analysis_result = self._call_llm(prompt, provider)
+            
+            if not analysis_result:
+                print(f"⚠️ {provider.upper()}模型分析失败，跳过")
+                continue
+            
+            # 4. 保存分析结果
+            print(f"\n💾 步骤4-{provider.upper()}: 保存{provider.upper()}分析结果...")
+            result = {
+                'stock_code': stock_code,
+                'stock_name': all_data.get('quote', {}).get('stock_name', ''),
+                'analysis_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'current_price': all_data.get('quote', {}).get('current_price', 0),
+                'price_change': all_data.get('quote', {}).get('price_change', 0),
+                'analysis': analysis_result,
+                'prompt': prompt,
+                'model_provider': provider,
+                'model_name': self.config['api_config'][provider]['model']
+            }
+            
+            if self.config['output_config']['save_to_file']:
+                self._save_result(stock_code, result)
+            
+            # 5. 显示结果
+            if self.config['output_config']['show_realtime']:
+                self._display_result(result)
+            
+            results.append(result)
+            
+            # 在多个模型之间稍作等待，避免API限制
+            if len(self.api_providers) > 1 and provider != self.api_providers[-1]:
+                print("\n⏳ 等待2秒后调用下一个模型...")
+                import time
+                time.sleep(2)
         
-        # 4. 保存分析结果
-        print("\n💾 步骤4: 保存分析结果...")
-        result = {
-            'stock_code': stock_code,
-            'stock_name': all_data.get('quote', {}).get('stock_name', ''),
-            'analysis_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'current_price': all_data.get('quote', {}).get('current_price', 0),
-            'price_change': all_data.get('quote', {}).get('price_change', 0),
-            'analysis': analysis_result,
-            'prompt': prompt
-        }
-        
-        if self.config['output_config']['save_to_file']:
-            self._save_result(stock_code, result)
-        
-        # 5. 显示结果
-        if self.config['output_config']['show_realtime']:
-            self._display_result(result)
-        
-        return result
+        return results
     
     def _fetch_all_data(self, stock_code: str) -> dict:
         """获取所有需要的数据"""
@@ -383,14 +419,20 @@ class IntradayTradingAnalyzer:
             traceback.print_exc()
             return None
     
-    def _call_llm(self, prompt: str) -> str:
+    def _call_llm(self, prompt: str, provider: str) -> str:
         """调用大模型API"""
         try:
-            api_provider = self.config.get('api_provider', 'qwen')
-            api_config = self.config['api_config'][api_provider]
+            api_config = self.config['api_config'][provider]
+            
+            # 根据不同的提供商获取对应的API密钥
+            api_key = self.config['api_keys'].get(provider)
+            
+            if not api_key:
+                print(f"❌ 未找到 {provider} 的API密钥")
+                return None
             
             client = OpenAI(
-                api_key=self.config['api_key'],
+                api_key=api_key,
                 base_url=api_config['base_url']
             )
             
@@ -410,7 +452,7 @@ class IntradayTradingAnalyzer:
             # 流式输出
             full_response = ""
             print("\n" + "="*60)
-            print("💬 大模型分析结果：")
+            print(f"💬 {provider.upper()}模型分析结果：")
             print("="*60 + "\n")
             
             for chunk in response:
@@ -425,7 +467,7 @@ class IntradayTradingAnalyzer:
             return full_response
             
         except Exception as e:
-            print(f"❌ 调用大模型API失败: {e}")
+            print(f"❌ 调用{provider.upper()}模型API失败: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -453,8 +495,12 @@ class IntradayTradingAnalyzer:
             output_dir = Path(self.config['output_config']['output_dir'])
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             
-            # 保存为JSON格式
-            json_filename = f"{stock_code}_{result['stock_name']}_result_{timestamp}.json"
+            # 获取模型信息（用于文件名）
+            model_provider = result.get('model_provider', 'unknown')
+            model_name = result.get('model_name', 'unknown')
+            
+            # 保存为JSON格式（包含模型名称）
+            json_filename = f"{stock_code}_{result['stock_name']}_{model_provider}_result_{timestamp}.json"
             json_filepath = output_dir / json_filename
             
             with open(json_filepath, 'w', encoding='utf-8') as f:
@@ -462,12 +508,13 @@ class IntradayTradingAnalyzer:
             
             print(f"  ✅ 分析结果(JSON)已保存: {json_filepath}")
             
-            # 保存为Markdown格式（更易读）
-            md_filename = f"{stock_code}_{result['stock_name']}_analysis_{timestamp}.md"
+            # 保存为Markdown格式（更易读，包含模型名称）
+            md_filename = f"{stock_code}_{result['stock_name']}_{model_provider}_analysis_{timestamp}.md"
             md_filepath = output_dir / md_filename
             
             with open(md_filepath, 'w', encoding='utf-8') as f:
                 f.write(f"# {result['stock_name']}({stock_code}) 日内交易分析报告\n\n")
+                f.write(f"**分析模型**: {model_name} ({model_provider})\n")
                 f.write(f"**分析时间**: {result['analysis_time']}\n")
                 f.write(f"**当前价格**: {result['current_price']:.2f} 元\n")
                 f.write(f"**涨跌幅**: {result['price_change']:.2f}%\n\n")
@@ -477,8 +524,8 @@ class IntradayTradingAnalyzer:
             
             print(f"  ✅ 分析报告(Markdown)已保存: {md_filepath}")
             
-            # 转换为HTML格式
-            html_filename = f"{stock_code}_{result['stock_name']}_analysis_{timestamp}.html"
+            # 转换为HTML格式（包含模型名称）
+            html_filename = f"{stock_code}_{result['stock_name']}_{model_provider}_analysis_{timestamp}.html"
             html_filepath = output_dir / html_filename
             
             converter = MarkdownToHTMLConverter()
@@ -496,10 +543,8 @@ class IntradayTradingAnalyzer:
             if email_sender and email_password and email_receivers:
                 print(f"\n📧 准备发送邮件...")
                 
-                # 获取模型名称
-                api_provider = self.config.get('api_provider', 'qwen')
-                api_config = self.config.get('api_config', {}).get(api_provider, {})
-                model_name = api_config.get('model', api_provider)
+                # 获取模型名称（从result中获取）
+                model_name = result.get('model_name', model_provider)
                 
                 # 提取操作方向和投资评级
                 trading_action = extract_trading_action(str(md_filepath))

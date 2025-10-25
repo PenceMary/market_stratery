@@ -37,6 +37,6 @@
     "output_dir": "intraday_output",
     "show_realtime": true
   },
-  "comment": "请在keys.json中配置api_key。api_provider用于单模型模式，api_providers用于多模型对比模式（留空则使用api_provider）"
+  "comment": "多模型对比配置示例。api_providers设置为空数组[]则使用单模型模式（api_provider）"
 }
 
