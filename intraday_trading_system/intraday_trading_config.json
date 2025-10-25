@@ -13,9 +13,8 @@
     }
   },
   "data_config": {
-    "intraday_minutes": 5,
-    "history_days": 3,
-    "kline_days": 20,
+    "history_days": 5,
+    "kline_days": 30,
     "cache_enabled": true,
     "api_timeout": 60,
     "max_retries": 5,

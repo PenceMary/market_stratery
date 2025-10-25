@@ -59,6 +59,46 @@ def extract_investment_rating(md_file_path: str) -> str:
         return ""
 
 
+def extract_trading_action(md_file_path: str) -> str:
+    """
+    从MD文件中提取操作方向信息
+    
+    :param md_file_path: str, MD文件路径
+    :return: str, 提取到的操作方向，如果未找到则返回空字符串
+    """
+    try:
+        with open(md_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 匹配多种可能的操作方向格式
+        patterns = [
+            r'\*\*操作方向：(.+?)\*\*',  # 格式1: **操作方向：买入（轻仓博弈反弹）**
+            r'\*\*操作方向\*\*\s*\|\s*(.+?)\s*\|',  # 格式2: | **操作方向** | ✅ 买入（轻仓做反弹） |
+            r'操作方向[：:]\s*(.+?)[\n\r]',  # 格式3: 操作方向：买入
+            r'\*\*交易建议\*\*[：:]\s*(.+?)[\n\r]',  # 格式4: **交易建议：买入**
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, content)
+            if match:
+                action_text = match.group(1).strip()
+                # 清理markdown格式
+                clean_action = re.sub(r'\*\*', '', action_text)  # 移除粗体标记
+                clean_action = re.sub(r'[✅❌🟢🟡🔴📊]', '', clean_action)  # 移除表情符号
+                clean_action = clean_action.strip()
+                
+                # 提取核心操作（买入/卖出/持有/观望等）
+                if clean_action:
+                    return clean_action
+        
+        print(f"⚠️ 在文件 {md_file_path} 中未找到操作方向信息")
+        return ""
+    
+    except Exception as e:
+        print(f"❌ 提取操作方向时出错: {e}")
+        return ""
+
+
 def send_email(subject: str, body: str, receivers: list, sender: str, password: str, 
                attachment_paths: list = None) -> bool:
     """
@@ -456,12 +496,30 @@ class IntradayTradingAnalyzer:
             if email_sender and email_password and email_receivers:
                 print(f"\n📧 准备发送邮件...")
                 
-                # 提取投资评级并添加到邮件主题中
+                # 获取模型名称
+                api_provider = self.config.get('api_provider', 'qwen')
+                api_config = self.config.get('api_config', {}).get(api_provider, {})
+                model_name = api_config.get('model', api_provider)
+                
+                # 提取操作方向和投资评级
+                trading_action = extract_trading_action(str(md_filepath))
                 investment_rating = extract_investment_rating(str(md_filepath))
+                
+                # 构建邮件主题
+                subject_parts = [f"[{model_name}]"]
+                
+                # 添加操作方向（如果有）
+                if trading_action:
+                    subject_parts.append(trading_action)
+                
+                # 添加股票信息
+                subject_parts.append(f"{result['stock_name']}({stock_code})")
+                
+                # 添加投资评级（如果有）
                 if investment_rating:
-                    email_subject = f"股票 {result['stock_name']}({stock_code}) 日内分析 - {investment_rating}"
-                else:
-                    email_subject = f"股票 {result['stock_name']}({stock_code}) 日内分析报告"
+                    subject_parts.append(f"- {investment_rating}")
+                
+                email_subject = " ".join(subject_parts)
                 
                 # 准备邮件正文
                 email_body = (
