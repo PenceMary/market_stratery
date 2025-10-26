@@ -582,14 +582,17 @@ class IntradayTradingAnalyzer:
                     f"分析时间: {result['analysis_time']}\n"
                     f"当前价格: {result['current_price']:.2f} 元\n"
                     f"涨跌幅: {result['price_change']:.2f}%\n\n"
-                    f"请查看附件中的详细分析报告（HTML和Markdown格式）。\n"
+                    f"请查看附件中的详细分析报告（HTML格式）和分析提示词文件。\n"
                 )
                 
-                # 准备附件列表
+                # 准备附件列表：HTML分析报告 + 提示词文件
                 attachment_list = []
                 if html_filepath and html_filepath.exists():
                     attachment_list.append(str(html_filepath))
-                attachment_list.append(str(md_filepath))
+                # 获取提示词文件路径
+                prompt_filepath = output_dir / f"{stock_code}_{result['stock_name']}_prompt_{timestamp}.txt"
+                if prompt_filepath.exists():
+                    attachment_list.append(str(prompt_filepath))
                 
                 # 发送邮件
                 send_result = send_email(
