@@ -305,8 +305,9 @@ class IntradayTradingAnalyzer:
         prompt = self.prompt_builder.build_prompt(all_data)
         
         # 保存提示词到文件（可选）
+        prompt_filepath = None
         if self.config['output_config']['save_to_file']:
-            self._save_prompt(stock_code, prompt, all_data.get('quote', {}).get('stock_name', ''))
+            prompt_filepath = self._save_prompt(stock_code, prompt, all_data.get('quote', {}).get('stock_name', ''))
         
         results = []
         
@@ -334,7 +335,7 @@ class IntradayTradingAnalyzer:
             }
             
             if self.config['output_config']['save_to_file']:
-                self._save_result(stock_code, result)
+                self._save_result(stock_code, result, prompt_filepath)
             
             # 5. 显示结果
             if self.config['output_config']['show_realtime']:
@@ -483,7 +484,7 @@ class IntradayTradingAnalyzer:
             return None
     
     def _save_prompt(self, stock_code: str, prompt: str, stock_name: str):
-        """保存提示词到文件"""
+        """保存提示词到文件，返回文件路径"""
         try:
             output_dir = Path(self.config['output_config']['output_dir'])
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -495,12 +496,19 @@ class IntradayTradingAnalyzer:
                 f.write(prompt)
             
             print(f"  ✅ 提示词已保存: {filepath}")
+            return filepath
             
         except Exception as e:
             print(f"  ⚠️ 保存提示词失败: {e}")
+            return None
     
-    def _save_result(self, stock_code: str, result: dict):
-        """保存分析结果到文件，并转换为HTML和发送邮件"""
+    def _save_result(self, stock_code: str, result: dict, prompt_filepath=None):
+        """保存分析结果到文件，并转换为HTML和发送邮件
+        
+        :param stock_code: 股票代码
+        :param result: 分析结果字典
+        :param prompt_filepath: 提示词文件路径
+        """
         try:
             output_dir = Path(self.config['output_config']['output_dir'])
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -589,10 +597,13 @@ class IntradayTradingAnalyzer:
                 attachment_list = []
                 if html_filepath and html_filepath.exists():
                     attachment_list.append(str(html_filepath))
-                # 获取提示词文件路径
-                prompt_filepath = output_dir / f"{stock_code}_{result['stock_name']}_prompt_{timestamp}.txt"
-                if prompt_filepath.exists():
+                
+                # 添加提示词文件
+                if prompt_filepath and prompt_filepath.exists():
                     attachment_list.append(str(prompt_filepath))
+                    print(f"  ✅ 已添加提示词文件: {prompt_filepath.name}")
+                else:
+                    print(f"  ⚠️ 提示词文件不存在")
                 
                 # 发送邮件
                 send_result = send_email(

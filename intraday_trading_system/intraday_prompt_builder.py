@@ -439,33 +439,28 @@ class PromptBuilder:
         if not hourly_volume_stats:
             return ""
         
-        text = "\n【历史量能分析（U:D:E量能比）】\n\n"
-        text += "说明：U=上涨量能，D=下跌量能，E=平盘量能，U/D比越大表示多方力量越强\n\n"
+        text = "\n【历史量能分析（外盘内盘分布）】\n\n"
+        text += "说明：U=外盘（主动性买入），D=内盘（主动性卖出），E=中性盘，UD比（外盘/内盘）越大表示买盘力量越强，成交量单位为股数，成交量占比为该时段占全天成交量的比例\n\n"
+        
+        # 表头
+        text += "| 日期 | 时间段 | 总笔数 | 成交量 | U占比 | D占比 | E占比 | UD比 | 成交量占比 |\n"
+        text += "|------|--------|--------|--------|-------|-------|-------|------|------------|\n"
         
         # 按日期排序
         sorted_dates = sorted(hourly_volume_stats.keys())
         
         for date in sorted_dates:
-            # 将日期转换为友好格式
+            # 将日期转换为简短格式 (YYYY/M/D)
             try:
                 date_obj = datetime.strptime(date, '%Y-%m-%d')
-                weekday_map = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
-                weekday = weekday_map[date_obj.weekday()]
-                formatted_date = date_obj.strftime('%Y年%m月%d日')
+                formatted_date = date_obj.strftime('%Y/%-m/%-d') if hasattr(date_obj, 'strftime') else date_obj.strftime('%Y/%m/%d').replace('/0', '/')
             except:
                 formatted_date = date
-                weekday = ""
-            
-            text += f"#### 🗓 {formatted_date}（{weekday}）\n\n"
             
             period_stats = hourly_volume_stats[date]
             
             # 计算全天总量（用于计算成交量占比）
             daily_total_volume_count = sum(stats['total_volume_count'] for stats in period_stats.values())
-            
-            # 表头
-            text += "| 时间段 | U占比 | D占比 | E占比 | U/D比 | 成交量占比 |\n"
-            text += "|--------|-------|-------|-------|-------|------------|\n"
             
             # 定义时间段顺序
             period_order = ['09:25', '09:30-10:30', '10:30-11:30', '13:00-14:00', '14:00-15:00']
@@ -474,13 +469,17 @@ class PromptBuilder:
             for period_name in period_order:
                 if period_name in period_stats:
                     stats = period_stats[period_name]
-                    u_ratio_pct = stats['u_ratio'] * 100
-                    d_ratio_pct = stats['d_ratio'] * 100
-                    e_ratio_pct = stats['e_ratio'] * 100
+                    
+                    # 提取数据
+                    transaction_count = stats['transaction_count']
+                    total_volume_count = stats['total_volume_count']
+                    u_ratio = stats['u_ratio']
+                    d_ratio = stats['d_ratio']
+                    e_ratio = stats['e_ratio']
                     ud_ratio = stats['ud_ratio']
                     
                     # 计算成交量占比
-                    volume_ratio = stats['total_volume_count'] / daily_total_volume_count if daily_total_volume_count > 0 else 0
+                    volume_ratio = total_volume_count / daily_total_volume_count if daily_total_volume_count > 0 else 0
                     
                     # 格式化U/D比
                     if ud_ratio == 'NA':
@@ -488,29 +487,33 @@ class PromptBuilder:
                     else:
                         ud_ratio_str = f"{ud_ratio:.2f}"
                     
-                    text += f"| {period_name} | {u_ratio_pct:.2f}% | {d_ratio_pct:.2f}% | {e_ratio_pct:.2f}% | {ud_ratio_str} | {volume_ratio:.4f} |\n"
+                    # 格式化时间段名称
+                    period_display = period_name.replace('09:25', '9:25')
+                    
+                    text += f"| {formatted_date} | {period_display} | {transaction_count} | {total_volume_count} | {u_ratio:.4f} | {d_ratio:.4f} | {e_ratio:.4f} | {ud_ratio_str} | {volume_ratio:.4f} |\n"
             
             # 计算全天汇总（排除09:25）
             filtered_stats = [stats for name, stats in period_stats.items() if name != '09:25']
             if filtered_stats:
-                total_u_volume = sum(s['u_volume'] for s in filtered_stats)
-                total_d_volume = sum(s['d_volume'] for s in filtered_stats)
-                total_e_volume = sum(s['e_volume'] for s in filtered_stats)
-                total_volume = total_u_volume + total_d_volume + total_e_volume
+                # 汇总数据
+                total_transactions = sum(s['transaction_count'] for s in filtered_stats)
+                total_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
+                total_u_volume_count = sum(s['u_volume_count'] for s in filtered_stats)
+                total_d_volume_count = sum(s['d_volume_count'] for s in filtered_stats)
+                total_e_volume_count = sum(s['e_volume_count'] for s in filtered_stats)
                 
-                if total_volume > 0:
-                    u_ratio_pct = (total_u_volume / total_volume) * 100
-                    d_ratio_pct = (total_d_volume / total_volume) * 100
-                    e_ratio_pct = (total_e_volume / total_volume) * 100
-                    ud_ratio = total_u_volume / total_d_volume if total_d_volume > 0 else 0
+                # 计算比例
+                if total_volume_count > 0:
+                    u_ratio = total_u_volume_count / total_volume_count
+                    d_ratio = total_d_volume_count / total_volume_count
+                    e_ratio = total_e_volume_count / total_volume_count
+                    ud_ratio = total_u_volume_count / total_d_volume_count if total_d_volume_count > 0 else 0
                     
                     # 全天成交量占比（排除09:25）
-                    filtered_volume_count = sum(s['total_volume_count'] for s in filtered_stats)
-                    volume_ratio = filtered_volume_count / daily_total_volume_count if daily_total_volume_count > 0 else 0
+                    volume_ratio = total_volume_count / daily_total_volume_count if daily_total_volume_count > 0 else 0
                     
-                    text += f"| **全天** | **{u_ratio_pct:.2f}%** | **{d_ratio_pct:.2f}%** | **{e_ratio_pct:.2f}%** | **{ud_ratio:.2f}** | **{volume_ratio:.4f}** |\n"
-            
-            text += "\n"
+                    text += f"| {formatted_date} | 09:30-15:00 | {total_transactions} | {total_volume_count} | {u_ratio:.4f} | {d_ratio:.4f} | {e_ratio:.4f} | {ud_ratio:.2f} | {volume_ratio:.4f} |\n"
         
+        text += "\n"
         return text
 

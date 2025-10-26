@@ -915,6 +915,7 @@ class IntradayDataFetcher:
                     continue
                 
                 # 分别统计U、D、E的量能和成交量
+                # U = 外盘（主动性买入），D = 内盘（主动性卖出），E = 中性盘
                 u_data = period_data[period_data['kind'] == 'U']
                 d_data = period_data[period_data['kind'] == 'D']
                 e_data = period_data[period_data['kind'] == 'E']
@@ -929,25 +930,23 @@ class IntradayDataFetcher:
                 e_volume_count = e_data['volume'].sum() if len(e_data) > 0 else 0
                 total_volume_count = u_volume_count + d_volume_count + e_volume_count
                 
-                total_volume = u_volume + d_volume + e_volume
+                # 计算占比（基于成交量股数）
+                u_ratio = u_volume_count / total_volume_count if total_volume_count > 0 else 0
+                d_ratio = d_volume_count / total_volume_count if total_volume_count > 0 else 0
+                e_ratio = e_volume_count / total_volume_count if total_volume_count > 0 else 0
                 
-                # 计算占比
-                u_ratio = u_volume / total_volume if total_volume > 0 else 0
-                d_ratio = d_volume / total_volume if total_volume > 0 else 0
-                e_ratio = e_volume / total_volume if total_volume > 0 else 0
-                
-                # 计算U/D比例
+                # 计算UD比（外盘/内盘比例，反映买卖力量对比）
                 if period.get('is_single_time', False):
                     ud_ratio = 'NA'
                 else:
-                    ud_ratio = u_volume / d_volume if d_volume > 0 else (u_volume if u_volume > 0 else 0)
+                    # 比值越大说明买盘越强
+                    ud_ratio = u_volume_count / d_volume_count if d_volume_count > 0 else (u_volume_count if u_volume_count > 0 else 0)
                 
                 date_period_stats[str(date)][period_name] = {
-                    'total_volume': total_volume,
                     'total_volume_count': total_volume_count,
-                    'u_volume': u_volume,
-                    'd_volume': d_volume,
-                    'e_volume': e_volume,
+                    'u_volume_count': u_volume_count,
+                    'd_volume_count': d_volume_count,
+                    'e_volume_count': e_volume_count,
                     'u_ratio': u_ratio,
                     'd_ratio': d_ratio,
                     'e_ratio': e_ratio,
