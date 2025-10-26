@@ -439,15 +439,25 @@ class IntradayTradingAnalyzer:
             print(f"  - 使用模型: {api_config['model']}")
             print(f"  - API地址: {api_config['base_url']}")
             
+            # 为qwen3-max添加推理模式指令
+            enhanced_prompt = prompt
+            if provider == 'qwen' and api_config.get('reasoning_mode', False):
+                enhanced_prompt = prompt + "\n\n/think"  # 添加推理模式指令
+                print(f"  - 推理模式: 已开启 (/think指令)")
+            
             # 调用API
-            response = client.chat.completions.create(
-                model=api_config['model'],
-                messages=[
+            api_params = {
+                'model': api_config['model'],
+                'messages': [
                     {'role': 'system', 'content': '你是一位专业的A股量化交易分析师，擅长技术分析和短线交易策略。'},
-                    {'role': 'user', 'content': prompt}
+                    {'role': 'user', 'content': enhanced_prompt}
                 ],
-                stream=True
-            )
+                'stream': True
+            }
+            
+            # 注意：incremental_output 不是标准 OpenAI API 参数，已移除
+            
+            response = client.chat.completions.create(**api_params)
             
             # 流式输出
             full_response = ""
