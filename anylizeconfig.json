@@ -2,7 +2,7 @@
     "stock_selection": "specified",
     "specified_stocks_file": "specified_stocks.txt",
     "random_stock_count": 1,
-    "specified_date": "20251024",
+    "specified_date": "",
     "intraday_days": 5,
     "hourly_volume_days": 15,
     "kline_days": 60,
