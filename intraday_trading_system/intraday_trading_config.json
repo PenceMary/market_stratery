@@ -19,7 +19,7 @@
     "kline_days": 30,
     "cache_enabled": true,
     "api_timeout": 60,
-    "max_retries": 5,
+    "max_retries": 2,
     "retry_delay": 3
   },
   "trading_time": {

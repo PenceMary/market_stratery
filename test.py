@@ -1,4 +1,16 @@
 import akshare as ak
 
-stock_intraday_sina_df = ak.stock_intraday_sina(symbol="sz000001", date="20251013")
-print(stock_intraday_sina_df)
+spot_df = ak.stock_board_industry_spot_em()
+print(spot_df)
+print(spot_df.columns)
+print(spot_df.index)
+print(spot_df.values)
+print(spot_df.shape)
+print(spot_df.dtypes)
+print(spot_df.describe())
+print(spot_df.info())
+print(spot_df.head())
+print(spot_df.tail())
+print(spot_df.sample(10))
+print(spot_df.sort_values(by='code'))
+print(spot_df.sort_values(by='code', ascending=False))

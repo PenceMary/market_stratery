@@ -14,6 +14,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 import os
+import pandas as pd
 
 from intraday_data_fetcher import IntradayDataFetcher
 from intraday_indicators import TechnicalIndicators
@@ -363,25 +364,45 @@ class IntradayTradingAnalyzer:
                 return None
             data['quote'] = quote
             
-            # 2. 今日分时数据
-            print("  - 获取今日分时数据...")
-            today_intraday = self.data_fetcher.get_today_intraday_data(stock_code)
-            if not today_intraday.empty:
-                # 计算分时指标
-                intraday_indicators = self.indicator_calculator.analyze_intraday_data(today_intraday)
-                data['intraday_indicators'] = intraday_indicators
-            
-            # 3. 历史分时数据和量能分析
+            # 2. 历史分时数据（包含今日）
             history_days = self.config['data_config']['history_days']
             if history_days > 0:
-                print(f"  - 获取最近{history_days}天分时数据...")
+                print(f"  - 获取最近{history_days}天分时数据（含今日）...")
                 historical_intraday = self.data_fetcher.get_historical_intraday_with_cache(stock_code, history_days)
+                
                 if not historical_intraday.empty:
-                    # 计算量能分布
+                    # 从历史数据中提取今日数据，用于计算分时指标
+                    today_str = datetime.now().strftime('%Y-%m-%d')
+                    today_intraday = historical_intraday[
+                        historical_intraday['ticktime'].dt.date == pd.to_datetime(today_str).date()
+                    ]
+                    
+                    if not today_intraday.empty:
+                        print(f"  ✅ 今日分时数据：{len(today_intraday)} 条记录")
+                        # 计算今日分时指标
+                        intraday_indicators = self.indicator_calculator.analyze_intraday_data(today_intraday)
+                        data['intraday_indicators'] = intraday_indicators
+                    else:
+                        print(f"  ⚠️ 今日暂无分时数据（可能未开盘）")
+                        data['intraday_indicators'] = {}
+                    
+                    # 计算历史量能分布
                     hourly_volume_stats = self.data_fetcher.calculate_hourly_volume(historical_intraday)
                     data['hourly_volume_stats'] = hourly_volume_stats
                 else:
+                    print(f"  ⚠️ 未获取到历史分时数据")
+                    data['intraday_indicators'] = {}
                     data['hourly_volume_stats'] = {}
+            else:
+                # 如果不需要历史数据，则单独获取今日分时数据
+                print("  - 获取今日分时数据...")
+                today_intraday = self.data_fetcher.get_today_intraday_data(stock_code)
+                if not today_intraday.empty:
+                    intraday_indicators = self.indicator_calculator.analyze_intraday_data(today_intraday)
+                    data['intraday_indicators'] = intraday_indicators
+                else:
+                    data['intraday_indicators'] = {}
+                data['hourly_volume_stats'] = {}
             
             # 4. K线数据
             kline_days = self.config['data_config']['kline_days']
@@ -410,6 +431,11 @@ class IntradayTradingAnalyzer:
             print("  - 获取市场情绪...")
             market_sentiment = self.data_fetcher.get_market_sentiment()
             data['market_sentiment'] = market_sentiment
+            
+            # 9. 资金流向
+            print("  - 获取资金流向...")
+            fund_flow = self.data_fetcher.get_fund_flow(stock_code)
+            data['fund_flow'] = fund_flow
             
             print("✅ 所有数据获取完成")
             return data

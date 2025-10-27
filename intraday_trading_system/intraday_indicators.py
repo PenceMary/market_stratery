@@ -134,6 +134,108 @@ class TechnicalIndicators:
         return data.rolling(window=period).mean()
     
     @staticmethod
+    def calculate_obv(df: pd.DataFrame) -> pd.Series:
+        """
+        计算能量潮(OBV)指标
+        
+        :param df: 包含收盘价和成交量的DataFrame
+        :return: OBV序列
+        """
+        if '收盘' not in df.columns or '成交量' not in df.columns:
+            return pd.Series()
+        
+        # 价格变化方向
+        price_change = df['收盘'].diff()
+        
+        # OBV计算：价格上涨时加成交量，价格下跌时减成交量
+        obv = pd.Series(index=df.index, dtype=float)
+        obv.iloc[0] = df['成交量'].iloc[0]
+        
+        for i in range(1, len(df)):
+            if price_change.iloc[i] > 0:
+                obv.iloc[i] = obv.iloc[i-1] + df['成交量'].iloc[i]
+            elif price_change.iloc[i] < 0:
+                obv.iloc[i] = obv.iloc[i-1] - df['成交量'].iloc[i]
+            else:
+                obv.iloc[i] = obv.iloc[i-1]
+        
+        return obv
+    
+    @staticmethod
+    def calculate_vr(df: pd.DataFrame, period: int = 26) -> pd.Series:
+        """
+        计算成交量变异率(VR)指标
+        
+        :param df: 包含收盘价、开盘价和成交量的DataFrame
+        :param period: 周期，默认26天
+        :return: VR序列
+        """
+        if '收盘' not in df.columns or '开盘' not in df.columns or '成交量' not in df.columns:
+            return pd.Series()
+        
+        # 判断涨跌
+        up_mask = df['收盘'] > df['开盘']
+        down_mask = df['收盘'] < df['开盘']
+        equal_mask = df['收盘'] == df['开盘']
+        
+        # 计算上涨日成交量、下跌日成交量、平盘日成交量
+        av = df['成交量'].where(up_mask, 0).rolling(window=period).sum()
+        bv = df['成交量'].where(down_mask, 0).rolling(window=period).sum()
+        cv = df['成交量'].where(equal_mask, 0).rolling(window=period).sum()
+        
+        # VR = (AV + 1/2 * CV) / (BV + 1/2 * CV) * 100
+        vr = (av + 0.5 * cv) / (bv + 0.5 * cv) * 100
+        
+        return vr
+    
+    @staticmethod
+    def calculate_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
+        """
+        计算平均真实波幅(ATR)指标
+        
+        :param df: 包含最高价、最低价、收盘价的DataFrame
+        :param period: 周期，默认14
+        :return: ATR序列
+        """
+        if '最高' not in df.columns or '最低' not in df.columns or '收盘' not in df.columns:
+            return pd.Series()
+        
+        # 计算真实波幅TR
+        high_low = df['最高'] - df['最低']
+        high_close = abs(df['最高'] - df['收盘'].shift(1))
+        low_close = abs(df['最低'] - df['收盘'].shift(1))
+        
+        tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+        
+        # ATR是TR的移动平均
+        atr = tr.ewm(span=period, adjust=False).mean()
+        
+        return atr
+    
+    @staticmethod
+    def calculate_historical_volatility(data: pd.Series, period: int = 20) -> float:
+        """
+        计算历史波动率(年化)
+        
+        :param data: 价格序列
+        :param period: 周期
+        :return: 历史波动率（百分比）
+        """
+        if len(data) < period:
+            return None
+        
+        # 计算日收益率
+        returns = data.pct_change().dropna()
+        
+        # 计算标准差（日波动率）
+        daily_vol = returns.tail(period).std()
+        
+        # 年化波动率（假设一年252个交易日）
+        annual_vol = daily_vol * np.sqrt(252) * 100
+        
+        return annual_vol
+    
+    @staticmethod
     def analyze_intraday_data(df: pd.DataFrame) -> Dict[str, Any]:
         """
         分析分时数据，计算各种指标
@@ -266,6 +368,35 @@ class TechnicalIndicators:
                 volumes = df['成交量']
                 result['vol_ma5'] = TechnicalIndicators.calculate_volume_ma(volumes, 5).iloc[-1] if len(volumes) >= 5 else None
                 result['vol_ma10'] = TechnicalIndicators.calculate_volume_ma(volumes, 10).iloc[-1] if len(volumes) >= 10 else None
+            
+            # 成交量指标 - OBV
+            if len(df) >= 2:
+                obv = TechnicalIndicators.calculate_obv(df)
+                if not obv.empty:
+                    result['obv'] = obv.iloc[-1]
+                    result['obv_ma5'] = obv.rolling(window=5).mean().iloc[-1] if len(obv) >= 5 else None
+                    result['obv_ma10'] = obv.rolling(window=10).mean().iloc[-1] if len(obv) >= 10 else None
+            
+            # 成交量指标 - VR
+            if len(df) >= 26:
+                vr = TechnicalIndicators.calculate_vr(df, 26)
+                if not vr.empty:
+                    result['vr'] = vr.iloc[-1]
+                    result['vr_series'] = vr.tail(10).tolist()
+            
+            # 波动率指标 - ATR
+            if len(df) >= 14:
+                atr = TechnicalIndicators.calculate_atr(df, 14)
+                if not atr.empty:
+                    result['atr'] = atr.iloc[-1]
+                    result['atr_series'] = atr.tail(10).tolist()
+                    # ATR百分比（ATR/收盘价）
+                    result['atr_percent'] = (atr.iloc[-1] / closes.iloc[-1] * 100) if closes.iloc[-1] != 0 else None
+            
+            # 历史波动率
+            if len(closes) >= 20:
+                hv = TechnicalIndicators.calculate_historical_volatility(closes, 20)
+                result['historical_volatility'] = hv
             
         except Exception as e:
             print(f"⚠️ 分析K线数据时出错: {e}")

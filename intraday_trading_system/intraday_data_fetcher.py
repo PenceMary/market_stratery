@@ -405,50 +405,102 @@ class IntradayDataFetcher:
         try:
             print(f"📋 获取 {stock_code} 盘口数据...")
             
-            # 非交易时间盘口数据无意义,直接返回空数据
-            current_time = datetime.now()
-            hour = current_time.hour
-            minute = current_time.minute
-            
-            is_trading_time = False
-            if (9 <= hour < 11) or (hour == 11 and minute <= 30):
-                is_trading_time = True
-            elif (13 <= hour < 15):
-                is_trading_time = True
-            
-            if not is_trading_time:
-                print(f"⚠️ 非交易时间,跳过盘口数据获取")
+            # 尝试获取实时盘口数据
+            try:
+                # 使用个股实时行情接口
+                df = ak.stock_bid_ask_em(symbol=stock_code)
+                
+                if df.empty:
+                    print(f"⚠️ 盘口数据为空")
+                    return {
+                        'bid': [{'price': 0, 'volume': 0} for _ in range(5)],
+                        'ask': [{'price': 0, 'volume': 0} for _ in range(5)]
+                    }
+                
+                # 接口返回的是键值对格式: ['item', 'value']
+                # 将其转换为字典以便查询
+                if 'item' in df.columns and 'value' in df.columns:
+                    data_dict = dict(zip(df['item'], df['value']))
+                    
+                    # 提取买卖盘数据
+                    # 实际数据格式: sell_5, sell_5_vol, sell_4, sell_4_vol, ..., buy_1, buy_1_vol, ...
+                    order_book = {
+                        'ask': [],  # 卖盘(从卖五到卖一)
+                        'bid': []   # 买盘(从买一到买五)
+                    }
+                    
+                    # 尝试使用英文字段名（新版API）
+                    # 提取卖盘(卖五到卖一，倒序)
+                    for i in range(5, 0, -1):
+                        # 先尝试英文字段名
+                        price_key_en = f'sell_{i}'
+                        volume_key_en = f'sell_{i}_vol'
+                        # 备用中文字段名
+                        price_key_cn = f'卖{["一", "二", "三", "四", "五"][i-1]}价'
+                        volume_key_cn = f'卖{["一", "二", "三", "四", "五"][i-1]}量'
+                        
+                        # 优先使用英文字段
+                        if price_key_en in data_dict:
+                            price = data_dict.get(price_key_en, 0)
+                            volume = data_dict.get(volume_key_en, 0)
+                        else:
+                            price = data_dict.get(price_key_cn, 0)
+                            volume = data_dict.get(volume_key_cn, 0)
+                        
+                        # 处理可能的'-'或空值
+                        try:
+                            price = float(price) if price and price != '-' else 0.0
+                            volume = int(volume) if volume and volume != '-' else 0
+                        except:
+                            price = 0.0
+                            volume = 0
+                        
+                        order_book['ask'].append({'price': price, 'volume': volume})
+                    
+                    # 提取买盘(买一到买五)
+                    for i in range(1, 6):
+                        # 先尝试英文字段名
+                        price_key_en = f'buy_{i}'
+                        volume_key_en = f'buy_{i}_vol'
+                        # 备用中文字段名
+                        price_key_cn = f'买{["一", "二", "三", "四", "五"][i-1]}价'
+                        volume_key_cn = f'买{["一", "二", "三", "四", "五"][i-1]}量'
+                        
+                        # 优先使用英文字段
+                        if price_key_en in data_dict:
+                            price = data_dict.get(price_key_en, 0)
+                            volume = data_dict.get(volume_key_en, 0)
+                        else:
+                            price = data_dict.get(price_key_cn, 0)
+                            volume = data_dict.get(volume_key_cn, 0)
+                        
+                        # 处理可能的'-'或空值
+                        try:
+                            price = float(price) if price and price != '-' else 0.0
+                            volume = int(volume) if volume and volume != '-' else 0
+                        except:
+                            price = 0.0
+                            volume = 0
+                        
+                        order_book['bid'].append({'price': price, 'volume': volume})
+                    
+                    print(f"✅ 盘口数据获取成功")
+                    return order_book
+                else:
+                    print(f"⚠️ 数据格式不正确，列名: {df.columns.tolist()}")
+                    return {
+                        'bid': [{'price': 0, 'volume': 0} for _ in range(5)],
+                        'ask': [{'price': 0, 'volume': 0} for _ in range(5)]
+                    }
+                    
+            except Exception as e:
+                print(f"⚠️ 获取盘口数据失败: {e}")
+                import traceback
+                traceback.print_exc()
                 return {
                     'bid': [{'price': 0, 'volume': 0} for _ in range(5)],
                     'ask': [{'price': 0, 'volume': 0} for _ in range(5)]
                 }
-            
-            # 交易时间内尝试获取实时盘口(使用快速接口备选方案)
-            try:
-                # 尝试使用个股实时行情接口
-                df = ak.stock_bid_ask_em(symbol=stock_code)
-                if not df.empty and len(df) >= 10:
-                    order_book = {
-                        'bid': [
-                            {'price': df.iloc[i]['价格'], 'volume': df.iloc[i]['成交量']} 
-                            for i in range(5)
-                        ],
-                        'ask': [
-                            {'price': df.iloc[i+5]['价格'], 'volume': df.iloc[i+5]['成交量']} 
-                            for i in range(5)
-                        ]
-                    }
-                    print(f"✅ 盘口数据获取成功")
-                    return order_book
-            except:
-                pass
-            
-            # 备用方案: 返回基础结构
-            print(f"⚠️ 盘口数据暂不可用,使用默认值")
-            return {
-                'bid': [{'price': 0, 'volume': 0} for _ in range(5)],
-                'ask': [{'price': 0, 'volume': 0} for _ in range(5)]
-            }
             
         except Exception as e:
             print(f"⚠️ 获取盘口数据异常: {e}, 使用默认值")
@@ -499,59 +551,99 @@ class IntradayDataFetcher:
             return {}
     
     def _get_index_realtime(self, index_code: str) -> Dict[str, Any]:
-        """获取指数实时数据(使用快速接口)"""
+        """获取指数实时数据"""
         try:
-            # 使用指数历史数据接口(更快更稳定)
-            today = datetime.now().strftime('%Y%m%d')
-            yesterday = (datetime.now() - timedelta(days=5)).strftime('%Y%m%d')
-            
-            # 构建指数symbol
-            if index_code == '000001':
-                symbol = 'sh000001'  # 上证指数
-            elif index_code == '399001':
-                symbol = 'sz399001'  # 深证成指
-            elif index_code == '399006':
-                symbol = 'sz399006'  # 创业板指
-            elif index_code == '000688':
-                symbol = 'sh000688'  # 科创50
-            elif index_code == '899050':
-                symbol = 'bj899050'  # 北证50
-            else:
-                symbol = index_code
-            
-            # 尝试获取指数历史数据
+            # 方法1：优先使用实时行情接口（包含成交额）
             try:
-                df = ak.stock_zh_index_daily(symbol=symbol)
-                if not df.empty:
-                    latest = df.iloc[-1]
-                    # 计算涨跌幅
-                    pre_close = df.iloc[-2]['close'] if len(df) > 1 else latest['close']
-                    change = ((latest['close'] - pre_close) / pre_close * 100) if pre_close > 0 else 0
-                    change_amount = latest['close'] - pre_close
-                    
-                    return {
+                # 获取所有指数实时行情
+                spot_df = ak.stock_zh_index_spot_em()
+                
+                # 查找对应的指数
+                index_row = spot_df[spot_df['代码'] == index_code]
+                
+                if not index_row.empty:
+                    row = index_row.iloc[0]
+                    # 使用字典方式访问 pandas Series，更可靠
+                    result = {
                         'code': index_code,
-                        'name': symbol,
-                        'current': latest['close'],
-                        'change': round(change, 2),
-                        'change_amount': round(change_amount, 2),
-                        'volume': latest.get('volume', 0),
-                        'amount': latest.get('amount', 0)
+                        'name': row['名称'] if '名称' in row else index_code,
+                        'current': float(row['最新价']) if '最新价' in row else 0,
+                        'change': float(row['涨跌幅']) if '涨跌幅' in row else 0,
+                        'change_amount': float(row['涨跌额']) if '涨跌额' in row else 0,
+                        'volume': int(row['成交量']) if '成交量' in row else 0,
+                        'amount': float(row['成交额']) if '成交额' in row else 0
                     }
-            except Exception as e:
-                # 如果快速接口失败,返回None而不是再尝试慢速接口
-                print(f"⚠️ 获取指数 {index_code} 失败: {e}")
-                return None
-            
-            return None
+                    print(f"  ✅ 成功获取 {result['name']} 实时数据: {result['current']:.2f} ({result['change']:+.2f}%)")
+                    return result
+                else:
+                    # 实时接口中没有找到该指数，尝试历史数据接口
+                    print(f"  ℹ️ 实时接口未找到指数 {index_code}，尝试历史数据接口...")
+                    raise ValueError(f"指数 {index_code} 不在实时数据中")
+                    
+            except Exception as e1:
+                # 方法2：备用方案 - 使用历史数据接口（无成交额）
+                print(f"  ⏩ 使用历史数据接口...")
+                
+                # 构建指数symbol
+                if index_code == '000001':
+                    symbol = 'sh000001'  # 上证指数
+                elif index_code == '399001':
+                    symbol = 'sz399001'  # 深证成指
+                elif index_code == '399006':
+                    symbol = 'sz399006'  # 创业板指
+                elif index_code == '000688':
+                    symbol = 'sh000688'  # 科创50
+                elif index_code == '899050':
+                    symbol = 'bj899050'  # 北证50
+                else:
+                    symbol = index_code
+                
+                try:
+                    df = ak.stock_zh_index_daily(symbol=symbol)
+                    if not df.empty:
+                        latest = df.iloc[-1]
+                        # 计算涨跌幅
+                        pre_close = df.iloc[-2]['close'] if len(df) > 1 else latest['close']
+                        change = ((latest['close'] - pre_close) / pre_close * 100) if pre_close > 0 else 0
+                        change_amount = latest['close'] - pre_close
+                        
+                        # 获取指数中文名称映射
+                        name_mapping = {
+                            '000001': '上证指数',
+                            '399001': '深证成指',
+                            '399006': '创业板指',
+                            '000688': '科创50',
+                            '899050': '北证50'
+                        }
+                        index_name = name_mapping.get(index_code, symbol)
+                        
+                        result = {
+                            'code': index_code,
+                            'name': index_name,
+                            'current': float(latest['close']),
+                            'change': round(change, 2),
+                            'change_amount': round(change_amount, 2),
+                            'volume': int(latest.get('volume', 0)),
+                            'amount': 0  # 历史数据接口无成交额字段
+                        }
+                        print(f"  ✅ 通过历史数据获取 {result['name']}: {result['current']:.2f} ({result['change']:+.2f}%)")
+                        return result
+                    else:
+                        print(f"  ⚠️ 历史数据为空")
+                        return None
+                except Exception as e2:
+                    print(f"  ⚠️ 历史数据接口也失败: {str(e2)[:50]}")
+                    return None
             
         except Exception as e:
-            print(f"⚠️ 获取指数 {index_code} 异常: {e}")
+            print(f"  ⚠️ 获取指数 {index_code} 异常: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def get_sector_info(self, stock_code: str) -> Dict[str, Any]:
         """
-        获取板块信息(简化版,只获取板块名称)
+        获取板块信息(含板块涨跌幅)
         
         :param stock_code: 股票代码
         :return: 板块信息字典
@@ -575,18 +667,70 @@ class IntradayDataFetcher:
             info_dict = dict(zip(stock_info['item'], stock_info['value']))
             sector_name = info_dict.get('行业', '未知')
             
-            # 只返回板块名称,不获取涨跌幅数据
-            # 原因: 板块行情接口(stock_board_industry_hist_em/spot_em)不稳定,
-            #       经常超时失败,而板块涨跌幅对分析影响较小,因此简化处理
+            # 初始化板块信息
             sector_info = {
                 'name': sector_name,
-                'change': 0,  # 不获取涨跌幅,使用默认值
+                'change': 0,
                 'leader': '',
                 'leader_change': 0,
                 'rank': 0
             }
             
-            print(f"✅ 板块信息获取成功: {sector_name}")
+            # 尝试获取板块涨跌幅数据(仅重试2次，避免等待过长)
+            sector_retries = 2  # 固定重试2次
+            for attempt in range(sector_retries):
+                try:
+                    # 获取今日板块行情
+                    sector_spot_df = ak.stock_board_industry_spot_em()
+                    
+                    if not sector_spot_df.empty and '板块名称' in sector_spot_df.columns:
+                        # 查找匹配的板块
+                        matching_sector = sector_spot_df[sector_spot_df['板块名称'] == sector_name]
+                        
+                        if not matching_sector.empty:
+                            sector_row = matching_sector.iloc[0]
+                            
+                            # 提取板块涨跌幅
+                            if '涨跌幅' in sector_row:
+                                sector_info['change'] = float(sector_row['涨跌幅'])
+                            
+                            # 提取领涨股信息(如果有)
+                            if '领涨股票' in sector_row:
+                                sector_info['leader'] = sector_row.get('领涨股票', '')
+                            
+                            # 提取排名(如果有)
+                            if '排名' in sector_row:
+                                sector_info['rank'] = int(sector_row.get('排名', 0))
+                            
+                            print(f"✅ 板块信息获取成功: {sector_name} ({sector_info['change']:+.2f}%)")
+                            return sector_info
+                        else:
+                            print(f"⚠️ 未找到板块 {sector_name} 的行情数据")
+                            break
+                    else:
+                        print(f"⚠️ 板块行情数据为空或格式异常")
+                        break
+                    
+                except Exception as e:
+                    error_msg = str(e)
+                    # 检查是否为网络连接错误
+                    is_network_error = any(keyword in error_msg.lower() for keyword in 
+                                          ['timeout', 'connection', 'proxy', 'max retries', 
+                                           'read timed out', 'remote end closed', 'aborted'])
+                    
+                    if attempt < sector_retries - 1 and is_network_error:
+                        wait_time = 3  # 固定等待3秒
+                        print(f"  ⚠️ 获取板块涨跌幅失败(第{attempt + 1}次): {error_msg[:80]}")
+                        print(f"  ⏳ {wait_time}秒后重试...")
+                        time.sleep(wait_time)
+                    else:
+                        if is_network_error:
+                            print(f"  ⚠️ 板块涨跌幅接口连接异常，已跳过")
+                        else:
+                            print(f"  ⚠️ 获取板块涨跌幅失败: {error_msg[:100]}")
+                        break
+            
+            print(f"✅ 板块信息获取成功: {sector_name} (涨跌幅数据未获取)")
             return sector_info
             
         except Exception as e:
@@ -653,6 +797,116 @@ class IntradayDataFetcher:
                 'up_down_ratio': 0,
                 'total_amount': 0
             }
+    
+    def get_fund_flow(self, stock_code: str) -> Dict[str, Any]:
+        """
+        获取个股资金流向数据
+        
+        :param stock_code: 股票代码
+        :return: 资金流向数据字典
+        """
+        try:
+            print(f"💰 获取 {stock_code} 资金流向数据...")
+            
+            # 判断市场
+            if stock_code.startswith('6'):
+                market = 'sh'
+            elif stock_code.startswith('0') or stock_code.startswith('3'):
+                market = 'sz'
+            elif stock_code.startswith('8') or stock_code.startswith('4'):
+                market = 'bj'
+            else:
+                market = 'sh'
+            
+            # 使用retry机制获取资金流向数据
+            for attempt in range(self.max_retries):
+                try:
+                    # 调用东方财富个股资金流向接口
+                    fund_flow_df = ak.stock_individual_fund_flow(stock=stock_code, market=market)
+                    
+                    if not fund_flow_df.empty and len(fund_flow_df) > 0:
+                        # 获取最新一天的数据
+                        latest = fund_flow_df.iloc[-1]
+                        
+                        result = {
+                            'date': str(latest.get('日期', '')),
+                            'close_price': float(latest.get('收盘价', 0)),
+                            'price_change': float(latest.get('涨跌幅', 0)),
+                            # 主力资金
+                            'main_net_inflow': float(latest.get('主力净流入-净额', 0)),
+                            'main_net_inflow_rate': float(latest.get('主力净流入-净占比', 0)),
+                            # 超大单
+                            'super_large_net_inflow': float(latest.get('超大单净流入-净额', 0)),
+                            'super_large_net_inflow_rate': float(latest.get('超大单净流入-净占比', 0)),
+                            # 大单
+                            'large_net_inflow': float(latest.get('大单净流入-净额', 0)),
+                            'large_net_inflow_rate': float(latest.get('大单净流入-净占比', 0)),
+                            # 中单
+                            'medium_net_inflow': float(latest.get('中单净流入-净额', 0)),
+                            'medium_net_inflow_rate': float(latest.get('中单净流入-净占比', 0)),
+                            # 小单
+                            'small_net_inflow': float(latest.get('小单净流入-净额', 0)),
+                            'small_net_inflow_rate': float(latest.get('小单净流入-净占比', 0))
+                        }
+                        
+                        # 计算连续资金流入天数
+                        consecutive_inflow = 0
+                        for i in range(len(fund_flow_df) - 1, -1, -1):
+                            if fund_flow_df.iloc[i].get('主力净流入-净额', 0) > 0:
+                                consecutive_inflow += 1
+                            else:
+                                break
+                        result['consecutive_inflow_days'] = consecutive_inflow
+                        
+                        # 近5日主力资金累计
+                        if len(fund_flow_df) >= 5:
+                            recent_5_main = fund_flow_df.tail(5)['主力净流入-净额'].sum()
+                            result['main_net_inflow_5d'] = float(recent_5_main)
+                        else:
+                            result['main_net_inflow_5d'] = 0
+                        
+                        print(f"  ✅ 资金流向数据获取成功 (主力净流入: {result['main_net_inflow']:.2f}元)")
+                        return result
+                    else:
+                        print(f"  ⚠️ 未获取到资金流向数据")
+                        return self._get_empty_fund_flow()
+                
+                except Exception as e:
+                    if attempt < self.max_retries - 1:
+                        print(f"  ⚠️ 获取资金流向失败(尝试{attempt + 1}/{self.max_retries}): {e}")
+                        time.sleep(self.retry_delay)
+                        continue
+                    else:
+                        print(f"  ⚠️ 获取资金流向最终失败: {e}")
+                        return self._get_empty_fund_flow()
+            
+            return self._get_empty_fund_flow()
+            
+        except Exception as e:
+            print(f"❌ 获取资金流向数据出错: {e}")
+            import traceback
+            traceback.print_exc()
+            return self._get_empty_fund_flow()
+    
+    def _get_empty_fund_flow(self) -> Dict[str, Any]:
+        """返回空的资金流向数据"""
+        return {
+            'date': '',
+            'close_price': 0,
+            'price_change': 0,
+            'main_net_inflow': 0,
+            'main_net_inflow_rate': 0,
+            'super_large_net_inflow': 0,
+            'super_large_net_inflow_rate': 0,
+            'large_net_inflow': 0,
+            'large_net_inflow_rate': 0,
+            'medium_net_inflow': 0,
+            'medium_net_inflow_rate': 0,
+            'small_net_inflow': 0,
+            'small_net_inflow_rate': 0,
+            'consecutive_inflow_days': 0,
+            'main_net_inflow_5d': 0
+        }
     
     def get_kline_data(self, stock_code: str, days: int = 20) -> pd.DataFrame:
         """

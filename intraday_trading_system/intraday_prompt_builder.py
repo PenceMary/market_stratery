@@ -100,6 +100,9 @@ class PromptBuilder:
         # 构建市场情绪部分
         market_sentiment = self._build_market_sentiment(data.get('market_sentiment', {}))
         
+        # 构建资金流向部分
+        fund_flow = self._build_fund_flow(data.get('fund_flow', {}))
+        
         # 构建分时数据部分
         intraday_analysis = self._build_intraday_analysis(data)
         
@@ -168,6 +171,12 @@ class PromptBuilder:
 
 ---
 
+=== 资金流向分析 ===
+
+{fund_flow}
+
+---
+
 === 分析任务 ===
 
 请基于以上实时数据，从以下维度进行深度分析并尽可能地使用推理来给出明确的交易决策：
@@ -175,24 +184,37 @@ class PromptBuilder:
 **1. 技术面分析**
    - 当前趋势判断（多头/空头/震荡）
    - 价格所处位置（相对支撑位和压力位）
-   - 技术指标多空信号
+   - 技术指标多空信号（EMA、MACD、RSI、KDJ、BOLL）
    - 是否存在背离
 
 **2. 量能分析**
    - 量价配合关系
-   - 资金流向判断
-   - 大单行为分析
+   - OBV能量潮趋势（是否与价格同步）
+   - VR成交量变异率（市场活跃度评估）
+   - 资金流向判断（主力、超大单、大单行为）
+   - 连续流入/流出天数分析
 
-**3. 盘口分析**
+**3. 波动率分析**
+   - ATR平均真实波幅（用于止损设置参考）
+   - 历史波动率水平（市场风险评估）
+   - 当前波动率是否适合交易
+
+**4. 资金流向分析**
+   - 主力资金净流入/流出情况
+   - 超大单与大单的配合
+   - 散户行为（小单流向）
+   - 近5日资金累计情况
+
+**5. 盘口分析**
    - 买卖力量对比
    - 是否存在主力动作
 
-**4. 市场环境**
+**6. 市场环境**
    - 大盘走势影响
    - 板块联动效应
    - 市场情绪评估
 
-**5. 交易决策（重点）**
+**7. 交易决策（重点）**
    ⚠️ 请给出明确、具体的交易建议：
    
    📊 **操作方向**：买入/卖出/观望（必须明确选择一个）
@@ -284,6 +306,51 @@ class PromptBuilder:
             text += f"BOLL上轨 = {kline_indicators.get('boll_upper', 'N/A')}\n"
             text += f"BOLL中轨 = {kline_indicators.get('boll_middle', 'N/A')}\n"
             text += f"BOLL下轨 = {kline_indicators.get('boll_lower', 'N/A')}\n"
+            
+            # 成交量指标
+            text += f"\n【成交量指标】\n"
+            obv = kline_indicators.get('obv', None)
+            if obv is not None:
+                text += f"OBV能量潮 = {obv:.0f}\n"
+                obv_ma5 = kline_indicators.get('obv_ma5', None)
+                obv_ma10 = kline_indicators.get('obv_ma10', None)
+                if obv_ma5:
+                    text += f"OBV-MA5 = {obv_ma5:.0f}\n"
+                if obv_ma10:
+                    text += f"OBV-MA10 = {obv_ma10:.0f}\n"
+            
+            vr = kline_indicators.get('vr', None)
+            if vr is not None:
+                text += f"VR成交量变异率 = {vr:.2f}\n"
+                # VR解读提示
+                if vr < 70:
+                    text += f"  (VR<70，成交量极度萎缩，市场低迷)\n"
+                elif vr < 150:
+                    text += f"  (VR在正常区间，市场交投平稳)\n"
+                elif vr < 450:
+                    text += f"  (VR>150，成交量放大，市场活跃)\n"
+                else:
+                    text += f"  (VR>450，成交量过度放大，警惕反转)\n"
+            
+            # 波动率指标
+            text += f"\n【波动率指标】\n"
+            atr = kline_indicators.get('atr', None)
+            if atr is not None:
+                text += f"ATR平均真实波幅 = {atr:.4f}\n"
+                atr_percent = kline_indicators.get('atr_percent', None)
+                if atr_percent:
+                    text += f"ATR百分比 = {atr_percent:.2f}% (相对当前价格的波动幅度)\n"
+            
+            hv = kline_indicators.get('historical_volatility', None)
+            if hv is not None:
+                text += f"历史波动率(20日年化) = {hv:.2f}%\n"
+                # 波动率解读
+                if hv < 20:
+                    text += f"  (低波动，市场平稳)\n"
+                elif hv < 40:
+                    text += f"  (中等波动，正常波动水平)\n"
+                else:
+                    text += f"  (高波动，市场剧烈波动)\n"
         
         return text
     
@@ -367,17 +434,21 @@ class PromptBuilder:
         
         text = "【盘口数据（五档）】\n"
         
-        # 卖盘
+        # 卖盘 (API返回的是股数，需转换为手数：1手=100股)
         asks = order_book.get('ask', [])
         for i, ask in enumerate(asks[:5], 1):
-            text += f"卖{['一', '二', '三', '四', '五'][i-1]}：{ask.get('price', 0):.2f} 元 × {int(ask.get('volume', 0))} 手\n"
+            volume_shares = int(ask.get('volume', 0))
+            volume_hands = volume_shares // 100  # 转换为手数
+            text += f"卖{['一', '二', '三', '四', '五'][i-1]}：{ask.get('price', 0):.2f} 元 × {volume_hands} 手 ({volume_shares} 股)\n"
         
         text += "\n"
         
-        # 买盘
+        # 买盘 (API返回的是股数，需转换为手数：1手=100股)
         bids = order_book.get('bid', [])
         for i, bid in enumerate(bids[:5], 1):
-            text += f"买{['一', '二', '三', '四', '五'][i-1]}：{bid.get('price', 0):.2f} 元 × {int(bid.get('volume', 0))} 手\n"
+            volume_shares = int(bid.get('volume', 0))
+            volume_hands = volume_shares // 100  # 转换为手数
+            text += f"买{['一', '二', '三', '四', '五'][i-1]}：{bid.get('price', 0):.2f} 元 × {volume_hands} 手 ({volume_shares} 股)\n"
         
         # 买卖力道比
         if bids and asks:
@@ -431,6 +502,67 @@ class PromptBuilder:
         text += f"下跌家数 = {sentiment.get('down_count', 0)}\n"
         text += f"涨跌比 = {sentiment.get('up_down_ratio', 0):.2f}\n"
         text += f"两市成交额 = {sentiment.get('total_amount', 0):.2f} 亿元\n"
+        
+        return text
+    
+    def _build_fund_flow(self, fund_flow: Dict[str, Any]) -> str:
+        """构建资金流向部分"""
+        if not fund_flow or fund_flow.get('main_net_inflow', 0) == 0:
+            return "暂无资金流向数据"
+        
+        text = f"【资金流向数据】\n"
+        text += f"数据日期：{fund_flow.get('date', 'N/A')}\n\n"
+        
+        # 主力资金
+        main_inflow = fund_flow.get('main_net_inflow', 0)
+        main_rate = fund_flow.get('main_net_inflow_rate', 0)
+        text += f"主力净流入：{main_inflow:,.0f} 元 ({main_rate:.2f}%)\n"
+        
+        # 判断资金流向状态
+        if main_inflow > 0:
+            text += f"  ✅ 主力资金流入，市场关注度高\n"
+        else:
+            text += f"  ⚠️ 主力资金流出，需警惕\n"
+        
+        # 超大单和大单
+        super_large = fund_flow.get('super_large_net_inflow', 0)
+        super_large_rate = fund_flow.get('super_large_net_inflow_rate', 0)
+        text += f"超大单净流入：{super_large:,.0f} 元 ({super_large_rate:.2f}%)\n"
+        
+        large = fund_flow.get('large_net_inflow', 0)
+        large_rate = fund_flow.get('large_net_inflow_rate', 0)
+        text += f"大单净流入：{large:,.0f} 元 ({large_rate:.2f}%)\n"
+        
+        # 中单和小单
+        medium = fund_flow.get('medium_net_inflow', 0)
+        medium_rate = fund_flow.get('medium_net_inflow_rate', 0)
+        text += f"中单净流入：{medium:,.0f} 元 ({medium_rate:.2f}%)\n"
+        
+        small = fund_flow.get('small_net_inflow', 0)
+        small_rate = fund_flow.get('small_net_inflow_rate', 0)
+        text += f"小单净流入：{small:,.0f} 元 ({small_rate:.2f}%)\n\n"
+        
+        # 连续流入天数
+        consecutive_days = fund_flow.get('consecutive_inflow_days', 0)
+        if consecutive_days > 0:
+            text += f"🔥 连续{consecutive_days}日主力净流入\n"
+        elif consecutive_days < 0:
+            text += f"❄️ 连续{abs(consecutive_days)}日主力净流出\n"
+        
+        # 5日累计
+        main_5d = fund_flow.get('main_net_inflow_5d', 0)
+        text += f"近5日主力累计：{main_5d:,.0f} 元\n\n"
+        
+        # 资金流向解读
+        text += f"【资金流向解读】\n"
+        if main_inflow > 0 and super_large > 0:
+            text += f"✅ 大资金持续流入，机构看好\n"
+        elif main_inflow > 0 and super_large < 0:
+            text += f"⚠️ 主力流入但超大单流出，资金分歧较大\n"
+        elif main_inflow < 0 and small > 0:
+            text += f"⚠️ 主力流出但散户接盘，需谨慎\n"
+        elif main_inflow < 0:
+            text += f"❌ 主力资金持续流出，短期承压\n"
         
         return text
     
