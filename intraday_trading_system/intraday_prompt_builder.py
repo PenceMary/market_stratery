@@ -139,7 +139,6 @@ class PromptBuilder:
 成交量：{quote.get('volume', 0)} 手
 成交额：{quote.get('amount', 0):.2f} 元
 换手率：{quote.get('turnover_rate', 0):.2f}%
-量比：{quote.get('volume_ratio', 0):.2f}
 
 {technical_indicators}
 
