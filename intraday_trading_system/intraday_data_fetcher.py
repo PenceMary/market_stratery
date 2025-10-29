@@ -199,6 +199,28 @@ class IntradayDataFetcher:
                             'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         }
                         
+                        # 尝试通过盘口接口补充量比等实时数据
+                        try:
+                            bid_ask_df = ak.stock_bid_ask_em(symbol=stock_code)
+                            if not bid_ask_df.empty and 'item' in bid_ask_df.columns:
+                                bid_ask_dict = dict(zip(bid_ask_df['item'], bid_ask_df['value']))
+                                
+                                # 补充实时数据（如果盘口接口有更新的数据）
+                                if '最新' in bid_ask_dict:
+                                    quote['current_price'] = float(bid_ask_dict['最新'])
+                                if '量比' in bid_ask_dict:
+                                    quote['volume_ratio'] = float(bid_ask_dict['量比'])
+                                if '换手' in bid_ask_dict:
+                                    quote['turnover_rate'] = float(bid_ask_dict['换手'])
+                                if '最高' in bid_ask_dict:
+                                    quote['high_price'] = float(bid_ask_dict['最高'])
+                                if '最低' in bid_ask_dict:
+                                    quote['low_price'] = float(bid_ask_dict['最低'])
+                                
+                                print(f"  ✅ 已补充盘口实时数据 (量比: {quote['volume_ratio']:.2f})")
+                        except:
+                            pass  # 盘口数据补充失败不影响主流程
+                        
                         # 计算涨跌停价
                         limit_up_price = round(pre_close * 1.10, 2)
                         limit_down_price = round(pre_close * 0.90, 2)
@@ -849,14 +871,26 @@ class IntradayDataFetcher:
                             'small_net_inflow_rate': float(latest.get('小单净流入-净占比', 0))
                         }
                         
-                        # 计算连续资金流入天数
-                        consecutive_inflow = 0
-                        for i in range(len(fund_flow_df) - 1, -1, -1):
-                            if fund_flow_df.iloc[i].get('主力净流入-净额', 0) > 0:
-                                consecutive_inflow += 1
-                            else:
-                                break
-                        result['consecutive_inflow_days'] = consecutive_inflow
+                        # 计算连续资金流入/流出天数（正数表示流入，负数表示流出）
+                        consecutive_days = 0
+                        latest_flow = fund_flow_df.iloc[-1].get('主力净流入-净额', 0)
+                        
+                        if latest_flow > 0:
+                            # 最新一天是流入，计算连续流入天数
+                            for i in range(len(fund_flow_df) - 1, -1, -1):
+                                if fund_flow_df.iloc[i].get('主力净流入-净额', 0) > 0:
+                                    consecutive_days += 1
+                                else:
+                                    break
+                        elif latest_flow < 0:
+                            # 最新一天是流出，计算连续流出天数（负数）
+                            for i in range(len(fund_flow_df) - 1, -1, -1):
+                                if fund_flow_df.iloc[i].get('主力净流入-净额', 0) < 0:
+                                    consecutive_days -= 1
+                                else:
+                                    break
+                        
+                        result['consecutive_inflow_days'] = consecutive_days
                         
                         # 近5日主力资金累计
                         if len(fund_flow_df) >= 5:
