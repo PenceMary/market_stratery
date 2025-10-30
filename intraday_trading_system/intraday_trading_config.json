@@ -19,8 +19,8 @@
     "kline_days": 90,
     "cache_enabled": true,
     "api_timeout": 90,
-    "max_retries": 2,
-    "retry_delay": 3
+    "max_retries": 3,
+    "retry_delay": 5
   },
   "trading_time": {
     "morning_start": "09:30",
