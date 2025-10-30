@@ -313,7 +313,7 @@ class IntradayTradingAnalyzer:
         results = []
 
         # 调试中，不调用模型，直接返回结果
-        return results
+        # return results
         
         # 3. 为每个模型进行分析
         for provider in self.api_providers:
