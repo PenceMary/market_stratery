@@ -1,6 +1,6 @@
 {
   "api_provider": "qwen",
-  "api_providers": ["qwen"],
+  "api_providers": ["qwen","deepseek"],
   "api_config": {
     "qwen": {
       "model": "qwen3-max",
@@ -16,9 +16,9 @@
   },
   "data_config": {
     "history_days": 5,
-    "kline_days": 30,
+    "kline_days": 90,
     "cache_enabled": true,
-    "api_timeout": 60,
+    "api_timeout": 90,
     "max_retries": 2,
     "retry_delay": 3
   },

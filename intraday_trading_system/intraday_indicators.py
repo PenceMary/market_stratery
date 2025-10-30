@@ -48,19 +48,23 @@ class TechnicalIndicators:
     @staticmethod
     def calculate_rsi(data: pd.Series, period: int = 14) -> pd.Series:
         """
-        计算RSI指标
+        计算RSI指标（Wilder 平滑法，等同于 RMA/EMA(alpha=1/period) 口径）
         
-        :param data: 价格序列
+        :param data: 价格序列（建议为前复权收盘价，且仅包含已收盘K线）
         :param period: 周期
         :return: RSI序列
         """
-        delta = data.diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
-        
-        rs = gain / loss
+        if data is None or len(data) == 0:
+            return pd.Series(dtype=float)
+        # 差分
+        delta = pd.to_numeric(data, errors='coerce').diff()
+        gain = delta.clip(lower=0)
+        loss = -delta.clip(upper=0)
+        # Wilder 平滑（RMA）：等价于 EMA(alpha=1/period, adjust=False)
+        avg_gain = gain.ewm(alpha=1/period, adjust=False, min_periods=period).mean()
+        avg_loss = loss.ewm(alpha=1/period, adjust=False, min_periods=period).mean()
+        rs = avg_gain / avg_loss.replace(0, np.nan)
         rsi = 100 - (100 / (1 + rs))
-        
         return rsi
     
     @staticmethod

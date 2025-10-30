@@ -311,6 +311,9 @@ class IntradayTradingAnalyzer:
             prompt_filepath = self._save_prompt(stock_code, prompt, all_data.get('quote', {}).get('stock_name', ''))
         
         results = []
+
+        # 调试中，不调用模型，直接返回结果
+        return results
         
         # 3. 为每个模型进行分析
         for provider in self.api_providers:
@@ -422,10 +425,10 @@ class IntradayTradingAnalyzer:
             market_indices = self.data_fetcher.get_market_indices(stock_code)
             data['market_indices'] = market_indices
             
-            # 7. 板块信息
-            print("  - 获取板块信息...")
-            sector_info = self.data_fetcher.get_sector_info(stock_code)
-            data['sector_info'] = sector_info
+            # 7. 移除板块信息获取
+            # print("  - 获取板块信息...")
+            # sector_info = self.data_fetcher.get_sector_info(stock_code)
+            # data['sector_info'] = sector_info
             
             # 8. 市场情绪
             print("  - 获取市场情绪...")

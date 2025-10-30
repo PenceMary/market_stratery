@@ -167,7 +167,7 @@ class IntradayDataFetcher:
                         period="daily",
                         start_date=yesterday,
                         end_date=today,
-                        adjust=""
+                        adjust="qfq"
                     )
                     
                     if not hist_df.empty:
@@ -243,53 +243,8 @@ class IntradayDataFetcher:
                         raise Exception("历史数据为空")
                         
                 except Exception as e1:
-                    # 方法2: 备用方案 - 使用完整市场数据(较慢但更完整)
-                    print(f"   快速接口失败({str(e1)[:50]}),尝试备用接口...")
-                    df = ak.stock_zh_a_spot_em()
-                    stock_data = df[df['代码'] == stock_code]
-                    
-                    if stock_data.empty:
-                        print(f"❌ 未找到股票 {stock_code} 的实时行情")
-                        return None
-                    
-                    row = stock_data.iloc[0]
-                    
-                    quote = {
-                        'stock_code': stock_code,
-                        'stock_name': row['名称'],
-                        'current_price': row['最新价'],
-                        'open_price': row['今开'],
-                        'high_price': row['最高'],
-                        'low_price': row['最低'],
-                        'pre_close': row['昨收'],
-                        'price_change': row['涨跌幅'],
-                        'price_change_amount': row['涨跌额'],
-                        'volume': row['成交量'],
-                        'amount': row['成交额'],
-                        'amplitude': row['振幅'],
-                        'turnover_rate': row['换手率'],
-                        'volume_ratio': row['量比'],
-                        'update_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    }
-                    
-                    # 计算涨跌停价
-                    limit_up_price = round(row['昨收'] * 1.10, 2)
-                    limit_down_price = round(row['昨收'] * 0.90, 2)
-                    
-                    # 科创板和创业板是20%
-                    if stock_code.startswith('688') or stock_code.startswith('300'):
-                        limit_up_price = round(row['昨收'] * 1.20, 2)
-                        limit_down_price = round(row['昨收'] * 0.80, 2)
-                    # 北交所是30%
-                    elif stock_code.startswith(('83', '43', '87', '920')):
-                        limit_up_price = round(row['昨收'] * 1.30, 2)
-                        limit_down_price = round(row['昨收'] * 0.70, 2)
-                    
-                    quote['limit_up_price'] = limit_up_price
-                    quote['limit_down_price'] = limit_down_price
-                    
-                    print(f"✅ 实时行情获取成功(备用接口): {quote['stock_name']} 当前价 {quote['current_price']}")
-                    return quote
+                    # 移除备用方案，直接抛出异常以走统一重试/失败处理
+                    raise e1
                 
             except Exception as e:
                 error_msg = str(e)
@@ -578,11 +533,12 @@ class IntradayDataFetcher:
             # 方法1：优先使用实时行情接口（包含成交额）
             try:
                 # 获取所有指数实时行情
-                spot_df = ak.stock_zh_index_spot_em()
-                
-                # 查找对应的指数
-                index_row = spot_df[spot_df['代码'] == index_code]
-                
+                spot_df = ak.stock_zh_index_spot_sina()
+
+                # 查找对应的指数（兼容是否带市场前缀的代码）
+                possible_codes = {index_code, f"sh{index_code}", f"sz{index_code}", f"bj{index_code}"}
+                index_row = spot_df[spot_df['代码'].astype(str).isin(possible_codes)]
+
                 if not index_row.empty:
                     row = index_row.iloc[0]
                     # 使用字典方式访问 pandas Series，更可靠
@@ -592,8 +548,8 @@ class IntradayDataFetcher:
                         'current': float(row['最新价']) if '最新价' in row else 0,
                         'change': float(row['涨跌幅']) if '涨跌幅' in row else 0,
                         'change_amount': float(row['涨跌额']) if '涨跌额' in row else 0,
-                        'volume': int(row['成交量']) if '成交量' in row else 0,
-                        'amount': float(row['成交额']) if '成交额' in row else 0
+                        'volume': int(pd.to_numeric(row.get('成交量', 0), errors='coerce') or 0),
+                        'amount': float(pd.to_numeric(row.get('成交额', 0), errors='coerce') or 0)
                     }
                     print(f"  ✅ 成功获取 {result['name']} 实时数据: {result['current']:.2f} ({result['change']:+.2f}%)")
                     return result
@@ -663,108 +619,6 @@ class IntradayDataFetcher:
             traceback.print_exc()
             return None
     
-    def get_sector_info(self, stock_code: str) -> Dict[str, Any]:
-        """
-        获取板块信息(含板块涨跌幅)
-        
-        :param stock_code: 股票代码
-        :return: 板块信息字典
-        """
-        try:
-            print(f"📊 获取 {stock_code} 板块信息...")
-            
-            # 获取股票基本信息
-            stock_info = ak.stock_individual_info_em(symbol=stock_code)
-            
-            if stock_info.empty:
-                print(f"⚠️ 无法获取股票基本信息")
-                return {
-                    'name': '未知',
-                    'change': 0,
-                    'leader': '',
-                    'leader_change': 0,
-                    'rank': 0
-                }
-            
-            info_dict = dict(zip(stock_info['item'], stock_info['value']))
-            sector_name = info_dict.get('行业', '未知')
-            
-            # 初始化板块信息
-            sector_info = {
-                'name': sector_name,
-                'change': 0,
-                'leader': '',
-                'leader_change': 0,
-                'rank': 0
-            }
-            
-            # 尝试获取板块涨跌幅数据(仅重试2次，避免等待过长)
-            sector_retries = 2  # 固定重试2次
-            for attempt in range(sector_retries):
-                try:
-                    # 获取今日板块行情
-                    sector_spot_df = ak.stock_board_industry_spot_em()
-                    
-                    if not sector_spot_df.empty and '板块名称' in sector_spot_df.columns:
-                        # 查找匹配的板块
-                        matching_sector = sector_spot_df[sector_spot_df['板块名称'] == sector_name]
-                        
-                        if not matching_sector.empty:
-                            sector_row = matching_sector.iloc[0]
-                            
-                            # 提取板块涨跌幅
-                            if '涨跌幅' in sector_row:
-                                sector_info['change'] = float(sector_row['涨跌幅'])
-                            
-                            # 提取领涨股信息(如果有)
-                            if '领涨股票' in sector_row:
-                                sector_info['leader'] = sector_row.get('领涨股票', '')
-                            
-                            # 提取排名(如果有)
-                            if '排名' in sector_row:
-                                sector_info['rank'] = int(sector_row.get('排名', 0))
-                            
-                            print(f"✅ 板块信息获取成功: {sector_name} ({sector_info['change']:+.2f}%)")
-                            return sector_info
-                        else:
-                            print(f"⚠️ 未找到板块 {sector_name} 的行情数据")
-                            break
-                    else:
-                        print(f"⚠️ 板块行情数据为空或格式异常")
-                        break
-                    
-                except Exception as e:
-                    error_msg = str(e)
-                    # 检查是否为网络连接错误
-                    is_network_error = any(keyword in error_msg.lower() for keyword in 
-                                          ['timeout', 'connection', 'proxy', 'max retries', 
-                                           'read timed out', 'remote end closed', 'aborted'])
-                    
-                    if attempt < sector_retries - 1 and is_network_error:
-                        wait_time = 3  # 固定等待3秒
-                        print(f"  ⚠️ 获取板块涨跌幅失败(第{attempt + 1}次): {error_msg[:80]}")
-                        print(f"  ⏳ {wait_time}秒后重试...")
-                        time.sleep(wait_time)
-                    else:
-                        if is_network_error:
-                            print(f"  ⚠️ 板块涨跌幅接口连接异常，已跳过")
-                        else:
-                            print(f"  ⚠️ 获取板块涨跌幅失败: {error_msg[:100]}")
-                        break
-            
-            print(f"✅ 板块信息获取成功: {sector_name} (涨跌幅数据未获取)")
-            return sector_info
-            
-        except Exception as e:
-            print(f"⚠️ 获取板块信息异常: {e}")
-            return {
-                'name': '未知',
-                'change': 0,
-                'leader': '',
-                'leader_change': 0,
-                'rank': 0
-            }
-    
     def get_market_sentiment(self) -> Dict[str, Any]:
         """
         获取市场情绪指标
@@ -795,18 +649,44 @@ class IntradayDataFetcher:
             except Exception as e:
                 print(f"⚠️ 获取跌停数据失败: {e}")
             
-            # 简化版本:使用上证和深证指数数据来判断市场情绪
-            # 避免使用需要获取全部股票的慢速接口
+            # 获取涨跌家数和成交额数据
+            up_count = 0
+            down_count = 0
+            total_amount_yuan = 0
+            try:
+                # 1) 从新浪指数实时接口获取上证指数与深证成指成交额，并相加作为两市成交额
+                index_df = ak.stock_zh_index_spot_sina()
+                if not index_df.empty and '成交额' in index_df.columns:
+                    # 兼容名称与代码两种筛选方式
+                    mask_name = index_df['名称'].isin(['上证指数', '深证成指']) if '名称' in index_df.columns else pd.Series([False]*len(index_df))
+                    mask_code = index_df['代码'].astype(str).isin(['sh000001', 'sz399001']) if '代码' in index_df.columns else pd.Series([False]*len(index_df))
+                    sel = index_df[mask_name | mask_code]
+                    if not sel.empty:
+                        total_amount_yuan = pd.to_numeric(sel['成交额'], errors='coerce').fillna(0).sum()
+
+                # 2) 从全市场个股获取涨跌家数
+                all_stocks = ak.stock_zh_a_spot_em()
+                if not all_stocks.empty and '涨跌幅' in all_stocks.columns:
+                    up_count = int((all_stocks['涨跌幅'] > 0).sum())
+                    down_count = int((all_stocks['涨跌幅'] < 0).sum())
+            except Exception as e:
+                print(f"⚠️ 获取市场整体数据失败: {e}")
+            
+            # 计算涨跌比
+            up_down_ratio = up_count / down_count if down_count > 0 else (up_count if up_count > 0 else 0)
+            # 输出为“亿元”口径，便于展示
+            total_amount_yi = round(total_amount_yuan / 1e8, 2) if total_amount_yuan else 0
+            
             sentiment = {
                 'limit_up_count': limit_up_count,
                 'limit_down_count': limit_down_count,
-                'up_count': 0,  # 简化版不统计
-                'down_count': 0,  # 简化版不统计
-                'up_down_ratio': 0,  # 简化版不统计
-                'total_amount': 0  # 简化版不统计
+                'up_count': up_count,
+                'down_count': down_count,
+                'up_down_ratio': round(up_down_ratio, 2),
+                'total_amount': total_amount_yi
             }
             
-            print(f"✅ 市场情绪数据获取成功 (涨停:{limit_up_count}, 跌停:{limit_down_count})")
+            print(f"✅ 市场情绪数据获取成功 (涨停:{limit_up_count}, 跌停:{limit_down_count}, 上涨:{up_count}, 下跌:{down_count})")
             return sentiment
             
         except Exception as e:
@@ -962,7 +842,7 @@ class IntradayDataFetcher:
                 period="daily",
                 start_date=start_date,
                 end_date=end_date,
-                adjust=""
+                adjust="qfq"
             )
             
             if df.empty:

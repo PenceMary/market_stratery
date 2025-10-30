@@ -71,12 +71,7 @@ class PromptBuilder:
 """
     
     def build_prompt(self, data: Dict[str, Any]) -> str:
-        """
-        构建完整的提示词
-        
-        :param data: 包含所有数据的字典
-        :return: 构建好的提示词字符串
-        """
+        """构建分析提示词"""
         current_time = datetime.now()
         
         # 计算距离开盘的时间
@@ -158,12 +153,6 @@ class PromptBuilder:
 
 ---
 
-=== 板块联动 ===
-
-{sector_info}
-
----
-
 === 市场情绪指标 ===
 
 {market_sentiment}
@@ -178,7 +167,8 @@ class PromptBuilder:
 
 === 分析任务 ===
 
-请基于以上实时数据，从以下维度进行深度分析并尽可能地使用推理来给出明确的交易决策：
+        请基于以上实时数据，从以下维度进行深度分析并尽可能地使用推理来给出明确的交易决策：
+        注意：A股交易策略为T+1（当日买入次日方可卖出），请在交易建议中充分考虑该约束。
 
 **1. 技术面分析**
    - 当前趋势判断（多头/空头/震荡）
@@ -470,7 +460,7 @@ class PromptBuilder:
                 text += f"【{data.get('name', name)}】\n"
                 text += f"当前点位 = {data.get('current', 0):.2f}\n"
                 text += f"涨跌幅 = {data.get('change', 0):.2f}%\n"
-                text += f"成交额 = {data.get('amount', 0):.2f} 元\n\n"
+                text += f"成交额 = {data.get('amount', 0):.0f} 元\n\n"
         
         return text if text else "暂无大盘指数数据"
     
@@ -500,7 +490,7 @@ class PromptBuilder:
         text += f"上涨家数 = {sentiment.get('up_count', 0)}\n"
         text += f"下跌家数 = {sentiment.get('down_count', 0)}\n"
         text += f"涨跌比 = {sentiment.get('up_down_ratio', 0):.2f}\n"
-        text += f"两市成交额 = {sentiment.get('total_amount', 0):.2f} 亿元\n"
+        text += f"两市成交额 = {sentiment.get('total_amount', 0):.0f} 亿元\n\n"
         
         return text
     
