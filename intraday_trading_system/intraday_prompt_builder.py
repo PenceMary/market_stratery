@@ -34,7 +34,7 @@ class PromptBuilder:
         return """======== A股日内交易分析 ========
 
 当前时间：{current_time}
-距离开盘：{elapsed_minutes} 分钟
+距离开盘：{elapsed_minutes} 分钟(负数为未开盘-距离开盘倒计时，正数为已开盘时长)
 
 === 个股行情 ===
 股票代码：{stock_code}
