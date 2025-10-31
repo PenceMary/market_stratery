@@ -509,9 +509,9 @@ class PromptBuilder:
         
         # 判断资金流向状态
         if main_inflow > 0:
-            # text += f"  ✅ 主力资金流入，市场关注度高\n"
+            text += f"  ✅ 主力资金流入，甄别主力是否大单拆中小单\n"
         else:
-            # text += f"  ⚠️ 主力资金流出，需警惕\n"
+            text += f"  ⚠️ 主力资金流出，甄别主力是否大单拆中小单\n"
         
         # 超大单和大单
         super_large = fund_flow.get('super_large_net_inflow', 0)
@@ -545,13 +545,13 @@ class PromptBuilder:
         # 资金流向解读
         text += f"【资金流向解读】\n"
         if main_inflow > 0 and super_large > 0:
-            # text += f"✅ 大资金持续流入，机构看好\n"
+            text += f"✅ 大资金持续流入，注意甄别\n"
         elif main_inflow > 0 and super_large < 0:
-            # text += f"⚠️ 主力流入但超大单流出，资金分歧较大\n"
+            text += f"⚠️ 主力流入但超大单流出\n"
         elif main_inflow < 0 and small > 0:
-            # text += f"⚠️ 主力流出但散户接盘，需谨慎\n"
+            text += f"⚠️ 主力流出但小单接盘，注意甄别\n"
         elif main_inflow < 0:
-            # text += f"❌ 主力资金持续流出，短期承压\n"
+            text += f"❌ 主力资金持续流出\n"
         
         return text
     
