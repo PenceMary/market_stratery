@@ -487,9 +487,9 @@ class PromptBuilder:
         
         text = f"涨停家数 = {sentiment.get('limit_up_count', 0)}\n"
         text += f"跌停家数 = {sentiment.get('limit_down_count', 0)}\n"
-        text += f"上涨家数 = {sentiment.get('up_count', 0)}\n"
-        text += f"下跌家数 = {sentiment.get('down_count', 0)}\n"
-        text += f"涨跌比 = {sentiment.get('up_down_ratio', 0):.2f}\n"
+        # text += f"上涨家数 = {sentiment.get('up_count', 0)}\n"
+        # text += f"下跌家数 = {sentiment.get('down_count', 0)}\n"
+        # text += f"涨跌比 = {sentiment.get('up_down_ratio', 0):.2f}\n"
         text += f"两市成交额 = {sentiment.get('total_amount', 0):.0f} 亿元\n\n"
         
         return text
