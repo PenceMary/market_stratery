@@ -1026,7 +1026,7 @@ def chat_with_qwen(file_id: str, question: Any, api_key: str, intraday_days: int
     for chunk in completion:
         if chunk.choices and chunk.choices[0].delta.content:
             full_content += chunk.choices[0].delta.content
-            print(".", end="", flush=True)
+            print(chunk.choices[0].delta.content, end="", flush=True)
 
     return full_content
 
