@@ -140,3 +140,4 @@ Thumbs.db
 #data_output/
 intraday_output/
 **/intraday_output/
+data_output
