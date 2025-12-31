@@ -57,6 +57,8 @@ body {
     margin: 0 auto;
     padding: 20px;
     background-color: var(--background-color);
+    width: 100%;
+    min-width: 0;
 }
 
 .container {
@@ -156,6 +158,9 @@ table {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 th, td {
@@ -212,6 +217,15 @@ hr {
     opacity: 0.6;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5em auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 .footer {
     text-align: center;
     margin-top: 50px;
@@ -225,26 +239,165 @@ hr {
     margin: 0;
 }
 
-@media (max-width: 768px) {
+/* 平板设备 (768px - 1024px) */
+@media (max-width: 1024px) {
     body {
-        padding: 10px;
+        padding: 15px;
     }
 
     .container {
-        padding: 20px;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+    }
+
+    h3 {
+        font-size: 1.2em;
+    }
+}
+
+/* 手机设备 (最大768px) */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .container {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .metadata {
+        padding: 12px 15px;
+        font-size: 0.85em;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 1.6em;
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+
+    h2 {
+        font-size: 1.3em;
+        padding-bottom: 6px;
+    }
+
+    h3 {
+        font-size: 1.1em;
+    }
+
+    h4 {
+        font-size: 1.05em;
+    }
+
+    p {
+        margin-bottom: 0.8em;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    code {
+        font-size: 0.8em;
+        padding: 2px 4px;
+        word-break: break-word;
+    }
+
+    pre {
+        font-size: 0.75em;
+        padding: 12px;
+        margin: 1em 0;
+        border-radius: 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    blockquote {
+        padding: 12px 15px;
+        margin: 1em 0;
+        font-size: 0.95em;
     }
 
     table {
-        font-size: 0.9em;
+        font-size: 0.85em;
+        display: block;
+        width: 100%;
+        min-width: 100%;
     }
 
     th, td {
         padding: 8px 10px;
+        font-size: 0.9em;
+        white-space: nowrap;
+    }
+
+    ul, ol {
+        padding-left: 20px;
+    }
+
+    li {
+        margin: 6px 0;
+    }
+
+    .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        font-size: 0.85em;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* 小屏手机设备 (最大480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .metadata {
+        padding: 10px 12px;
+        font-size: 0.8em;
+    }
+
+    h1 {
+        font-size: 1.4em;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    h3 {
+        font-size: 1.05em;
     }
 
     pre {
+        font-size: 0.7em;
+        padding: 10px;
+    }
+
+    table {
         font-size: 0.8em;
-        padding: 15px;
+    }
+
+    th, td {
+        padding: 6px 8px;
+        font-size: 0.85em;
     }
 }
 </style>
@@ -255,7 +408,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>{title}</title>
     {css}
 </head>

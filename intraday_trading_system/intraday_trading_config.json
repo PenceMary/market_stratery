@@ -1,6 +1,6 @@
 {
   "api_provider": "qwen",
-  "api_providers": ["qwen","deepseek"],
+  "api_providers": ["deepseek"],
   "api_config": {
     "qwen": {
       "model": "qwen3-max",
