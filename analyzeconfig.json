@@ -1,0 +1,20 @@
+{
+  "execution_time": {
+    "start_hour": 17,
+    "end_hour": 6
+  },
+  "api_control": {
+    "normal_min_interval": 60,
+    "normal_max_interval": 120,
+    "extended_min_interval": 120,
+    "extended_max_interval": 240,
+    "failure_wait_time": 900,
+    "failure_threshold": 3
+  },
+  "analysis": {
+    "output_base_dir": "data_output",
+    "max_retries": 3,
+    "retry_delay": 20,
+    "api_timeout": 300
+  }
+}
