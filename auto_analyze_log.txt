@@ -221,3 +221,26 @@ Traceback (most recent call last):
            ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
 TypeError: unsupported operand type(s) for /: 'WindowsPath' and 'int'
 2026-01-08 07:23:34,450 - auto_analyze_stocks - INFO - 等待 147 秒后进行下一次分析...
+2026-01-08 07:24:00,255 - auto_analyze_stocks - INFO - ✅ 等待完成，开始获取股票数据
+2026-01-08 07:24:00,259 - auto_analyze_stocks - INFO - 正在下载股票数据...
+2026-01-08 07:25:10,795 - auto_analyze_stocks - INFO - 
+程序结束
+2026-01-08 07:25:57,661 - auto_analyze_stocks - INFO - 🐛 调试模式已启用：跳过时间检测，立即执行
+2026-01-08 07:25:57,661 - auto_analyze_stocks - INFO - 自动股票分析系统启动
+2026-01-08 07:25:57,661 - auto_analyze_stocks - INFO - ==================================================
+2026-01-08 07:25:57,661 - auto_analyze_stocks - INFO - 配置加载完成
+2026-01-08 07:25:57,708 - auto_analyze_stocks - INFO - 共有 5793 只股票需要分析
+2026-01-08 07:25:57,724 - auto_analyze_stocks - INFO - 随机选择股票: 2380
+2026-01-08 07:25:57,724 - auto_analyze_stocks - INFO - 开始分析股票: 2380
+2026-01-08 07:25:58,694 - auto_analyze_stocks - INFO - ⏳ 等待 101 秒（1分41秒）后开始获取股票数据，避免API调用过快被封IP...
+2026-01-08 07:26:01,454 - auto_analyze_stocks - INFO - 随机选择股票: 300423
+2026-01-08 07:26:01,454 - auto_analyze_stocks - INFO - 开始分析股票: 300423
+2026-01-08 07:26:01,454 - auto_analyze_stocks - INFO - 正在下载股票数据...
+2026-01-08 07:26:01,454 - auto_analyze_stocks - ERROR - 股票 300423 分析过程中发生错误: unsupported operand type(s) for /: 'WindowsPath' and 'int'
+Traceback (most recent call last):
+  File "d:\stock\stock_ana\market_stratery\auto_analyze_stocks.py", line 403, in analyze_stock
+  File "d:\stock\stock_ana\market_stratery\anaByQwen2.py", line 34, in get_stock_output_dir
+    return Path(OUTPUT_BASE_DIR) / stock
+           ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+TypeError: unsupported operand type(s) for /: 'WindowsPath' and 'int'
+2026-01-08 07:26:01,454 - auto_analyze_stocks - INFO - 等待 183 秒后进行下一次分析...

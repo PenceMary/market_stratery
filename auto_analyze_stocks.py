@@ -39,6 +39,7 @@ from logging.handlers import RotatingFileHandler
 import os
 
 # 从anaByQwen2.py导入需要的函数
+import anaByQwen2  # 导入整个模块以便修改常量
 from anaByQwen2 import (
     load_config,
     get_and_save_stock_data,
@@ -672,6 +673,15 @@ def load_config_with_validation(config_file: str = DEFAULT_CONFIG_FILE, keys_fil
     config.setdefault('hourly_volume_days', 10)
     config.setdefault('kline_days', 60)
     config.setdefault('specified_date', '')
+    
+    # 使用猴子补丁修改anaByQwen2.py中的等待时间常量，确保API调用间隔为1-2分钟
+    # 从配置中读取等待时间（使用normal_min_interval和normal_max_interval，即1-2分钟）
+    api_control = config.get('api_control', {})
+    wait_min = api_control.get('normal_min_interval', 60)  # 默认1分钟
+    wait_max = api_control.get('normal_max_interval', 120)  # 默认2分钟
+    anaByQwen2.RANDOM_WAIT_MIN = wait_min
+    anaByQwen2.RANDOM_WAIT_MAX = wait_max
+    print(f"✅ 已设置API调用间隔为 {wait_min}-{wait_max} 秒（{wait_min//60}-{wait_max//60}分钟）")
     
     return config
 
