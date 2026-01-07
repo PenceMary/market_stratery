@@ -207,3 +207,17 @@ TypeError: unsupported operand type(s) for /: 'WindowsPath' and 'int'
 2026-01-08 07:22:28,813 - auto_analyze_stocks - INFO - 随机选择股票: 301491
 2026-01-08 07:22:28,813 - auto_analyze_stocks - INFO - 开始分析股票: 301491
 2026-01-08 07:22:30,002 - auto_analyze_stocks - INFO - ⏳ 等待 90 秒（1分30秒）后开始获取股票数据，避免API调用过快被封IP...
+2026-01-08 07:23:30,034 - auto_analyze_stocks - INFO -    剩余等待时间: 0分30秒
+2026-01-08 07:23:34,442 - auto_analyze_stocks - INFO - 随机选择股票: 300208
+2026-01-08 07:23:34,443 - auto_analyze_stocks - INFO - 开始分析股票: 300208
+2026-01-08 07:23:34,445 - auto_analyze_stocks - INFO - 正在下载股票数据...
+2026-01-08 07:23:34,446 - auto_analyze_stocks - ERROR - 股票 300208 分析过程中发生错误: unsupported operand type(s) for /: 'WindowsPath' and 'int'
+Traceback (most recent call last):
+  File "d:\stock\stock_ana\market_stratery\auto_analyze_stocks.py", line 403, in analyze_stock
+    try:
+         
+  File "d:\stock\stock_ana\market_stratery\anaByQwen2.py", line 34, in get_stock_output_dir
+    return Path(OUTPUT_BASE_DIR) / stock
+           ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+TypeError: unsupported operand type(s) for /: 'WindowsPath' and 'int'
+2026-01-08 07:23:34,450 - auto_analyze_stocks - INFO - 等待 147 秒后进行下一次分析...
