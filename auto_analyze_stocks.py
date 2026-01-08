@@ -408,7 +408,7 @@ def analyze_stock(stock_code: str,
     """
     # 确保 stock_code 是字符串类型
     stock_code = str(stock_code)
-    stock_code = preserv_zeros(stock_code,6)
+    stock_code = stock_code.astype(str).str.zfill(6)
     logger.info(f"开始分析股票: {stock_code}")
     
     try:
