@@ -379,6 +379,15 @@ def wait_until_execution_time(start_hour: int = 17, check_interval: int = 60):
             t.sleep(1)
         print()  # 换行
 
+def preserv_zeros(value,length=8):
+    import pandas as pd
+    if pd.isna(value):
+        return value
+    value = str(value).strip
+    if value.isdigit():
+        return value.zfill(length)
+    return value 
+
 # ===== 主控制循环 =====
 def analyze_stock(stock_code: str, 
                 interval_controller: APICallIntervalController,
@@ -399,6 +408,7 @@ def analyze_stock(stock_code: str,
     """
     # 确保 stock_code 是字符串类型
     stock_code = str(stock_code)
+    stock_code = preserv_zeros(stock_code,6)
     logger.info(f"开始分析股票: {stock_code}")
     
     try:
