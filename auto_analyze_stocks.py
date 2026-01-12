@@ -415,6 +415,38 @@ def analyze_stock(stock_code: str,
         # 从 config 中获取日期范围参数（使用get方法确保安全）
         specified_date = config.get('specified_date', '').strip() or None
         intraday_days = config.get('intraday_days', 3)
+
+        # 收盘期间智能调整end_date
+        if specified_date is None:  # 只有在用户未指定日期时才自动调整
+            current_hour = datetime.now().hour
+
+            # 收盘期间：16:00-23:59 或 00:00-08:00
+            if current_hour >= 16 or current_hour < 8:
+                logger.info(f"当前处于收盘期间（当前小时: {current_hour}），将智能选择结束日期")
+
+                from anaByQwen2 import get_trading_dates
+                today_str = date.today().strftime('%Y%m%d')
+                # 往前推足够多的天来确保包含需要的交易日
+                search_start = (date.today() - timedelta(days=10)).strftime('%Y%m%d')
+                recent_trading_dates = get_trading_dates(search_start, today_str)
+
+                if current_hour >= 16:
+                    # 16:00-23:59：今天的交易已收盘，如果今天是交易日则用今天
+                    if len(recent_trading_dates) >= 1:
+                        specified_date = recent_trading_dates[-1]  # 最后一个（可能是今天）
+                        logger.info(f"使用当前交易日: {specified_date}")
+                else:
+                    # 00:00-08:00：今天的交易未开始，使用上一个交易日
+                    if len(recent_trading_dates) >= 2:
+                        specified_date = recent_trading_dates[-2]  # 倒数第二个（上一个交易日）
+                        logger.info(f"使用上一个交易日: {specified_date}")
+                    elif len(recent_trading_dates) >= 1:
+                        specified_date = recent_trading_dates[-1]
+                        logger.warning(f"仅找到一个交易日，使用: {specified_date}")
+
+                if specified_date is None:
+                    logger.warning("未能获取到交易日，将使用今天日期")
+
         intraday_start_date, intraday_end_date = get_intraday_date_range(intraday_days, specified_date)
         hourly_volume_days = config.get('hourly_volume_days', intraday_days)
         hourly_start_date, hourly_end_date = get_intraday_date_range(hourly_volume_days, specified_date)
