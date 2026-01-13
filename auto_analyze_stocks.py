@@ -549,34 +549,39 @@ def analyze_stock(stock_code: str,
             return False
         
         logger.info(f"HTML文件已生成: {html_filepath}")
-        
-        # 6. 发送邮件通知
-        logger.info("正在发送分析结果邮件...")
-        email_sender = config.get('email_sender', '')
-        email_password = config.get('email_password', '')
-        email_receivers = config.get('email_receivers', [])
-        
+
+        # 6. 发送邮件通知（仅针对强烈推荐）
         # 提取投资评级并添加到邮件主题中
         investment_rating = extract_investment_rating(str(md_filepath))
-        if investment_rating:
+
+        logger.info("正在检查投资评级...")
+        if investment_rating and "强烈推荐" in investment_rating:
+            logger.info(f"投资评级为「{investment_rating}」，符合邮件发送条件，正在发送邮件...")
+            email_sender = config.get('email_sender', '')
+            email_password = config.get('email_password', '')
+            email_receivers = config.get('email_receivers', [])
+
             email_subject = f"股票 {stock_name}（{stock_code}）分析结果 - {investment_rating}"
+
+            email_body = f"股票 {stock_name}（{stock_code}）的分析报告已生成，请查看附件中的文件。\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析数据已包含在CSV文件中"
+            attachment_list = [str(html_filepath), str(md_filepath)]
+
+            email_sent = send_email(
+                subject=email_subject,
+                body=email_body,
+                receivers=email_receivers,
+                sender=email_sender,
+                password=email_password,
+                attachment_paths=attachment_list
+            )
+
+            if not email_sent:
+                logger.warning(f"股票 {stock_code} 邮件发送失败，但分析已完成")
+            else:
+                logger.info(f"股票 {stock_code} 邮件发送成功")
         else:
-            email_subject = f"股票 {stock_name}（{stock_code}）分析结果"
-        
-        email_body = f"股票 {stock_name}（{stock_code}）的分析报告已生成，请查看附件中的文件。\n\n附件包含：\n1. 主分析报告（HTML格式）\n2. 小时量能分析数据已包含在CSV文件中"
-        attachment_list = [str(html_filepath), str(md_filepath)]
-        
-        email_sent = send_email(
-            subject=email_subject,
-            body=email_body,
-            receivers=email_receivers,
-            sender=email_sender,
-            password=email_password,
-            attachment_paths=attachment_list
-        )
-        
-        if not email_sent:
-            logger.warning(f"股票 {stock_code} 邮件发送失败，但分析已完成")
+            rating_info = investment_rating if investment_rating else "未识别"
+            logger.info(f"投资评级为「{rating_info}」，不满足发送条件（仅强烈推荐发送），跳过邮件发送")
         
         # 7. 清理数据目录
         cleanup_stock_data(stock_code)
