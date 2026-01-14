@@ -386,7 +386,154 @@ def preserv_zeros(value,length=8):
     value = str(value).strip
     if value.isdigit():
         return value.zfill(length)
-    return value 
+    return value
+
+
+# ===== 交易日和分析模式判断 =====
+def is_next_day_trading_day() -> bool:
+    """
+    判断下一个自然日是否为交易日
+
+    :return: True表示下一个日期是交易日
+    """
+    from anaByQwen2 import get_trading_dates
+    tomorrow = (date.today() + timedelta(days=1)).strftime('%Y%m%d')
+    today_str = date.today().strftime('%Y%m%d')
+
+    try:
+        # 获取今天和明天的交易日信息
+        trading_dates = get_trading_dates(today_str, tomorrow)
+        return tomorrow in trading_dates
+    except Exception as e:
+        print(f"⚠️  判断下一个交易日时发生错误: {e}，默认认为下一个日期是交易日")
+        return True
+
+
+def update_stocks_list_on_trading_day(cache_file: str = DEFAULT_STOCKS_LIST_FILE) -> pd.DataFrame:
+    """
+    在交易日当天更新股票列表，获取最新的换手率数据
+
+    :param cache_file: 缓存文件路径
+    :return: DataFrame，包含所有A股股票信息
+    """
+    cache_path = Path(cache_file)
+    today_str = date.today().strftime('%Y%m%d')
+
+    # 检查缓存文件是否是今天的
+    need_update = True
+    if cache_path.exists():
+        file_mtime = datetime.fromtimestamp(cache_path.stat().st_mtime)
+        file_date = file_mtime.strftime('%Y%m%d')
+        if file_date == today_str:
+            print(f"📂 股票列表已是今天的数据（{file_date}），无需更新")
+            need_update = False
+
+    if need_update:
+        print(f"📥 交易日当天更新股票列表，获取最新换手率数据...")
+        try:
+            df = ak.stock_zh_a_spot_em()
+            if df is not None and not df.empty:
+                # 保存到缓存文件
+                df.to_csv(cache_file, index=False, encoding='utf-8-sig')
+                print(f"✅ 成功获取 {len(df)} 只股票，已保存到: {cache_file}")
+                return df
+            else:
+                raise Exception("获取的股票列表为空")
+        except Exception as e:
+            print(f"❌ 获取股票列表失败: {e}")
+            # 如果更新失败，尝试读取缓存
+            if cache_path.exists():
+                print(f"📂 读取缓存文件: {cache_file}")
+                return pd.read_csv(cache_file, encoding='utf-8-sig')
+            raise
+    else:
+        # 读取已有的今天数据
+        return pd.read_csv(cache_file, encoding='utf-8-sig')
+
+
+def get_high_turnover_stocks(all_stocks_df: pd.DataFrame, turnover_threshold: float = 20.0) -> List[str]:
+    """
+    获取换手率大于指定阈值的股票列表
+
+    :param all_stocks_df: 所有股票DataFrame
+    :param turnover_threshold: 换手率阈值（百分比）
+    :return: 高换手率股票代码列表
+    """
+    # 确保换手率列存在
+    if '换手率' not in all_stocks_df.columns:
+        print("⚠️  股票列表中缺少'换手率'列，返回空列表")
+        return []
+
+    # 处理可能的空值和非数值数据
+    df = all_stocks_df.copy()
+    df['换手率'] = pd.to_numeric(df['换手率'], errors='coerce')
+
+    # 筛选换手率 > threshold 的股票
+    high_turnover_df = df[df['换手率'] > turnover_threshold]
+    high_turnover_codes = high_turnover_df['代码'].astype(str).tolist()
+
+    print(f"📊 换手率 > {turnover_threshold}% 的股票有 {len(high_turnover_codes)} 只")
+    return high_turnover_codes
+
+
+def get_current_analysis_mode() -> str:
+    """
+    获取当前应该使用的分析模式
+
+    :return: 'high_turnover'（连续交易日，只分析高换手率）或 'all_random'（非交易日间隔，分析所有股票）
+    """
+    if is_next_day_trading_day():
+        return 'high_turnover'
+    else:
+        return 'all_random'
+
+
+def wait_until_next_trading_day_start(check_interval: int = 60):
+    """
+    等待直到下一个交易日盘后（17:00）
+
+    :param check_interval: 检查间隔（秒）
+    """
+    print("📅 当前分析周期已完成，等待下一个交易日盘后...")
+
+    while True:
+        now = datetime.now()
+        current_hour = now.hour
+
+        # 判断是否在执行时间范围内（17:00-次日6:00）
+        if is_execution_time():
+            # 检查是否是新的交易日之后
+            # 如果是连续交易日模式，下一个交易日盘后就开始
+            # 如果是非交易日，需要等到交易日盘后
+            print(f"✅ 已到达执行时间范围（当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')}）")
+            break
+
+        # 计算需要等待的时间
+        if current_hour < 6:
+            # 凌晨0-6点，已到执行时间，但需要确认是否到了新周期
+            print(f"✅ 已到达执行时间范围（当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')}）")
+            break
+        elif current_hour >= 17:
+            # 已到17:00之后，可以开始
+            print(f"✅ 已到达执行时间范围（当前时间: {now.strftime('%Y-%m-%d %H:%M:%S')}）")
+            break
+        else:
+            # 还没到17:00，计算等待时间
+            target_time = now.replace(hour=17, minute=0, second=0, microsecond=0)
+            delta = target_time - now
+            wait_seconds = int(delta.total_seconds())
+
+            # 限制单次等待时间
+            if wait_seconds > check_interval:
+                wait_seconds = check_interval
+
+            print(f"⏳ 等待 {wait_seconds} 秒后检查...")
+            for i in range(wait_seconds):
+                if i % 60 == 0 and i > 0:
+                    remaining = wait_seconds - i
+                    print(f"   剩余等待时间: {remaining//60}分{remaining%60}秒", end='\r')
+                t.sleep(1)
+            print() 
 
 # ===== 主控制循环 =====
 def analyze_stock(stock_code: str, 
@@ -736,12 +883,15 @@ def load_config_with_validation(config_file: str = DEFAULT_CONFIG_FILE, keys_fil
 def main_control_loop(logger: logging.Logger, debug_mode: bool = False):
     """
     主控制循环
-    
+
     功能：
     - 持续运行，直到人工干预退出
     - 在执行时间范围内分析股票
+    - 根据是否为连续交易日选择不同的分析模式：
+      * 连续交易日：只分析换手率 > 20% 的股票
+      * 非交易日间隔：对所有股票随机分析
     - 管理分析进度和状态
-    
+
     :param logger: 日志记录器
     :param debug_mode: 调试模式，如果为True则跳过时间检测，立即执行
     """
@@ -749,20 +899,20 @@ def main_control_loop(logger: logging.Logger, debug_mode: bool = False):
         logger.info("🐛 调试模式已启用：跳过时间检测，立即执行")
     logger.info("自动股票分析系统启动")
     logger.info("=" * 50)
-    
+
     try:
         # 1. 加载配置
         config = load_config_with_validation()
         logger.info("配置加载完成")
-        
-        # 2. 获取股票列表
-        all_stocks_df = update_stocks_list_if_needed()
-        logger.info(f"共有 {len(all_stocks_df)} 只股票需要分析")
-        
+
+        # 2. 在交易日当天更新股票列表（获取最新换手率）
+        all_stocks_df = update_stocks_list_on_trading_day()
+        logger.info(f"共有 {len(all_stocks_df)} 只股票")
+
         # 3. 加载已分析记录
         analyzed_records = load_analyzed_stocks()
         analyzed_records = reset_daily_records_if_needed(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
-        
+
         # 4. 初始化API间隔控制器
         api_control = config['api_control']
         interval_controller = APICallIntervalController(
@@ -773,42 +923,73 @@ def main_control_loop(logger: logging.Logger, debug_mode: bool = False):
             failure_wait_time=api_control['failure_wait_time'],
             failure_threshold=api_control['failure_threshold']
         )
-        
+
         # 5. 主循环
         while True:
             # 检查是否在执行时间范围内（调试模式下跳过）
             if not debug_mode and not is_execution_time():
                 logger.info("当前时间不在执行范围内，等待...")
-                wait_until_execution_time()
-                continue
-            
-            # 获取未分析的股票
-            unanalyzed_stocks = get_unanalyzed_stocks(all_stocks_df, analyzed_records)
-            
-            if not unanalyzed_stocks:
-                logger.info("所有股票都已分析完成！")
-                # 等待一段时间后重置记录（可选）
-                logger.info("等待24小时后重置分析记录...")
-                t.sleep(86400)  # 等待24小时
-                analyzed_records = {}  # 重置记录
+                wait_until_next_trading_day_start()
+                # 到达执行时间后，更新股票列表（获取最新换手率）
+                all_stocks_df = update_stocks_list_on_trading_day()
+                # 新周期开始，重置分析记录
+                logger.info("🔄 新的分析周期开始，重置分析记录")
+                analyzed_records = {}
                 save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
                 continue
-            
+
+            # 获取当前分析模式
+            analysis_mode = get_current_analysis_mode()
+
+            # 根据模式获取待分析股票列表
+            if analysis_mode == 'high_turnover':
+                logger.info("📊 当前模式：连续交易日，只分析换手率 > 20% 的股票")
+                # 连续交易日：不保留之前的记录，重新开始
+                analyzed_records = {}
+                save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
+                logger.info("🔄 连续交易日模式：已重置分析记录")
+
+                # 获取高换手率股票
+                high_turnover_stocks = get_high_turnover_stocks(all_stocks_df, turnover_threshold=20.0)
+                unanalyzed_stocks = high_turnover_stocks
+                logger.info(f"待分析的高换手率股票有 {len(unanalyzed_stocks)} 只")
+            else:
+                logger.info("🎲 当前模式：非交易日间隔，对所有股票随机分析")
+                # 从所有股票中筛选未分析的
+                unanalyzed_stocks = get_unanalyzed_stocks(all_stocks_df, analyzed_records)
+                logger.info(f"待分析的股票有 {len(unanalyzed_stocks)} 只")
+
+            # 检查是否还有股票需要分析
+            if not unanalyzed_stocks:
+                if analysis_mode == 'high_turnover':
+                    logger.info("所有高换手率股票都已分析完成，等待下一个分析周期")
+                else:
+                    logger.info("所有股票都已分析完成，等待下一个交易日盘后")
+
+                # 等待直到下一个交易日盘后
+                wait_until_next_trading_day_start()
+                # 到达执行时间后，更新股票列表并重置记录
+                all_stocks_df = update_stocks_list_on_trading_day()
+                analyzed_records = {}
+                save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
+                logger.info("🔄 新的分析周期开始，重置分析记录")
+                continue
+
             # 随机选择一只股票进行分析
             stock_to_analyze = random.choice(unanalyzed_stocks)
             logger.info(f"随机选择股票: {stock_to_analyze}")
-            
+
             # 分析股票
-            analyze_stock(stock_to_analyze, interval_controller, analyzed_records, 
+            analyze_stock(stock_to_analyze, interval_controller, analyzed_records,
                         DEFAULT_ANALYZED_RECORDS_FILE, config, logger)
-            
+
             # 获取下一次API调用的间隔时间
             interval = interval_controller.get_next_interval()
-            
+
             # 等待指定间隔时间
             logger.info(f"等待 {interval} 秒后进行下一次分析...")
             t.sleep(interval)
-            
+
     except KeyboardInterrupt:
         logger.info("\n用户中断，程序退出")
     except Exception as e:
