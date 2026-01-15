@@ -390,6 +390,23 @@ def preserv_zeros(value,length=8):
 
 
 # ===== 交易日和分析模式判断 =====
+def is_today_trading_day() -> bool:
+    """
+    判断今天是否为交易日
+
+    :return: True表示今天是交易日
+    """
+    from anaByQwen2 import get_trading_dates
+    today_str = date.today().strftime('%Y%m%d')
+
+    try:
+        trading_dates = get_trading_dates(today_str, today_str)
+        return today_str in trading_dates
+    except Exception as e:
+        print(f"⚠️ 判断今天是否为交易日时发生错误: {e}，默认认为今天是交易日")
+        return True
+
+
 def is_next_day_trading_day() -> bool:
     """
     判断下一个自然日是否为交易日
@@ -480,12 +497,58 @@ def get_current_analysis_mode() -> str:
     """
     获取当前应该使用的分析模式
 
+    判断逻辑：
+    - 如果今天是交易日，且明天也是交易日 → high_turnover（连续交易日）
+    - 如果今天不是交易日 → all_random（非交易日间隔）
+    - 如果今天是交易日，但明天不是交易日 → all_random（交易日进入非交易日）
+
+    凌晨时段（00:00-06:00）特殊处理：
+    - 只有当"昨天是交易日且明天是交易日"时 → high_turnover（连续交易日的延续）
+    - 否则 → all_random
+
     :return: 'high_turnover'（连续交易日，只分析高换手率）或 'all_random'（非交易日间隔，分析所有股票）
     """
-    if is_next_day_trading_day():
-        return 'high_turnover'
+    current_hour = datetime.now().hour
+
+    if current_hour < 6:
+        # 凌晨时段（00:00-06:00）：只有连续交易日才用high_turnover
+        yesterday = (date.today() - timedelta(days=1)).strftime('%Y%m%d')
+        today_str = date.today().strftime('%Y%m%d')
+        try:
+            from anaByQwen2 import get_trading_dates
+            trading_dates = get_trading_dates(yesterday, (date.today() + timedelta(days=1)).strftime('%Y%m%d'))
+
+            yesterday_is_trading = yesterday in trading_dates
+            tomorrow_is_trading = is_next_day_trading_day()
+
+            if yesterday_is_trading and tomorrow_is_trading:
+                # 昨天是交易日，明天也是交易日 → 连续交易日的延续 → high_turnover
+                return 'high_turnover'
+            else:
+                # 否则 → all_random
+                return 'all_random'
+        except Exception as e:
+            print(f"⚠️ 判断交易日状态时发生错误: {e}，默认使用all_random")
+            return 'all_random'
     else:
-        return 'all_random'
+        # 其他时段（06:00-24:00）：基于今天和明天的交易日状态
+        today_str = date.today().strftime('%Y%m%d')
+        try:
+            from anaByQwen2 import get_trading_dates
+            trading_dates = get_trading_dates(today_str, (date.today() + timedelta(days=1)).strftime('%Y%m%d'))
+
+            today_is_trading = today_str in trading_dates
+            tomorrow_is_trading = is_next_day_trading_day()
+
+            if today_is_trading and tomorrow_is_trading:
+                # 今天是交易日，明天也是交易日 → 连续交易日 → high_turnover
+                return 'high_turnover'
+            else:
+                # 今天不是交易日，或者明天不是交易日 → all_random
+                return 'all_random'
+        except Exception as e:
+            print(f"⚠️ 判断交易日状态时发生错误: {e}，默认使用all_random")
+            return 'all_random'
 
 
 def wait_until_next_trading_day_start(check_interval: int = 60):
@@ -925,34 +988,90 @@ def main_control_loop(logger: logging.Logger, debug_mode: bool = False):
         )
 
         # 5. 主循环
+        # 记录状态，用于检测新的分析周期
+        last_execution_time = False  # 上一次是否在执行时间内
+        last_analysis_mode = None  # 上一次的分析模式
+        last_analysis_date = None  # 上一次分析的日期（YYYY-MM-DD）
+        is_first_iteration = True  # 是否是第一次迭代（用于处理重启）
+
         while True:
-            # 检查是否在执行时间范围内（调试模式下跳过）
-            if not debug_mode and not is_execution_time():
-                logger.info("当前时间不在执行范围内，等待...")
-                wait_until_next_trading_day_start()
-                # 到达执行时间后，更新股票列表（获取最新换手率）
-                all_stocks_df = update_stocks_list_on_trading_day()
-                # 新周期开始，重置分析记录
-                logger.info("🔄 新的分析周期开始，重置分析记录")
-                analyzed_records = {}
-                save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
-                continue
+            current_date = date.today()
+            current_date_str = current_date.strftime('%Y-%m-%d')
 
             # 获取当前分析模式
-            analysis_mode = get_current_analysis_mode()
+            current_analysis_mode = get_current_analysis_mode()
 
-            # 根据模式获取待分析股票列表
-            if analysis_mode == 'high_turnover':
-                logger.info("📊 当前模式：连续交易日，只分析换手率 > 20% 的股票")
-                # 连续交易日：不保留之前的记录，重新开始
+            # 根据模式判断是否在执行时间：
+            # - all_random模式：全天执行（00:00-24:00），不间断分析
+            # - high_turnover模式：17:00-次日06:00执行
+            if current_analysis_mode == 'all_random':
+                current_execution_time = True  # 全天都在执行时间内
+            else:
+                current_execution_time = is_execution_time()  # 17:00-06:00
+
+            # 检测是否进入新的分析周期：
+            # 1. 从非执行时间进入执行时间（17:00开始）
+            # 2. 分析模式发生变化
+            # 3. 日期发生变化（每个交易日都是新周期）
+            # 注意：首次启动或重启时，会加载之前的记录并继续（不重置）
+            is_new_cycle = False
+
+            if not is_first_iteration:
+                # 非首次迭代，正常判断新周期
+                if current_execution_time and not last_execution_time:
+                    # 从非执行时间进入执行时间（如17:00开始）
+                    # 这通常意味着新的一天或新周期的开始
+                    is_new_cycle = True
+                    logger.info(f"🔄 进入执行时间（17:00开始），新的分析周期开始（日期：{current_date_str}）")
+                elif current_execution_time and last_execution_time:
+                    # 一直在执行时间内，检查日期或模式是否变化
+                    date_changed = (current_date_str != last_analysis_date)
+                    mode_changed = (current_analysis_mode != last_analysis_mode)
+
+                    if date_changed:
+                        # 日期发生变化，新的交易日，新的分析周期
+                        is_new_cycle = True
+                        logger.info(f"🔄 检测到日期变化（从 {last_analysis_date} 到 {current_date_str}），新的交易日周期开始")
+                    elif mode_changed:
+                        # 模式发生变化，新的分析周期
+                        is_new_cycle = True
+                        logger.info(f"🔄 检测到分析模式变化（从 {last_analysis_mode} 到 {current_analysis_mode}），新的分析周期开始")
+                    else:
+                        # 日期和模式都未变化，继续当前周期
+                        logger.info(f"➡️  继续当前分析周期（日期：{current_date_str}，模式：{current_analysis_mode}）")
+            else:
+                # 首次迭代，加载之前的记录并继续（不重置）
+                logger.info(f"🚀 首次启动/重启，加载现有记录并继续分析（日期：{current_date_str}，模式：{current_analysis_mode}）")
+                last_analysis_date = current_date_str  # 初始化日期
+                is_first_iteration = False
+
+            if is_new_cycle:
                 analyzed_records = {}
                 save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
-                logger.info("🔄 连续交易日模式：已重置分析记录")
+                # 更新股票列表（获取最新换手率数据）
+                all_stocks_df = update_stocks_list_on_trading_day()
+                logger.info(f"✅ 已重置分析记录，新的分析周期开始（日期：{current_date}）")
 
+            # 更新状态
+            last_execution_time = current_execution_time
+            last_analysis_mode = current_analysis_mode
+            last_analysis_date = current_date_str
+
+            # 检查是否在执行时间范围内（调试模式下跳过）
+            if not debug_mode and not current_execution_time:
+                logger.info("当前时间不在执行范围内，等待...")
+                wait_until_next_trading_day_start()
+                # 等待后继续循环，会在下一次迭代时检测到新周期
+                continue
+
+            # 根据模式获取待分析股票列表
+            if current_analysis_mode == 'high_turnover':
+                logger.info("📊 当前模式：连续交易日，只分析换手率 > 20% 的股票")
                 # 获取高换手率股票
                 high_turnover_stocks = get_high_turnover_stocks(all_stocks_df, turnover_threshold=20.0)
-                unanalyzed_stocks = high_turnover_stocks
-                logger.info(f"待分析的高换手率股票有 {len(unanalyzed_stocks)} 只")
+                # 从高换手率股票中筛选未分析的（使用当前的analyzed_records）
+                unanalyzed_stocks = [code for code in high_turnover_stocks if not is_stock_analyzed(str(code), analyzed_records)]
+                logger.info(f"待分析的高换手率股票有 {len(unanalyzed_stocks)} 只（从 {len(high_turnover_stocks)} 只高换手率股票中筛选）")
             else:
                 logger.info("🎲 当前模式：非交易日间隔，对所有股票随机分析")
                 # 从所有股票中筛选未分析的
@@ -961,18 +1080,14 @@ def main_control_loop(logger: logging.Logger, debug_mode: bool = False):
 
             # 检查是否还有股票需要分析
             if not unanalyzed_stocks:
-                if analysis_mode == 'high_turnover':
-                    logger.info("所有高换手率股票都已分析完成，等待下一个分析周期")
+                if current_analysis_mode == 'high_turnover':
+                    logger.info("✅ 所有高换手率股票都已分析完成，等待下一个分析周期...")
                 else:
-                    logger.info("所有股票都已分析完成，等待下一个交易日盘后")
+                    logger.info("✅ 所有股票都已分析完成，等待下一个分析周期...")
 
                 # 等待直到下一个交易日盘后
                 wait_until_next_trading_day_start()
-                # 到达执行时间后，更新股票列表并重置记录
-                all_stocks_df = update_stocks_list_on_trading_day()
-                analyzed_records = {}
-                save_analyzed_stocks(DEFAULT_ANALYZED_RECORDS_FILE, analyzed_records)
-                logger.info("🔄 新的分析周期开始，重置分析记录")
+                # 等待后继续循环，会在下一次迭代时检测到新周期并自动重置
                 continue
 
             # 随机选择一只股票进行分析
