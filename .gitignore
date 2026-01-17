@@ -142,3 +142,6 @@ Thumbs.db
 intraday_output/
 **/intraday_output/
 data_output
+all_stocks_list.csv
+auto_analyze_log.txt
+nohup.out
